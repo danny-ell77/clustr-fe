@@ -22,7 +22,7 @@
 import { SelectItem, SelectItemIndicator, SelectItemText } from 'radix-vue'
 import { Check } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
-import { useForwardProps } from '@/hooks/useForwardProps' // Declare the useForwardProps hook
+import { useForwardProps } from 'radix-vue' // Corrected import path
 
 const props = defineProps<{
   value: string
@@ -31,5 +31,5 @@ const props = defineProps<{
   class?: string
 }>()
 
-const forwarded = useForwardProps(props) // Ensure this hook is called at the top level
+const forwarded = useForwardProps(props)
 </script>

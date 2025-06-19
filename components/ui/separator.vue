@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { Separator as SeparatorRoot } from 'radix-vue'
 import { cn } from '@/lib/utils'
-import { useForwardProps } from '@/lib/utils' // Declare the useForwardProps variable
+import { useForwardProps } from 'radix-vue' // Corrected import path
 
 const props = withDefaults(
   defineProps<{
@@ -26,5 +26,5 @@ const props = withDefaults(
   }
 )
 
-const forwarded = useForwardProps(props) // Ensure this hook is called at the top level
+const forwarded = useForwardProps(props)
 </script>

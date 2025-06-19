@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { SelectRoot } from 'radix-vue'
-import { useForwardPropsEmits } from 'some-hook-library' // Import the useForwardPropsEmits hook
+import { useForwardPropsEmits } from 'radix-vue' // Corrected import path
 
 const props = defineProps<{
   defaultValue?: string
@@ -26,5 +26,5 @@ const emits = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
-const forwarded = useForwardPropsEmits(props, emits) // Ensure this hook is called at the top level
+const forwarded = useForwardPropsEmits(props, emits)
 </script>

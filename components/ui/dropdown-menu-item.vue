@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { DropdownMenuItem } from 'radix-vue'
 import { cn } from '@/lib/utils'
-import { useForwardProps } from '@/hooks/useForwardProps' // Declare the variable before using it
+import { useForwardProps } from 'radix-vue' // Corrected import path
 
 const props = defineProps<{
   disabled?: boolean
@@ -23,5 +23,5 @@ const props = defineProps<{
   class?: string
 }>()
 
-const forwarded = useForwardProps(props) // Ensure this hook is called at the top level
+const forwarded = useForwardProps(props)
 </script>

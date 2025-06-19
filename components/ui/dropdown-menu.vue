@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { DropdownMenuRoot } from 'radix-vue'
-import { useForwardPropsEmits } from 'some-hook-library' // Assuming this is where useForwardPropsEmits is declared
+import { useForwardPropsEmits } from 'radix-vue' // Corrected import path
 
 const props = defineProps<{
   defaultOpen?: boolean

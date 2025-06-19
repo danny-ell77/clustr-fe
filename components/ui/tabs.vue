@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { TabsRoot } from 'radix-vue'
 import { cn } from '@/lib/utils'
-import { useForwardPropsEmits } from '@/hooks/useForwardPropsEmits'
+import { useForwardPropsEmits } from 'radix-vue' // Corrected import path
 
 const props = defineProps<{
   defaultValue?: string

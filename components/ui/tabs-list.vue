@@ -13,12 +13,12 @@
 <script setup lang="ts">
 import { TabsList } from 'radix-vue'
 import { cn } from '@/lib/utils'
-import { useForwardProps } from '@/hooks/useForwardProps' // Declare the useForwardProps variable
+import { useForwardProps } from 'radix-vue' // Corrected import path
 
 const props = defineProps<{
   loop?: boolean
   class?: string
 }>()
 
-const forwarded = useForwardProps(props) // Ensure this hook is called at the top level
+const forwarded = useForwardProps(props)
 </script>

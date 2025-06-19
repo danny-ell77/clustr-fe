@@ -4,16 +4,18 @@ export default defineNuxtConfig({
   modules: [
     // Core module must be loaded first
     "~/modules/core/module",
-    // shadcn-vue module
+
+    // Tailwind CSS module
     "@nuxtjs/tailwindcss",
+    // shadcn-vue module
     "shadcn-nuxt",
 
     // Feature modules - these will be conditionally loaded based on permissions
     "~/modules/property/module",
     "~/modules/accounting/module",
     "~/modules/security/module",
-    "~/modules/shift/module",
-    "~/modules/portal/module",
+    "~/modules/shift/module", // Added Shift module
+    "~/modules/portal/module", // Added Portal module
   ],
 
   // shadcn-vue configuration

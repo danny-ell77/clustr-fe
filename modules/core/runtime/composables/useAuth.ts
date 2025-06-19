@@ -48,6 +48,20 @@ export function useAuth() {
       order: 3,
       permissions: ["security.view"],
     },
+    "shift.view": {
+      id: "shift",
+      label: "Shift Management",
+      icon: "calendar-clock",
+      order: 4,
+      permissions: ["shift.view"],
+    },
+    "portal.view": {
+      id: "portal",
+      label: "Tenant Portal",
+      icon: "message-circle",
+      order: 5,
+      permissions: ["portal.view"],
+    },
   }
 
   // Compute available modules based on permissions
@@ -116,6 +130,11 @@ export function useAuth() {
     }
   }
 
+  const shouldShowPrimarySidebar = computed(() => {
+    // Show primary sidebar if user is admin or has more than one module available
+    return user.value?.role === "Admin" || availableModules.value.length > 1
+  })
+
   return {
     user: readonly(user),
     permissions: readonly(permissions),
@@ -126,5 +145,6 @@ export function useAuth() {
     login,
     logout,
     fetchUserAndPermissions,
+    shouldShowPrimarySidebar,
   }
 }

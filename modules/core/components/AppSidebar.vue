@@ -3,6 +3,7 @@
     <!-- Primary Sidebar - Only show for admin or users with multiple roles -->
     <aside 
       class="w-16 bg-slate-800 text-white flex flex-col items-center py-4 space-y-6"
+      v-if="shouldShowPrimarySidebar"
     >
       <!-- Logo -->
       <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">

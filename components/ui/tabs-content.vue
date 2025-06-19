@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { TabsContent, Tabs } from 'radix-vue'
 import { cn } from '@/lib/utils'
-import { useForwardProps } from '@/hooks/useForwardProps'
+import { useForwardProps } from 'radix-vue' // Corrected import path
 
 const props = defineProps<{
   value: string
