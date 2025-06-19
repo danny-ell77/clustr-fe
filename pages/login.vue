@@ -58,9 +58,10 @@
         <div class="mt-6 p-4 bg-blue-50 rounded-lg">
           <h3 class="text-sm font-medium text-blue-900 mb-2">Demo Credentials:</h3>
           <div class="text-xs text-blue-700 space-y-1">
-            <p><strong>Admin:</strong> admin@demo.com / admin123</p>
-            <p><strong>Manager:</strong> manager@demo.com / manager123</p>
-            <p><strong>User:</strong> user@demo.com / user123</p>
+            <p><strong>Admin (Multi-role):</strong> admin@demo.com / admin123</p>
+            <p><strong>Property Manager:</strong> manager@demo.com / manager123</p>
+            <p><strong>Security Officer:</strong> security@demo.com / security123</p>
+            <p><strong>Resident:</strong> user@demo.com / user123</p>
           </div>
         </div>
       </form>

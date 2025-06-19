@@ -20,11 +20,19 @@ export default defineNuxtPlugin({
     registry.registerExtensionHandler("property:getNavigation", "property", ({ permissions }) => {
       const navItems = [
         {
+          id: "dashboard",
+          label: "Dashboard",
+          icon: "layout-dashboard",
+          route: "/property",
+          order: 1,
+          visible: permissions.includes("property.view"),
+        },
+        {
           id: "listings",
-          label: "Listings",
+          label: "Property Listings",
           icon: "building",
           route: "/property/listings",
-          order: 1,
+          order: 2,
           visible: permissions.includes("property.listings.view"),
         },
         {
@@ -32,7 +40,7 @@ export default defineNuxtPlugin({
           label: "Maintenance",
           icon: "wrench",
           route: "/property/maintenance",
-          order: 2,
+          order: 3,
           visible: permissions.includes("property.maintenance.view"),
         },
         {
@@ -40,8 +48,16 @@ export default defineNuxtPlugin({
           label: "Tenants",
           icon: "users",
           route: "/property/tenants",
-          order: 3,
+          order: 4,
           visible: permissions.includes("property.tenants.view"),
+        },
+        {
+          id: "reports",
+          label: "Reports",
+          icon: "file-text",
+          route: "/property/reports",
+          order: 5,
+          visible: permissions.includes("property.reports.view"),
         },
       ]
 

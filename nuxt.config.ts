@@ -9,6 +9,8 @@ export default defineNuxtConfig({
     "~/modules/property/module",
     "~/modules/accounting/module",
     "~/modules/security/module",
+    "~/modules/shift/module",
+    "~/modules/portal/module",
   ],
 
   // Module-specific configuration
@@ -30,6 +32,14 @@ export default defineNuxtConfig({
 
   security: {
     features: ["users", "roles", "logs"],
+  },
+
+  shift: {
+    features: ["scheduling", "logging", "tasks"],
+  },
+
+  portal: {
+    features: ["chat", "meetings", "announcements"],
   },
 
   // CSS framework

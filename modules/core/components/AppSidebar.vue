@@ -1,75 +1,99 @@
 <template>
-  <aside class="w-64 bg-gray-900 text-white h-screen flex flex-col">
-    <!-- Logo/Brand -->
-    <div class="p-4 border-b border-gray-700">
-      <h1 class="text-xl font-bold">{{ config.public.appName }}</h1>
-    </div>
-    
-    <!-- Main Navigation -->
-    <div class="flex-1 overflow-y-auto">
-      <div class="p-4">
-        <div 
-          v-for="module in availableModules" 
+  <div class="flex h-screen">
+    <!-- Primary Sidebar - Only show for admin or users with multiple roles -->
+    <aside 
+      class="w-16 bg-slate-800 text-white flex flex-col items-center py-4 space-y-6"
+    >
+      <!-- Logo -->
+      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+        <Icon name="building" class="w-6 h-6 text-white" />
+      </div>
+      
+      <!-- Primary Navigation Icons -->
+      <nav class="flex flex-col space-y-4">
+        <button
+          v-for="module in availableModules"
           :key="module.id"
-          class="mb-2"
+          @click="setCurrentModule(module.id)"
+          class="w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
+          :class="[
+            currentModule === module.id 
+              ? 'bg-blue-600 text-white' 
+              : 'text-gray-400 hover:bg-slate-700 hover:text-white'
+          ]"
+          :title="module.label"
+          v-if="shouldShowPrimarySidebar"
         >
-          <button
-            @click="setCurrentModule(module.id)"
-            class="w-full flex items-center px-3 py-2 rounded-lg transition-colors"
-            :class="[
-              currentModule === module.id 
-                ? 'bg-blue-600 text-white' 
-                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-            ]"
-          >
-            <Icon :name="module.icon" class="w-5 h-5 mr-3" />
-            <span>{{ module.label }}</span>
-          </button>
-          
-          <!-- Sub-navigation -->
-          <div 
-            v-if="currentModule === module.id && subNavigation.length"
-            class="ml-8 mt-2 space-y-1"
-          >
-            <NuxtLink
-              v-for="navItem in subNavigation"
-              :key="navItem.id"
-              :to="navItem.route"
-              class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-700 hover:text-white"
-              active-class="bg-gray-700 text-white"
-            >
-              <Icon :name="navItem.icon" class="w-4 h-4 mr-2" />
-              <span>{{ navItem.label }}</span>
-            </NuxtLink>
+          <Icon :name="module.icon" class="w-5 h-5" />
+        </button>
+      </nav>
+    </aside>
+    
+    <!-- Secondary Sidebar - Always show when a module is selected -->
+    <aside 
+      class="bg-slate-100 border-r border-gray-200 flex flex-col"
+      :class="shouldShowPrimarySidebar ? 'w-64' : 'w-80'"
+      v-if="currentModule"
+    >
+      <!-- Module Header -->
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <Icon name="building" class="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <h1 class="text-lg font-semibold text-gray-900">ClustR</h1>
+            <p class="text-sm text-gray-500">{{ getCurrentModuleLabel() }}</p>
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- User Info -->
-    <div class="p-4 border-t border-gray-700">
-      <div v-if="user" class="flex items-center">
-        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-          <span class="text-sm font-medium">{{ user.name.charAt(0) }}</span>
+      
+      <!-- Secondary Navigation -->
+      <nav class="flex-1 p-4 space-y-2">
+        <div
+          v-for="navItem in subNavigation"
+          :key="navItem.id"
+          class="group"
+        >
+          <NuxtLink
+            :to="navItem.route"
+            class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors"
+            :class="[
+              $route.path === navItem.route
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-700 hover:bg-gray-200 hover:text-gray-900'
+            ]"
+          >
+            <Icon :name="navItem.icon" class="w-4 h-4 mr-3" />
+            <span>{{ navItem.label }}</span>
+          </NuxtLink>
         </div>
-        <div class="ml-3">
-          <p class="text-sm font-medium">{{ user.name }}</p>
-          <p class="text-xs text-gray-400">{{ user.role }}</p>
+      </nav>
+      
+      <!-- User Info -->
+      <div class="p-4 border-t border-gray-200">
+        <div v-if="user" class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+            <span class="text-sm font-medium text-white">{{ user.name.charAt(0) }}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-900 truncate">{{ user.name }}</p>
+            <p class="text-xs text-gray-500 truncate">{{ user.role }}</p>
+          </div>
         </div>
       </div>
-    </div>
-  </aside>
+    </aside>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
 import { usePluginRegistry } from '../runtime/composables/usePluginRegistry'
-import { useRuntimeConfig } from '#app'
-import Icon from '~~/components/Icon.vue' // Declare the Icon component
+import { useRoute } from '#app'
 
-const config = useRuntimeConfig()
-const { user, availableModules, permissions } = useAuth()
+const route = useRoute()
+const { user, availableModules, permissions, shouldShowPrimarySidebar } = useAuth()
 const registry = usePluginRegistry()
 
 const currentModule = ref(null)
@@ -78,13 +102,11 @@ const currentModule = ref(null)
 const subNavigation = computed(() => {
   if (!currentModule.value) return []
   
-  // Execute module-specific extension point to get navigation items
   const navItems = registry.executeExtension(
     `${currentModule.value}:getNavigation`, 
     { permissions: permissions.value }
   )
   
-  // Flatten results from all handlers into a single array
   return navItems.flat().sort((a, b) => a.order - b.order)
 })
 
@@ -92,7 +114,24 @@ function setCurrentModule(moduleId) {
   currentModule.value = moduleId
 }
 
-// Set initial module if available
+function getCurrentModuleLabel() {
+  const module = availableModules.value.find(m => m.id === currentModule.value)
+  return module?.label || ''
+}
+
+// Auto-select module based on current route
+watch(() => route.path, (newPath) => {
+  const pathSegments = newPath.split('/').filter(Boolean)
+  if (pathSegments.length > 0) {
+    const moduleFromPath = pathSegments[0]
+    const availableModuleIds = availableModules.value.map(m => m.id)
+    if (availableModuleIds.includes(moduleFromPath)) {
+      currentModule.value = moduleFromPath
+    }
+  }
+}, { immediate: true })
+
+// Set initial module if available and none selected
 watch(availableModules, (modules) => {
   if (modules.length && !currentModule.value) {
     currentModule.value = modules[0].id
