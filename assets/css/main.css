@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+.sidebar {
+  @apply bg-gray-900 text-white h-screen flex flex-col;
+}
+
+.sidebar-item {
+  @apply flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer transition-colors;
+}
+
+.sidebar-item.active {
+  @apply bg-blue-600 text-white;
+}
+
+.sidebar-subitem {
+  @apply flex items-center px-4 py-2 text-sm text-gray-400 hover:bg-gray-700 hover:text-white cursor-pointer transition-colors;
+}
+
+/* Icon component styles */
+.lucide {
+  @apply inline-block;
+}
