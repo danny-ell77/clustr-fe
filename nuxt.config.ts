@@ -4,6 +4,9 @@ export default defineNuxtConfig({
   modules: [
     // Core module must be loaded first
     "~/modules/core/module",
+    // shadcn-vue module
+    "@nuxtjs/tailwindcss",
+    "shadcn-nuxt",
 
     // Feature modules - these will be conditionally loaded based on permissions
     "~/modules/property/module",
@@ -12,6 +15,12 @@ export default defineNuxtConfig({
     "~/modules/shift/module",
     "~/modules/portal/module",
   ],
+
+  // shadcn-vue configuration
+  shadcn: {
+    prefix: "",
+    componentDir: "./components/ui",
+  },
 
   // Module-specific configuration
   core: {
@@ -54,7 +63,7 @@ export default defineNuxtConfig({
     // Public keys (available client-side)
     public: {
       apiBase: process.env.API_BASE || "/api",
-      appName: "Property Management System",
+      appName: "ClustR",
     },
   },
 

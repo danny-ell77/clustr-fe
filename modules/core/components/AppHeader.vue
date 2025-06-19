@@ -11,44 +11,38 @@
         
         <div class="flex items-center space-x-4">
           <!-- Notifications -->
-          <button class="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+          <Button variant="ghost" size="icon" class="text-gray-400 hover:text-gray-600">
             <Icon name="bell" class="w-5 h-5" />
-          </button>
+          </Button>
           
           <!-- User Menu -->
-          <div class="relative">
-            <button 
-              @click="showUserMenu = !showUserMenu"
-              class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <span class="text-sm font-medium text-white">
-                  {{ user?.name.charAt(0) }}
-                </span>
-              </div>
-              <Icon name="chevron-down" class="w-4 h-4 text-gray-400" />
-            </button>
-            
-            <!-- Dropdown Menu -->
-            <div 
-              v-if="showUserMenu"
-              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
-            >
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="ghost" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100">
+                <Avatar class="w-8 h-8">
+                  <AvatarFallback class="bg-blue-600 text-white text-sm font-medium">
+                    {{ user?.name.charAt(0) }}
+                  </AvatarFallback>
+                </Avatar>
+                <Icon name="chevron-down" class="w-4 h-4 text-gray-400" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent class="w-48" align="end">
+              <DropdownMenuItem>
+                <Icon name="user" class="w-4 h-4 mr-2" />
                 Profile Settings
-              </a>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Icon name="settings" class="w-4 h-4 mr-2" />
                 Preferences
-              </a>
-              <hr class="my-1">
-              <button 
-                @click="handleLogout"
-                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
+              </DropdownMenuItem>
+              <Separator class="my-1" />
+              <DropdownMenuItem @click="handleLogout">
+                <Icon name="log-out" class="w-4 h-4 mr-2" />
                 Sign Out
-              </button>
-            </div>
-          </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
@@ -56,13 +50,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
 import { useRoute, navigateTo } from '#app'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Separator } from '@/components/ui/separator'
 
 const { user, logout } = useAuth()
 const route = useRoute()
-const showUserMenu = ref(false)
 
 const pageTitle = computed(() => {
   return route.meta?.title || 'Dashboard'
@@ -74,16 +71,6 @@ const pageDescription = computed(() => {
 
 async function handleLogout() {
   await logout()
-  showUserMenu.value = false
   await navigateTo('/login')
 }
-
-// Close menu when clicking outside
-onMounted(() => {
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.relative')) {
-      showUserMenu.value = false
-    }
-  })
-})
 </script>

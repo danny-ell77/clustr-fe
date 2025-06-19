@@ -9,7 +9,6 @@ interface User {
   name: string
   email: string
   role: string
-  roles?: string[] // Support multiple roles
 }
 
 interface ModuleAccess {
@@ -62,19 +61,6 @@ export function useAuth() {
     })
 
     return Array.from(modules.values()).sort((a, b) => a.order - b.order)
-  })
-
-  // Add new computed properties after availableModules
-  const hasMultipleRoles = computed(() => {
-    return user.value?.roles && user.value.roles.length > 1
-  })
-
-  const isAdmin = computed(() => {
-    return user.value?.role === "Admin" || user.value?.roles?.includes("Admin")
-  })
-
-  const shouldShowPrimarySidebar = computed(() => {
-    return isAdmin.value || hasMultipleRoles.value
   })
 
   const hasPermission = (permission: string) => {
@@ -137,9 +123,6 @@ export function useAuth() {
     isLoading: readonly(isLoading),
     hasPermission,
     hasAnyPermission,
-    hasMultipleRoles,
-    isAdmin,
-    shouldShowPrimarySidebar,
     login,
     logout,
     fetchUserAndPermissions,

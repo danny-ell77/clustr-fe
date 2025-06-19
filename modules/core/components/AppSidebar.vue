@@ -11,21 +11,22 @@
       
       <!-- Primary Navigation Icons -->
       <nav class="flex flex-col space-y-4">
-        <button
+        <Button
           v-for="module in availableModules"
           :key="module.id"
           @click="setCurrentModule(module.id)"
-          class="w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
+          variant="ghost"
+          size="icon"
+          class="w-10 h-10 rounded-lg transition-colors"
           :class="[
             currentModule === module.id 
-              ? 'bg-blue-600 text-white' 
+              ? 'bg-blue-600 text-white hover:bg-blue-700' 
               : 'text-gray-400 hover:bg-slate-700 hover:text-white'
           ]"
           :title="module.label"
-          v-if="shouldShowPrimarySidebar"
         >
           <Icon :name="module.icon" class="w-5 h-5" />
-        </button>
+        </Button>
       </nav>
     </aside>
     
@@ -55,27 +56,31 @@
           :key="navItem.id"
           class="group"
         >
-          <NuxtLink
+          <Button
+            :as="NuxtLink"
             :to="navItem.route"
-            class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors"
+            variant="ghost"
+            class="w-full justify-start px-3 py-2.5 text-sm font-medium rounded-lg transition-colors"
             :class="[
               $route.path === navItem.route
-                ? 'bg-blue-600 text-white'
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
                 : 'text-gray-700 hover:bg-gray-200 hover:text-gray-900'
             ]"
           >
             <Icon :name="navItem.icon" class="w-4 h-4 mr-3" />
             <span>{{ navItem.label }}</span>
-          </NuxtLink>
+          </Button>
         </div>
       </nav>
       
       <!-- User Info -->
       <div class="p-4 border-t border-gray-200">
         <div v-if="user" class="flex items-center space-x-3">
-          <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <span class="text-sm font-medium text-white">{{ user.name.charAt(0) }}</span>
-          </div>
+          <Avatar class="w-8 h-8">
+            <AvatarFallback class="bg-blue-600 text-white text-sm font-medium">
+              {{ user.name.charAt(0) }}
+            </AvatarFallback>
+          </Avatar>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-gray-900 truncate">{{ user.name }}</p>
             <p class="text-xs text-gray-500 truncate">{{ user.role }}</p>
@@ -91,6 +96,9 @@ import { ref, computed, watch } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
 import { usePluginRegistry } from '../runtime/composables/usePluginRegistry'
 import { useRoute } from '#app'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { NuxtLink } from '#components'
 
 const route = useRoute()
 const { user, availableModules, permissions, shouldShowPrimarySidebar } = useAuth()
