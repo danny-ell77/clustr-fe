@@ -115,15 +115,15 @@ export function useAuth() {
     }
   }
 
-  // Modified to return data for useAsyncData
+  // Modified to throw error on failure, allowing useAsyncData to handle it
   const fetchUserAndPermissions = async () => {
     isLoading.value = true
     try {
       const response = await $fetch(`${config.public.apiBase}/auth/me`)
       return { user: response.user, permissions: response.permissions }
     } catch (error) {
-      console.error("Failed to fetch user data:", error)
-      return { user: null, permissions: [] }
+      // Re-throw the error so useAsyncData's onError can catch it
+      throw error
     } finally {
       isLoading.value = false
     }
