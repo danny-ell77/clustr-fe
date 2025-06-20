@@ -2,7 +2,7 @@
 
 import { defineNuxtPlugin } from "#app"
 import { useAuth } from "../composables/useAuth"
-import { useAsyncData } from "#app" // Import useAsyncData
+import { useAsyncData, navigateTo } from "#app" // Import useAsyncData and navigateTo
 
 export default defineNuxtPlugin({
   name: "auth",
@@ -10,7 +10,6 @@ export default defineNuxtPlugin({
     const auth = useAuth()
 
     // Initialize auth on app start using useAsyncData for universal fetching
-    // This will run on the server during SSR and hydrate on the client without re-fetching
     const { data, error } = useAsyncData(
       "initial-auth-data", // Unique key for caching
       () => auth.fetchUserAndPermissions(),
@@ -20,6 +19,13 @@ export default defineNuxtPlugin({
         // Handle errors during initial fetch
         onError: (err) => {
           console.error("Error fetching initial auth data:", err)
+          // Check if it's a 401 Unauthorized error
+          if (err && typeof err === "object" && "statusCode" in err && err.statusCode === 401) {
+            console.log("401 Unauthorized: Redirecting to login page.")
+            navigateTo("/login")
+          }
+          // Clear auth state on any error
+          auth.updateAuthState(null, [])
         },
         // Default value in case of error or no data
         default: () => ({ user: null, permissions: [] }),
