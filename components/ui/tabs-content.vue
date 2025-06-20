@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { TabsContent, Tabs } from 'radix-vue'
+import { Tabs, TabsContent } from 'radix-vue'
 import { cn } from '@/lib/utils'
 import { useForwardProps } from 'radix-vue' // Corrected import path
 

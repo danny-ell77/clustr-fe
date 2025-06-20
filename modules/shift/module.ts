@@ -36,6 +36,26 @@ export default defineNuxtModule<ModuleOptions>({
           description: "Manage shifts and schedules",
         },
       })
+
+      pages.push({
+        name: "shift-scheduling",
+        path: "/shift/scheduling",
+        file: resolver.resolve("./pages/scheduling.vue"),
+        meta: {
+          title: "Shift Scheduling",
+          description: "Manage employee shifts and schedules",
+        },
+      })
+
+      pages.push({
+        name: "shift-logging",
+        path: "/shift/logging",
+        file: resolver.resolve("./pages/logging.vue"),
+        meta: {
+          title: "Time Logging",
+          description: "Track employee work hours",
+        },
+      })
       // Add more shift-related pages here if needed
     })
 

@@ -36,6 +36,26 @@ export default defineNuxtModule<ModuleOptions>({
           description: "Communication and resources for tenants",
         },
       })
+
+      pages.push({
+        name: "portal-chat",
+        path: "/portal/chat",
+        file: resolver.resolve("./pages/chat.vue"),
+        meta: {
+          title: "Tenant Chat",
+          description: "Communicate directly with tenants",
+        },
+      })
+
+      pages.push({
+        name: "portal-meetings",
+        path: "/portal/meetings",
+        file: resolver.resolve("./pages/meetings.vue"),
+        meta: {
+          title: "Tenant Meetings",
+          description: "Schedule and manage meetings with tenants",
+        },
+      })
       // Add more portal-related pages here if needed
     })
 
