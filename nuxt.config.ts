@@ -1,4 +1,4 @@
-import { defineNuxtConfig } from "nuxt"
+import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
   modules: [
@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 
     // Feature modules - these will be conditionally loaded based on permissions
     "~/modules/property/module",
-    "~/modules/accounting/module",
+    // "~/modules/accounting/module",
     "~/modules/security/module",
     "~/modules/shift/module", // Added Shift module
     "~/modules/portal/module", // Added Portal module
@@ -56,6 +56,16 @@ export default defineNuxtConfig({
   // CSS framework
   css: ["~/assets/css/main.css"],
 
+  // PostCSS configuration
+  postcss: {
+    plugins: {
+      "postcss-import": {},
+      "tailwindcss/nesting": {}, // Recommended for nested Tailwind CSS rules
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
+
   // Runtime configuration
   runtimeConfig: {
     // Private keys (server only)
@@ -73,4 +83,4 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
   },
-})
+});

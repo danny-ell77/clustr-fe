@@ -1,8 +1,13 @@
-import { defineNuxtModule, extendPages, createResolver, addPlugin } from "@nuxt/kit"
-import { defu } from "defu"
+import {
+  defineNuxtModule,
+  extendPages,
+  createResolver,
+  addPlugin,
+} from "@nuxt/kit";
+import { defu } from "defu";
 
 export interface ModuleOptions {
-  features: string[]
+  features: string[];
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -11,19 +16,16 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: "accounting",
     compatibility: {
       nuxt: "^3.0.0",
-      modules: {
-        core: ">=1.0.0",
-      },
     },
   },
   defaults: {
     features: ["invoices", "payments", "reports"],
   },
   setup(options, nuxt) {
-    const resolver = createResolver(import.meta.url)
+    const resolver = createResolver(import.meta.url);
 
     // Add accounting module plugin
-    addPlugin(resolver.resolve("./runtime/plugins/accounting"))
+    addPlugin(resolver.resolve("./runtime/plugins/accounting"));
 
     // Register routes for this module
     extendPages((pages) => {
@@ -35,7 +37,7 @@ export default defineNuxtModule<ModuleOptions>({
           title: "Accounting",
           description: "Manage financial operations",
         },
-      })
+      });
 
       pages.push({
         name: "accounting-invoices",
@@ -45,7 +47,7 @@ export default defineNuxtModule<ModuleOptions>({
           title: "Invoices",
           description: "Manage invoices and billing",
         },
-      })
+      });
 
       pages.push({
         name: "accounting-payments",
@@ -55,7 +57,7 @@ export default defineNuxtModule<ModuleOptions>({
           title: "Payments",
           description: "Track incoming and outgoing payments",
         },
-      })
+      });
 
       pages.push({
         name: "accounting-reports",
@@ -65,12 +67,24 @@ export default defineNuxtModule<ModuleOptions>({
           title: "Reports",
           description: "Generate financial reports",
         },
-      })
-    })
+      });
+    });
 
     // Provide module options to runtime config
-    nuxt.options.runtimeConfig.public.accounting = defu(nuxt.options.runtimeConfig.public.accounting, {
-      features: options.features,
-    })
+    nuxt.options.runtimeConfig.public.accounting = defu(
+      nuxt.options.runtimeConfig.public.accounting,
+      {
+        features: options.features,
+      }
+    );
   },
-})
+});
+
+declare module "@nuxt/schema" {
+  interface NuxtConfig {
+    accounting?: ModuleOptions;
+  }
+  interface NuxtOptions {
+    accounting?: ModuleOptions;
+  }
+}
