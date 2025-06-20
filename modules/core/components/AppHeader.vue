@@ -53,10 +53,15 @@
 import { computed } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
 import { useRoute, navigateTo } from '#app'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Separator } from '@/components/ui/separator'
+import DropdownMenu from '@/components/ui/dropdown-menu.vue'
+import DropdownMenuTrigger from '@/components/ui/dropdown-menu-trigger.vue'
+import DropdownMenuContent from '@/components/ui/dropdown-menu-content.vue'
+import DropdownMenuItem from '@/components/ui/dropdown-menu-item.vue'
+import Avatar from '@/components/ui/avatar.vue'
+import AvatarFallback from '@/components/ui/avatar-fallback.vue'
+import Button from '@/components/ui/button.vue'
+import Icon from '@/components/ui/icon.vue'
+import Separator from '@/components/ui/separator.vue'
 
 const { user, logout } = useAuth()
 const route = useRoute()

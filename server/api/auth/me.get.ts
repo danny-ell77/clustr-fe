@@ -1,15 +1,15 @@
-import { defineEventHandler } from "h3"
-import { getCookie } from "h3"
-import { createError } from "h3"
+import { defineEventHandler } from "h3";
+import { getCookie } from "h3";
+import { createError } from "h3";
 
 export default defineEventHandler(async (event) => {
-  const token = getCookie(event, "auth-token")
+  const token = getCookie(event, "auth-token");
 
   if (!token) {
     throw createError({
       statusCode: 401,
       statusMessage: "Not authenticated",
-    })
+    });
   }
 
   // Mock user data based on token - in real app, verify JWT and get from database
@@ -37,7 +37,12 @@ export default defineEventHandler(async (event) => {
       name: "Property Manager",
       email: "manager@demo.com",
       role: "Property Manager",
-      permissions: ["property.view", "property.listings.view", "property.maintenance.view", "property.tenants.view"],
+      permissions: [
+        "property.view",
+        "property.listings.view",
+        "property.maintenance.view",
+        "property.tenants.view",
+      ],
     },
     "mock-token-3": {
       id: "3",
@@ -46,15 +51,15 @@ export default defineEventHandler(async (event) => {
       role: "User",
       permissions: ["property.view", "property.listings.view"],
     },
-  }
+  };
 
-  const userData = users[token]
+  const userData = users[token];
 
   if (!userData) {
     throw createError({
       statusCode: 401,
       statusMessage: "Invalid token",
-    })
+    });
   }
 
   return {
@@ -65,5 +70,5 @@ export default defineEventHandler(async (event) => {
       role: userData.role,
     },
     permissions: userData.permissions,
-  }
-})
+  };
+});
