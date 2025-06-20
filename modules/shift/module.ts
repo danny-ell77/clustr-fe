@@ -1,13 +1,8 @@
-import {
-  defineNuxtModule,
-  extendPages,
-  createResolver,
-  addPlugin,
-} from "@nuxt/kit";
-import { defu } from "defu";
+import { defineNuxtModule, extendPages, createResolver, addPlugin } from "@nuxt/kit"
+import { defu } from "defu"
 
 export interface ModuleOptions {
-  features: string[];
+  features: string[]
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -16,16 +11,19 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: "shift",
     compatibility: {
       nuxt: "^3.0.0",
+      modules: {
+        core: ">=1.0.0",
+      },
     },
   },
   defaults: {
     features: ["scheduling", "logging", "tasks"],
   },
   setup(options, nuxt) {
-    const resolver = createResolver(import.meta.url);
+    const resolver = createResolver(import.meta.url)
 
     // Add shift module plugin
-    addPlugin(resolver.resolve("./runtime/plugins/shift"));
+    addPlugin(resolver.resolve("./runtime/plugins/shift"))
 
     // Register routes for this module
     extendPages((pages) => {
@@ -37,7 +35,7 @@ export default defineNuxtModule<ModuleOptions>({
           title: "Shift Management",
           description: "Manage shifts and schedules",
         },
-      });
+      })
 
       pages.push({
         name: "shift-scheduling",
@@ -47,7 +45,7 @@ export default defineNuxtModule<ModuleOptions>({
           title: "Shift Scheduling",
           description: "Manage employee shifts and schedules",
         },
-      });
+      })
 
       pages.push({
         name: "shift-logging",
@@ -57,25 +55,13 @@ export default defineNuxtModule<ModuleOptions>({
           title: "Time Logging",
           description: "Track employee work hours",
         },
-      });
+      })
       // Add more shift-related pages here if needed
-    });
+    })
 
     // Provide module options to runtime config
-    nuxt.options.runtimeConfig.public.shift = defu(
-      nuxt.options.runtimeConfig.public.shift,
-      {
-        features: options.features,
-      }
-    );
+    nuxt.options.runtimeConfig.public.shift = defu(nuxt.options.runtimeConfig.public.shift, {
+      features: options.features,
+    })
   },
-});
-
-declare module "@nuxt/schema" {
-  interface NuxtConfig {
-    shift?: ModuleOptions;
-  }
-  interface NuxtOptions {
-    shift?: ModuleOptions;
-  }
-}
+})

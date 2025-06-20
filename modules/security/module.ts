@@ -1,13 +1,4 @@
-import {
-  defineNuxtModule,
-  extendPages,
-  createResolver,
-  addPlugin,
-} from "@nuxt/kit";
-
-export interface ModuleOptions {
-  features?: string[];
-}
+import { defineNuxtModule, extendPages, createResolver, addPlugin } from "@nuxt/kit"
 
 export default defineNuxtModule({
   meta: {
@@ -15,14 +6,17 @@ export default defineNuxtModule({
     configKey: "security",
     compatibility: {
       nuxt: "^3.0.0",
+      modules: {
+        core: ">=1.0.0",
+      },
     },
   },
   defaults: {},
   setup(options, nuxt) {
-    const resolver = createResolver(import.meta.url);
+    const resolver = createResolver(import.meta.url)
 
     // Add security module plugin
-    addPlugin(resolver.resolve("./runtime/plugins/security"));
+    addPlugin(resolver.resolve("./runtime/plugins/security"))
 
     // Register routes for this module
     extendPages((pages) => {
@@ -34,7 +28,7 @@ export default defineNuxtModule({
           title: "Access Control",
           description: "Manage users, roles, and permissions",
         },
-      });
+      })
 
       pages.push({
         name: "security-users",
@@ -44,7 +38,7 @@ export default defineNuxtModule({
           title: "Users",
           description: "Manage system users",
         },
-      });
+      })
 
       pages.push({
         name: "security-roles",
@@ -54,16 +48,7 @@ export default defineNuxtModule({
           title: "Roles & Permissions",
           description: "Configure roles and permissions",
         },
-      });
-    });
+      })
+    })
   },
-});
-
-declare module "@nuxt/schema" {
-  interface NuxtConfig {
-    security?: ModuleOptions;
-  }
-  interface NuxtOptions {
-    security?: ModuleOptions;
-  }
-}
+})

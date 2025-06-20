@@ -1,29 +1,29 @@
-"use client";
+"use client"
 
-import { ref, reactive, computed, readonly } from "vue";
-import { useRuntimeConfig } from "#app";
-import { $fetch } from "ofetch";
+import { ref, reactive, computed, readonly } from "vue"
+import { useRuntimeConfig } from "#app"
+import { $fetch } from "ofetch"
 
 interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
+  id: string
+  name: string
+  email: string
+  role: string
 }
 
 interface ModuleAccess {
-  id: string;
-  label: string;
-  icon: string;
-  order: number;
-  permissions: string[];
+  id: string
+  label: string
+  icon: string
+  order: number
+  permissions: string[]
 }
 
 export function useAuth() {
-  const config = useRuntimeConfig();
-  const user = ref<User | null>(null);
-  const permissions = reactive<string[]>([]);
-  const isLoading = ref(false);
+  const config = useRuntimeConfig()
+  const user = ref<User | null>(null)
+  const permissions = reactive<string[]>([])
+  const isLoading = ref(false)
 
   // Define module access mapping
   const moduleMap: Record<string, ModuleAccess> = {
@@ -62,78 +62,83 @@ export function useAuth() {
       order: 5,
       permissions: ["portal.view"],
     },
-  };
+  }
 
   // Compute available modules based on permissions
   const availableModules = computed(() => {
-    const modules = new Map<string, ModuleAccess>();
+    const modules = new Map<string, ModuleAccess>()
 
     permissions.forEach((permission) => {
       if (moduleMap[permission]) {
-        modules.set(moduleMap[permission].id, moduleMap[permission]);
+        modules.set(moduleMap[permission].id, moduleMap[permission])
       }
-    });
+    })
 
-    return Array.from(modules.values()).sort((a, b) => a.order - b.order);
-  });
+    return Array.from(modules.values()).sort((a, b) => a.order - b.order)
+  })
 
   const hasPermission = (permission: string) => {
-    return permissions.includes(permission);
-  };
+    return permissions.includes(permission)
+  }
 
   const hasAnyPermission = (perms: string[]) => {
-    return perms.some((p) => permissions.includes(p));
-  };
+    return perms.some((p) => permissions.includes(p))
+  }
 
   const login = async (email: string, password: string) => {
-    isLoading.value = true;
+    isLoading.value = true
     try {
-      const response = await $fetch("http://localhost:3000/api/auth/login", {
+      const response = await $fetch(`${config.public.apiBase}/auth/login`, {
         method: "POST",
         body: { email, password },
-      });
+      })
 
-      user.value = response.user;
-      permissions.splice(0, permissions.length, ...response.permissions);
+      user.value = response.user
+      permissions.splice(0, permissions.length, ...response.permissions)
 
-      return { success: true };
+      return { success: true }
     } catch (error) {
-      console.error("Login failed:", error);
-      return { success: false, error: "Login failed" };
+      console.error("Login failed:", error)
+      return { success: false, error: "Login failed" }
     } finally {
-      isLoading.value = false;
+      isLoading.value = false
     }
-  };
+  }
 
   const logout = async () => {
     try {
-      await $fetch("http://localhost:3000/api/auth/logout", { method: "POST" });
-      user.value = null;
-      permissions.splice(0, permissions.length);
+      await $fetch(`${config.public.apiBase}/auth/logout`, { method: "POST" })
+      user.value = null
+      permissions.splice(0, permissions.length)
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error("Logout failed:", error)
     }
-  };
+  }
 
+  // Modified to return data for useAsyncData
   const fetchUserAndPermissions = async () => {
-    isLoading.value = true;
+    isLoading.value = true
     try {
-      const response = await $fetch("http://localhost:3000/api/auth/me");
-      user.value = response.user;
-      permissions.splice(0, permissions.length, ...response.permissions);
+      const response = await $fetch(`${config.public.apiBase}/auth/me`)
+      return { user: response.user, permissions: response.permissions }
     } catch (error) {
-      console.error("Failed to fetch user data:", error);
-      user.value = null;
-      permissions.splice(0, permissions.length);
+      console.error("Failed to fetch user data:", error)
+      return { user: null, permissions: [] }
     } finally {
-      isLoading.value = false;
+      isLoading.value = false
     }
-  };
+  }
+
+  // Function to update internal state from fetched data
+  const updateAuthState = (fetchedUser: User | null, fetchedPermissions: string[]) => {
+    user.value = fetchedUser
+    permissions.splice(0, permissions.length, ...fetchedPermissions)
+  }
 
   const shouldShowPrimarySidebar = computed(() => {
     // Show primary sidebar if user is admin or has more than one module available
-    return user.value?.role === "Admin" || availableModules.value.length > 1;
-  });
+    return user.value?.role === "Admin" || availableModules.value.length > 1
+  })
 
   return {
     user: readonly(user),
@@ -144,7 +149,8 @@ export function useAuth() {
     hasAnyPermission,
     login,
     logout,
-    fetchUserAndPermissions,
+    fetchUserAndPermissions, // Still exposed for direct calls if needed
+    updateAuthState, // New function to update state
     shouldShowPrimarySidebar,
-  };
+  }
 }

@@ -1,18 +1,12 @@
-import {
-  defineNuxtModule,
-  addPlugin,
-  createResolver,
-  addImports,
-  addComponent,
-} from "@nuxt/kit";
-import { defu } from "defu";
+import { defineNuxtModule, addPlugin, createResolver, addImports, addComponent } from "@nuxt/kit"
+import { defu } from "defu"
 
 export interface ModuleOptions {
-  debug: boolean;
+  debug: boolean
   registry: {
-    enabled: boolean;
-    autoDiscover: boolean;
-  };
+    enabled: boolean
+    autoDiscover: boolean
+  }
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -31,11 +25,11 @@ export default defineNuxtModule<ModuleOptions>({
     },
   },
   setup(options, nuxt) {
-    const resolver = createResolver(import.meta.url);
+    const resolver = createResolver(import.meta.url)
 
     // Add core plugins
-    addPlugin(resolver.resolve("./runtime/plugins/plugin-registry"));
-    addPlugin(resolver.resolve("./runtime/plugins/auth"));
+    addPlugin(resolver.resolve("./runtime/plugins/plugin-registry"))
+    addPlugin(resolver.resolve("./runtime/plugins/auth"))
 
     // Add composables
     addImports([
@@ -49,47 +43,35 @@ export default defineNuxtModule<ModuleOptions>({
         as: "useAuth",
         from: resolver.resolve("./runtime/composables/useAuth"),
       },
-    ]);
+    ])
 
     // Add core components
     addComponent({
       name: "AppSidebar",
       filePath: resolver.resolve("./components/AppSidebar.vue"),
-    });
+    })
 
     addComponent({
       name: "AppHeader",
       filePath: resolver.resolve("./components/AppHeader.vue"),
-    });
+    })
 
     // Provide module options to runtime config
-    nuxt.options.runtimeConfig.public.core = defu(
-      nuxt.options.runtimeConfig.public.core,
-      {
-        debug: options.debug,
-        registry: options.registry,
-      }
-    );
+    nuxt.options.runtimeConfig.public.core = defu(nuxt.options.runtimeConfig.public.core, {
+      debug: options.debug,
+      registry: options.registry,
+    })
 
     // Add default layout
     nuxt.hook("app:resolve", (app) => {
-      app.mainComponent = resolver.resolve("./layouts/default.vue");
-    });
+      app.mainComponent = resolver.resolve("./layouts/default.vue")
+    })
 
     // Notify when module is ready
     nuxt.hook("ready", () => {
       if (options.debug) {
-        console.log("Core module is ready");
+        console.log("Core module is ready")
       }
-    });
+    })
   },
-});
-
-declare module "@nuxt/schema" {
-  interface NuxtConfig {
-    core?: ModuleOptions;
-  }
-  interface NuxtOptions {
-    core?: ModuleOptions;
-  }
-}
+})

@@ -12,7 +12,7 @@
     "@nuxt/devtools": "latest",
     "@nuxtjs/tailwindcss": "^6.8.4",
     "nuxt": "^3.8.0",
-    "shadcn-nuxt": "^2.2.0",
+    "shadcn-nuxt": "^0.10.4",
     "typescript": "^5.3.3"
   },
   "dependencies": {

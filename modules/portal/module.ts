@@ -1,13 +1,8 @@
-import {
-  defineNuxtModule,
-  extendPages,
-  createResolver,
-  addPlugin,
-} from "@nuxt/kit";
-import { defu } from "defu";
+import { defineNuxtModule, extendPages, createResolver, addPlugin } from "@nuxt/kit"
+import { defu } from "defu"
 
 export interface ModuleOptions {
-  features: string[];
+  features: string[]
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -16,16 +11,19 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: "portal",
     compatibility: {
       nuxt: "^3.0.0",
+      modules: {
+        core: ">=1.0.0",
+      },
     },
   },
   defaults: {
     features: ["chat", "meetings", "announcements"],
   },
   setup(options, nuxt) {
-    const resolver = createResolver(import.meta.url);
+    const resolver = createResolver(import.meta.url)
 
     // Add portal module plugin
-    addPlugin(resolver.resolve("./runtime/plugins/portal"));
+    addPlugin(resolver.resolve("./runtime/plugins/portal"))
 
     // Register routes for this module
     extendPages((pages) => {
@@ -37,7 +35,7 @@ export default defineNuxtModule<ModuleOptions>({
           title: "Tenant Portal",
           description: "Communication and resources for tenants",
         },
-      });
+      })
 
       pages.push({
         name: "portal-chat",
@@ -47,7 +45,7 @@ export default defineNuxtModule<ModuleOptions>({
           title: "Tenant Chat",
           description: "Communicate directly with tenants",
         },
-      });
+      })
 
       pages.push({
         name: "portal-meetings",
@@ -57,25 +55,13 @@ export default defineNuxtModule<ModuleOptions>({
           title: "Tenant Meetings",
           description: "Schedule and manage meetings with tenants",
         },
-      });
+      })
       // Add more portal-related pages here if needed
-    });
+    })
 
     // Provide module options to runtime config
-    nuxt.options.runtimeConfig.public.portal = defu(
-      nuxt.options.runtimeConfig.public.portal,
-      {
-        features: options.features,
-      }
-    );
+    nuxt.options.runtimeConfig.public.portal = defu(nuxt.options.runtimeConfig.public.portal, {
+      features: options.features,
+    })
   },
-});
-
-declare module "@nuxt/schema" {
-  interface NuxtConfig {
-    portal?: ModuleOptions;
-  }
-  interface NuxtOptions {
-    portal?: ModuleOptions;
-  }
-}
+})

@@ -1,4 +1,4 @@
-import { defineNuxtConfig } from "nuxt/config";
+import { defineNuxtConfig } from "nuxt"
 
 export default defineNuxtConfig({
   modules: [
@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 
     // Feature modules - these will be conditionally loaded based on permissions
     "~/modules/property/module",
-    // "~/modules/accounting/module",
+    "~/modules/accounting/module",
     "~/modules/security/module",
     "~/modules/shift/module", // Added Shift module
     "~/modules/portal/module", // Added Portal module
@@ -83,4 +83,4 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
   },
-});
+})
