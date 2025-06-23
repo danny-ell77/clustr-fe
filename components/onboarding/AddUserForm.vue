@@ -3,17 +3,17 @@
     <h2 class="text-2xl font-bold text-gray-900 mb-4">Add Users</h2>
     <div class="relative">
       <Label for="first-name" class="sr-only">First Name</Label>
-      <Input id="first-name" v-model="form.firstName" placeholder="First Name" required />
+      <Input id="first-name" v-model="form.firstName" placeholder="First Name" required class="pl-9"/>
       <Icon name="user" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
     </div>
     <div class="relative">
       <Label for="last-name" class="sr-only">Last Name</Label>
-      <Input id="last-name" v-model="form.lastName" placeholder="Last Name" required />
+      <Input id="last-name" v-model="form.lastName" placeholder="Last Name" required class="pl-9"/>
       <Icon name="user" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
     </div>
     <div class="relative">
       <Label for="user-email" class="sr-only">Email</Label>
-      <Input id="user-email" v-model="form.email" type="email" placeholder="Email" required />
+      <Input id="user-email" v-model="form.email" type="email" placeholder="Email" required class="pl-9"/>
       <Icon name="mail" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
     </div>
     <div>
@@ -50,10 +50,14 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import Input from '~/components/ui/input'
+import Label from '~/components/ui/label'
+import Button from '~/components/ui/button'
+import Select from '~/components/ui/select'
+import SelectContent from '~/components/ui/select-content'
+import SelectItem from '~/components/ui/select-item'
+import SelectTrigger from '~/components/ui/select-trigger'
+import SelectValue from '~/components/ui/select-value'
 import Icon from '~/components/Icon.vue'
 
 const emit = defineEmits(['next'])

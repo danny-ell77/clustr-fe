@@ -13,8 +13,10 @@
 import UnderConstruction from '~/modules/core/components/UnderConstruction.vue'
 import { definePageMeta } from '#imports'
 
+// Define page meta with permissions
 definePageMeta({
   title: 'Tenants',
-  description: 'Manage tenant information and leases'
+  description: 'Manage tenant information and leases',
+  requiresPermission: 'property.tenants.view'
 })
 </script>

@@ -13,8 +13,10 @@
 import UnderConstruction from '~/modules/core/components/UnderConstruction.vue'
 import { definePageMeta } from '#imports'
 
+// Define page meta with permissions
 definePageMeta({
   title: 'Shift Management',
-  description: 'Manage shifts and schedules'
+  description: 'Manage shifts and schedules',
+  requiresPermission: 'shift.overview.view'
 })
 </script>

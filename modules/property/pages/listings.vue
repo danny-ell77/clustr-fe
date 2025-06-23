@@ -96,6 +96,14 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { definePageMeta } from '#imports'
+
+// Define page meta with permissions
+definePageMeta({
+  title: 'Property Listings',
+  description: 'Manage your property portfolio',
+  requiresPermission: 'property.listings.view'
+})
 
 const filters = ref({
   status: '',

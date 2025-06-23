@@ -10,47 +10,22 @@ export default defineNuxtConfig({
     // shadcn-vue module
     "shadcn-nuxt",
 
-    // Feature modules - these will be conditionally loaded based on permissions
+    // Feature modules
     "~/modules/property/module",
-    // "~/modules/accounting/module",
     "~/modules/security/module",
-    "~/modules/shift/module", // Added Shift module
-    "~/modules/portal/module", // Added Portal module
+    "~/modules/shift/module",
+    "~/modules/portal/module",
   ],
 
   // shadcn-vue configuration
-  shadcn: {
-    prefix: "",
-    componentDir: "./components/ui",
-  },
+  // shadcn: {
+  //   prefix: "",
+  //   componentDir: "./components/ui",
+  // },
 
   // Module-specific configuration
   core: {
     debug: process.env.NODE_ENV !== "production",
-    registry: {
-      enabled: true,
-      autoDiscover: true,
-    },
-  },
-
-  property: {
-    features: ["listings", "maintenance", "tenants"],
-  },
-
-  accounting: {
-    features: ["invoices", "payments", "reports"],
-  },
-
-  security: {
-    features: ["users", "roles", "logs"],
-  },
-
-  shift: {
-    features: ["scheduling", "logging", "tasks"],
-  },
-
-  portal: {
-    features: ["chat", "meetings", "announcements"],
   },
 
   // CSS framework
@@ -60,7 +35,7 @@ export default defineNuxtConfig({
   postcss: {
     plugins: {
       "postcss-import": {},
-      "tailwindcss/nesting": {}, // Recommended for nested Tailwind CSS rules
+      "tailwindcss/nesting": {},
       tailwindcss: {},
       autoprefixer: {},
     },
@@ -74,7 +49,7 @@ export default defineNuxtConfig({
 
     // Public keys (available client-side)
     public: {
-      apiBase: process.env.API_BASE || "/api",
+      apiBase: process.env.API_BASE || "http://localhost:3000/api",
       appName: "ClustR",
     },
   },
@@ -82,5 +57,10 @@ export default defineNuxtConfig({
   // TypeScript configuration
   typescript: {
     strict: true,
+  },
+
+  // Auto-imports configuration
+  imports: {
+    dirs: ['composables/**', 'utils/**']
   },
 });

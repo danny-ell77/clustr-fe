@@ -2,17 +2,17 @@
   <form @submit.prevent="handleSubmit" class="space-y-6">
     <div class="relative">
       <Label for="estate-plan" class="sr-only">Estate Plan</Label>
-      <Input id="estate-plan" v-model="form.estatePlan" placeholder="Estate plan" required />
+      <Input id="estate-plan" v-model="form.estatePlan" placeholder="Estate plan" required class="pl-9"/>
       <Icon name="building" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
     </div>
     <div class="relative">
       <Label for="estate-name" class="sr-only">Estate Name</Label>
-      <Input id="estate-name" v-model="form.estateName" placeholder="Estate Name" required />
+      <Input id="estate-name" v-model="form.estateName" placeholder="Estate Name" required class="pl-9"/>
       <Icon name="home" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
     </div>
     <div class="relative">
       <Label for="email" class="sr-only">Email</Label>
-      <Input id="email" v-model="form.email" type="email" placeholder="Email" required />
+      <Input id="email" v-model="form.email" type="email" placeholder="Email" required class="pl-9"/>
       <Icon name="mail" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
     </div>
     <div class="relative">
@@ -31,7 +31,7 @@
     </div>
     <div class="relative">
       <Label for="clustr-domain" class="sr-only">Clustr.com</Label>
-      <Input id="clustr-domain" v-model="form.clustrDomain" placeholder="Clustr.com" required />
+      <Input id="clustr-domain" v-model="form.clustrDomain" placeholder="Clustr.com" required class="pl-9"/>
       <Icon name="globe" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
     </div>
 
@@ -44,9 +44,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
+import Input from '~/components/ui/input'
+import Label from '~/components/ui/label'
+import Button from '~/components/ui/button'
 import { NuxtLink } from '#components'
 import Icon from '~/components/Icon.vue'
 

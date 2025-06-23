@@ -82,6 +82,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { definePageMeta } from '#imports'
+
+// Define page meta with permissions
+definePageMeta({
+  title: 'Property Dashboard',
+  description: 'Overview of your property portfolio',
+  requiresPermission: 'property.overview.view'
+})
 
 // Mock data - in real app, this would come from API
 const stats = ref({

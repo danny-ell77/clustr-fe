@@ -1,15 +1,15 @@
 import {
   defineNuxtModule,
-  extendPages,
   createResolver,
-  addPlugin,
+  extendPages,
 } from "@nuxt/kit";
+import { useAddModulePages } from '../../lib/useAddModulePages';
 
 export interface ModuleOptions {
-  features?: string[];
+  features: string[];
 }
 
-export default defineNuxtModule({
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: "security",
     configKey: "security",
@@ -17,53 +17,22 @@ export default defineNuxtModule({
       nuxt: "^3.0.0",
     },
   },
-  defaults: {},
+  defaults: {
+    features: ["users", "roles", "logs"],
+  },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url);
+    useAddModulePages('security', resolver, extendPages);
 
-    // Add security module plugin
-    addPlugin(resolver.resolve("./runtime/plugins/security"));
-
-    // Register routes for this module
-    extendPages((pages) => {
-      pages.push({
-        name: "security-index",
-        path: "/security",
-        file: resolver.resolve("./pages/index.vue"),
-        meta: {
-          title: "Access Control",
-          description: "Manage users, roles, and permissions",
-        },
-      });
-
-      pages.push({
-        name: "security-users",
-        path: "/security/users",
-        file: resolver.resolve("./pages/users.vue"),
-        meta: {
-          title: "Users",
-          description: "Manage system users",
-        },
-      });
-
-      pages.push({
-        name: "security-roles",
-        path: "/security/roles",
-        file: resolver.resolve("./pages/roles.vue"),
-        meta: {
-          title: "Roles & Permissions",
-          description: "Configure roles and permissions",
-        },
-      });
-    });
+    // Provide module options to runtime config
+    nuxt.options.runtimeConfig.public.security = {
+      features: options.features,
+    };
   },
 });
 
 declare module "@nuxt/schema" {
   interface NuxtConfig {
-    security?: ModuleOptions;
-  }
-  interface NuxtOptions {
     security?: ModuleOptions;
   }
 }

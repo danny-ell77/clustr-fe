@@ -29,16 +29,16 @@
             </DropdownMenuTrigger>
             <DropdownMenuContent class="w-48" align="end">
               <DropdownMenuItem>
-                <Icon name="user" class="w-4 h-4 mr-2" />
+                <!-- <Icon name="user" class="w-4 h-4 mr-2" /> -->
                 Profile Settings
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Icon name="settings" class="w-4 h-4 mr-2" />
+                <!-- <Icon name="settings" class="w-4 h-4 mr-2" /> -->
                 Preferences
               </DropdownMenuItem>
               <Separator class="my-1" />
               <DropdownMenuItem @click="handleLogout">
-                <Icon name="log-out" class="w-4 h-4 mr-2" />
+                <!-- <Icon name="log-out" class="w-4 h-4 mr-2" /> -->
                 Sign Out
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -53,15 +53,16 @@
 import { computed } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
 import { useRoute, navigateTo } from '#app'
-import DropdownMenu from '@/components/ui/dropdown-menu.vue'
-import DropdownMenuTrigger from '@/components/ui/dropdown-menu-trigger.vue'
-import DropdownMenuContent from '@/components/ui/dropdown-menu-content.vue'
-import DropdownMenuItem from '@/components/ui/dropdown-menu-item.vue'
-import Avatar from '@/components/ui/avatar.vue'
-import AvatarFallback from '@/components/ui/avatar-fallback.vue'
-import Button from '@/components/ui/button.vue'
-import Icon from '@/components/ui/icon.vue'
-import Separator from '@/components/ui/separator.vue'
+import DropdownMenu from '~/components/ui/dropdown-menu.vue'
+import DropdownMenuTrigger from '~/components/ui/dropdown-menu-trigger.vue'
+import DropdownMenuContent from '~/components/ui/dropdown-menu-content.vue'
+import DropdownMenuItem from '~/components/ui/dropdown-menu-item.vue'
+import Avatar from '~/components/ui/avatar.vue'
+import AvatarFallback from '~/components/ui/avatar-fallback.vue'
+import Button from '~/components/ui/button.vue'
+import Icon from '~/components/Icon.vue'
+import Separator from '~/components/ui/separator.vue'
+
 
 const { user, logout } = useAuth()
 const route = useRoute()

@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { SelectIcon, SelectTrigger } from 'radix-vue'
 import { ChevronDown } from 'lucide-vue-next'
-import { cn } from '@/lib/utils'
+import { cn } from '~/lib/utils'
 import { useForwardProps } from 'radix-vue' // Corrected import path
 
 const props = defineProps<{

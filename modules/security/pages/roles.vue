@@ -13,8 +13,10 @@
 import UnderConstruction from '~/modules/core/components/UnderConstruction.vue'
 import { definePageMeta } from '#imports'
 
+// Define page meta with permissions
 definePageMeta({
   title: 'Roles & Permissions',
-  description: 'Configure roles and permissions'
+  description: 'Configure roles and permissions',
+  requiresPermission: 'security.roles.view'
 })
 </script>

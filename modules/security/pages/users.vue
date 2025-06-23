@@ -75,6 +75,14 @@
 
 <script setup>
 import { ref } from 'vue'
+import { definePageMeta } from '#imports'
+
+// Define page meta with permissions
+definePageMeta({
+  title: 'Users',
+  description: 'Manage system users and their access',
+  requiresPermission: 'security.users.view'
+})
 
 // Mock data
 const users = ref([

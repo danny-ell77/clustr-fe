@@ -37,7 +37,7 @@ import {
   SelectViewport,
 } from 'radix-vue'
 import { ChevronDown, ChevronUp } from 'lucide-vue-next'
-import { cn } from '@/lib/utils'
+import { cn } from '~/lib/utils'
 import { useForwardProps } from 'radix-vue' // Corrected import path
 
 const props = withDefaults(

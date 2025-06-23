@@ -1,10 +1,9 @@
 import {
   defineNuxtModule,
-  extendPages,
   createResolver,
-  addPlugin,
+  extendPages,
 } from "@nuxt/kit";
-import { defu } from "defu";
+import { useAddModulePages } from "~/lib/useAddModulePages";
 
 export interface ModuleOptions {
   features: string[];
@@ -23,51 +22,12 @@ export default defineNuxtModule<ModuleOptions>({
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url);
-
-    // Add portal module plugin
-    addPlugin(resolver.resolve("./runtime/plugins/portal"));
-
-    // Register routes for this module
-    extendPages((pages) => {
-      pages.push({
-        name: "portal-index",
-        path: "/portal",
-        file: resolver.resolve("./pages/index.vue"),
-        meta: {
-          title: "Tenant Portal",
-          description: "Communication and resources for tenants",
-        },
-      });
-
-      pages.push({
-        name: "portal-chat",
-        path: "/portal/chat",
-        file: resolver.resolve("./pages/chat.vue"),
-        meta: {
-          title: "Tenant Chat",
-          description: "Communicate directly with tenants",
-        },
-      });
-
-      pages.push({
-        name: "portal-meetings",
-        path: "/portal/meetings",
-        file: resolver.resolve("./pages/meetings.vue"),
-        meta: {
-          title: "Tenant Meetings",
-          description: "Schedule and manage meetings with tenants",
-        },
-      });
-      // Add more portal-related pages here if needed
-    });
+    useAddModulePages("portal", resolver, extendPages)
 
     // Provide module options to runtime config
-    nuxt.options.runtimeConfig.public.portal = defu(
-      nuxt.options.runtimeConfig.public.portal,
-      {
-        features: options.features,
-      }
-    );
+    nuxt.options.runtimeConfig.public.portal = {
+      features: options.features,
+    };
   },
 });
 

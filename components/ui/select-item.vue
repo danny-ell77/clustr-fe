@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { SelectItem, SelectItemIndicator, SelectItemText } from 'radix-vue'
 import { Check } from 'lucide-vue-next'
-import { cn } from '@/lib/utils'
+import { cn } from '~/lib/utils'
 import { useForwardProps } from 'radix-vue' // Corrected import path
 
 const props = defineProps<{

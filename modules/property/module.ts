@@ -1,10 +1,9 @@
 import {
   defineNuxtModule,
-  extendPages,
   createResolver,
-  addPlugin,
+  extendPages,
 } from "@nuxt/kit";
-import { defu } from "defu";
+import { useAddModulePages } from "~/lib/useAddModulePages";
 
 export interface ModuleOptions {
   features: string[];
@@ -24,59 +23,12 @@ export default defineNuxtModule<ModuleOptions>({
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url);
 
-    // Add property module plugin
-    addPlugin(resolver.resolve("./runtime/plugins/property"));
-
-    // Register routes for this module
-    extendPages((pages) => {
-      pages.push({
-        name: "property-index",
-        path: "/property",
-        file: resolver.resolve("./pages/index.vue"),
-        meta: {
-          title: "Properties",
-          description: "Manage your property portfolio",
-        },
-      });
-
-      pages.push({
-        name: "property-listings",
-        path: "/property/listings",
-        file: resolver.resolve("./pages/listings.vue"),
-        meta: {
-          title: "Property Listings",
-          description: "View and manage property listings",
-        },
-      });
-
-      pages.push({
-        name: "property-maintenance",
-        path: "/property/maintenance",
-        file: resolver.resolve("./pages/maintenance.vue"),
-        meta: {
-          title: "Maintenance",
-          description: "Track maintenance requests and schedules",
-        },
-      });
-
-      pages.push({
-        name: "property-tenants",
-        path: "/property/tenants",
-        file: resolver.resolve("./pages/tenants.vue"),
-        meta: {
-          title: "Tenants",
-          description: "Manage tenant information and leases",
-        },
-      });
-    });
+    useAddModulePages('property', resolver, extendPages);
 
     // Provide module options to runtime config
-    nuxt.options.runtimeConfig.public.property = defu(
-      nuxt.options.runtimeConfig.public.property,
-      {
-        features: options.features,
-      }
-    );
+    nuxt.options.runtimeConfig.public.property = {
+      features: options.features,
+    };
   },
 });
 

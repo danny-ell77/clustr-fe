@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { DropdownMenuItem } from 'radix-vue'
-import { cn } from '@/lib/utils'
+import { cn } from '~/lib/utils'
 import { useForwardProps } from 'radix-vue' // Corrected import path
 
 const props = defineProps<{

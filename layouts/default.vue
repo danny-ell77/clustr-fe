@@ -15,11 +15,11 @@
         </main>
       </div>
     </div>
-    <NoPermissionsModal v-if="showPermissionModal" />
+    <NoPermissionsModal v-if="showPermissionModal" @close="closePermissionModal" />
   </div>
 </template>
 
 <script setup>
-import { usePermissionModal } from '../runtime/composables/usePermissionModal'
-const { showPermissionModal } = usePermissionModal()
-</script>
+import { usePermissionModal } from '~/modules/core/runtime/composables/usePermissionModal'
+const { showPermissionModal, closePermissionModal } = usePermissionModal()
+</script> 

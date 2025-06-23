@@ -1,9 +1,9 @@
 <template>
   <div class="flex h-screen">
-    <!-- Primary Sidebar - Only show for admin or users with multiple roles -->
+    <!-- Primary Sidebar - Only for Admin users -->
     <aside 
       class="w-16 bg-slate-800 text-white flex flex-col items-center py-4 space-y-6"
-      v-if="shouldShowPrimarySidebar"
+      v-if="isAdmin"
     >
       <!-- Logo -->
       <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -15,6 +15,8 @@
         <Button
           v-for="module in availableModules"
           :key="module.id"
+          :as="NuxtLink"
+          :to="module.id"
           @click="setCurrentModule(module.id)"
           variant="ghost"
           size="icon"
@@ -31,11 +33,10 @@
       </nav>
     </aside>
     
-    <!-- Secondary Sidebar - Always show when a module is selected -->
+    <!-- Secondary Sidebar - For all users -->
     <aside 
       class="bg-slate-100 border-r border-gray-200 flex flex-col"
-      :class="shouldShowPrimarySidebar ? 'w-64' : 'w-80'"
-      v-if="currentModule"
+      :class="isAdmin ? 'w-64' : 'w-80'"
     >
       <!-- Module Header -->
       <div class="p-6 border-b border-gray-200">
@@ -95,28 +96,64 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
-import { usePluginRegistry } from '../runtime/composables/usePluginRegistry'
 import { useRoute } from '#app'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import Button from '~/components/ui/button'
+import Avatar from '~/components/ui/avatar'
+import AvatarFallback from '~/components/ui/avatar-fallback'
+
 import { NuxtLink } from '#components'
 
 const route = useRoute()
-const { user, availableModules, permissions, shouldShowPrimarySidebar } = useAuth()
-const registry = usePluginRegistry()
+const { user, permissions, isAdmin, availableModules } = useAuth();
 
-const currentModule = ref(null)
+const currentModule = ref('property')
 
-// Get sub-navigation for the selected module
+// Use availableModules for navigation
+const adminModules = availableModules
+
+// Get sub-navigation based on current module and user permissions
 const subNavigation = computed(() => {
-  if (!currentModule.value) return []
+  const moduleNavs = {
+    property: [
+      { id: 'overview', label: 'Overview', icon: 'home', route: '/property', order: 1 },
+      { id: 'listings', label: 'Listings', icon: 'building', route: '/property/listings', order: 2 },
+      { id: 'maintenance', label: 'Maintenance', icon: 'wrench', route: '/property/maintenance', order: 3 },
+      { id: 'tenants', label: 'Tenants', icon: 'users', route: '/property/tenants', order: 4 },
+    ],
+    accounting: [
+      { id: 'overview', label: 'Overview', icon: 'dollar-sign', route: '/accounting', order: 1 },
+      { id: 'invoices', label: 'Invoices', icon: 'file-text', route: '/accounting/invoices', order: 2 },
+      { id: 'payments', label: 'Payments', icon: 'credit-card', route: '/accounting/payments', order: 3 },
+      { id: 'reports', label: 'Reports', icon: 'bar-chart', route: '/accounting/reports', order: 4 },
+    ],
+    security: [
+      { id: 'overview', label: 'Overview', icon: 'shield', route: '/security', order: 1 },
+      { id: 'users', label: 'Users', icon: 'users', route: '/security/users', order: 2 },
+      { id: 'roles', label: 'Roles', icon: 'user-check', route: '/security/roles', order: 3 },
+    ],
+    shift: [
+      { id: 'overview', label: 'Overview', icon: 'calendar-clock', route: '/shift', order: 1 },
+      { id: 'scheduling', label: 'Scheduling', icon: 'calendar', route: '/shift/scheduling', order: 2 },
+      { id: 'logging', label: 'Logging', icon: 'clock', route: '/shift/logging', order: 3 },
+    ],
+    portal: [
+      { id: 'overview', label: 'Overview', icon: 'message-circle', route: '/portal', order: 1 },
+      { id: 'chat', label: 'Chat', icon: 'message-square', route: '/portal/chat', order: 2 },
+      { id: 'meetings', label: 'Meetings', icon: 'video', route: '/portal/meetings', order: 3 },
+    ],
+  }
+
+  const navItems = moduleNavs[currentModule.value] || []
   
-  const navItems = registry.executeExtension(
-    `${currentModule.value}:getNavigation`, 
-    { permissions: permissions.value }
-  )
-  
-  return navItems.flat().sort((a, b) => a.order - b.order)
+  // Filter based on permissions for non-admin users
+  if (!isAdmin.value) {
+    return navItems.filter(item => {
+      const permission = `${currentModule.value}.${item.id}.view`
+      return permissions.includes(permission)
+    })
+  }
+
+  return navItems
 })
 
 function setCurrentModule(moduleId) {
@@ -124,26 +161,24 @@ function setCurrentModule(moduleId) {
 }
 
 function getCurrentModuleLabel() {
-  const module = availableModules.value.find(m => m.id === currentModule.value)
-  return module?.label || ''
+  const module = adminModules.value.find(m => m.id === currentModule.value)
+  return module?.label || 'Dashboard'
 }
 
 // Auto-select module based on current route
 watch(() => route.path, (newPath) => {
   const pathSegments = newPath.split('/').filter(Boolean)
+  const availableModuleIds = adminModules.value.map(m => m.id)
   if (pathSegments.length > 0) {
     const moduleFromPath = pathSegments[0]
-    const availableModuleIds = availableModules.value.map(m => m.id)
     if (availableModuleIds.includes(moduleFromPath)) {
       currentModule.value = moduleFromPath
+      return
     }
   }
-}, { immediate: true })
-
-// Set initial module if available and none selected
-watch(availableModules, (modules) => {
-  if (modules.length && !currentModule.value) {
-    currentModule.value = modules[0].id
+  // If on root ("/"), set to first available module
+  if (availableModuleIds.length > 0) {
+    currentModule.value = availableModuleIds[0]
   }
 }, { immediate: true })
 </script>
