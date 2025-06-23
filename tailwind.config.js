@@ -21,6 +21,9 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['"Neue Montreal"', "sans-serif"], // Add Neue Montreal to the sans-serif stack
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

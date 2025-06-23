@@ -22,4 +22,4 @@
 <script setup>
 import { usePermissionModal } from '~/modules/core/runtime/composables/usePermissionModal'
 const { showPermissionModal, closePermissionModal } = usePermissionModal()
-</script> 
+</script>

@@ -52,7 +52,8 @@
 <script setup>
 import { computed } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
-import { useRoute, navigateTo } from '#app'
+import { usePageMeta } from '../runtime/composables/usePageMeta' // Import the new composable
+import { useRoute, navigateTo, useRuntimeConfig } from '#app' // Import useRuntimeConfig
 import DropdownMenu from '~/components/ui/dropdown-menu.vue'
 import DropdownMenuTrigger from '~/components/ui/dropdown-menu-trigger.vue'
 import DropdownMenuContent from '~/components/ui/dropdown-menu-content.vue'
@@ -63,17 +64,10 @@ import Button from '~/components/ui/button.vue'
 import Icon from '~/components/Icon.vue'
 import Separator from '~/components/ui/separator.vue'
 
-
-const { user, logout } = useAuth()
 const route = useRoute()
-
-const pageTitle = computed(() => {
-  return route.meta?.title || 'Dashboard'
-})
-
-const pageDescription = computed(() => {
-  return route.meta?.description || ''
-})
+const config = useRuntimeConfig() // Get runtime config
+const { user, logout } = useAuth()
+const { pageTitle, pageDescription } = usePageMeta() // Use the new composable
 
 async function handleLogout() {
   await logout()

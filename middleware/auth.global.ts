@@ -23,4 +23,4 @@ export default defineNuxtRouteMiddleware((to) => {
     //     openPermissionModal()
     //     return false // Cancel navigation
     // }
-}) 
+})

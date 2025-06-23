@@ -26,4 +26,4 @@ export function useAddModulePages(moduleName: string, resolver: Resolver, extend
             });
         }
     });
-} 
+}

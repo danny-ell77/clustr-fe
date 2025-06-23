@@ -60,4 +60,4 @@ const goHome = () => {
   router.push('/')
   emit('close')
 }
-</script> 
+</script>

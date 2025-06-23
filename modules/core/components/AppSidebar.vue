@@ -6,15 +6,14 @@
       :class="isSidebarHovered ? 'w-56 shadow-xl' : 'w-16'"
       @mouseenter="isSidebarHovered = true"
       @mouseleave="isSidebarHovered = false"
-      v-if="isAdmin"
     >
       <!-- Logo -->
-      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center ml-3">
-        <Icon name="building" class="w-6 h-6 text-white" />
+      <div class="w-10 h-10 rounded-lg flex items-center justify-center ml-3">
+        <img src="/images/clustr_logo.png" alt="ClustR Logo" class="w-full h-full object-contain" />
       </div>
       
       <!-- Primary Navigation Icons + Labels -->
-      <nav class="flex flex-col space-y-4 w-full p-2">
+      <nav class="flex flex-col space-y-4 w-full p-2 flex-1">
         <Button
           v-for="module in availableModules"
           :key="module.id"
@@ -41,6 +40,32 @@
           </span>
         </Button>
       </nav>
+
+      <!-- Settings Button at the bottom of the main sidebar -->
+      <div class="w-full p-2">
+        <Button
+          :as="NuxtLink"
+          to="/settings"
+          variant="ghost"
+          size="icon"
+          class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2"
+          :class="[
+            $route.path === '/settings'
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'text-gray-400 hover:bg-slate-700 hover:text-white',
+              isSidebarHovered && 'justify-start'
+          ]"
+          title="Settings"
+        >
+          <Icon name="settings" class="w-5 h-5" />
+          <span
+            class="ml-4 text-base font-medium transition-opacity duration-200"
+            v-if="isSidebarHovered"
+          >
+            Settings
+          </span>
+        </Button>
+      </div>
     </aside>
     
     <!-- Main Content Container with left margin for primary sidebar -->
@@ -57,7 +82,7 @@
               <Icon name="building" class="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 class="text-lg font-semibold text-gray-900">ClustR</h1>
+              <h1 class="text-lg font-semibold text-gray-900">{{ appName }}</h1>
               <p class="text-sm text-gray-500">{{ getCurrentModuleLabel() }}</p>
             </div>
           </div>
@@ -114,15 +139,17 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
-import { useRoute, navigateTo } from '#app'
+import { useRoute, navigateTo, useRuntimeConfig } from '#app'
 import Button from '~/components/ui/button'
 import Avatar from '~/components/ui/avatar'
 import AvatarFallback from '~/components/ui/avatar-fallback'
-
+import Icon from '~/components/Icon.vue' // Ensure Icon is imported
 import { NuxtLink } from '#components'
 
 const route = useRoute()
 const { user, permissions, isAdmin, availableModules } = useAuth();
+const config = useRuntimeConfig() // Get runtime config
+const appName = config.public.appName // Access appName
 
 const currentModule = ref('property')
 const isSidebarHovered = ref(false)

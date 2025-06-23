@@ -11,4 +11,4 @@ defineProps({
     default: 'Select an option'
   }
 })
-</script> 
+</script>
