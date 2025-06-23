@@ -2,101 +2,119 @@
   <div class="flex h-screen">
     <!-- Primary Sidebar - Only for Admin users -->
     <aside 
-      class="w-16 bg-slate-800 text-white flex flex-col items-center py-4 space-y-6"
+      class="fixed left-0 top-0 h-full bg-slate-800 text-white flex flex-col items-start py-4 space-y-6 transition-all duration-300 z-30 max-h-screen"
+      :class="isSidebarHovered ? 'w-56 shadow-xl' : 'w-16'"
+      @mouseenter="isSidebarHovered = true"
+      @mouseleave="isSidebarHovered = false"
       v-if="isAdmin"
     >
       <!-- Logo -->
-      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center ml-3">
         <Icon name="building" class="w-6 h-6 text-white" />
       </div>
       
-      <!-- Primary Navigation Icons -->
-      <nav class="flex flex-col space-y-4">
+      <!-- Primary Navigation Icons + Labels -->
+      <nav class="flex flex-col space-y-4 w-full p-2">
         <Button
           v-for="module in availableModules"
           :key="module.id"
           :as="NuxtLink"
-          :to="module.id"
+          :to="`/${module.id}`"
           @click="setCurrentModule(module.id)"
           variant="ghost"
           size="icon"
-          class="w-10 h-10 rounded-lg transition-colors"
+          class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2"
           :class="[
             currentModule === module.id 
               ? 'bg-blue-600 text-white hover:bg-blue-700' 
-              : 'text-gray-400 hover:bg-slate-700 hover:text-white'
+              : 'text-gray-400 hover:bg-slate-700 hover:text-white',
+              isSidebarHovered && 'justify-start'
           ]"
           :title="module.label"
         >
           <Icon :name="module.icon" class="w-5 h-5" />
+          <span
+            class="ml-4 text-base font-medium transition-opacity duration-200"
+            v-if="isSidebarHovered"
+          >
+            {{ module.label }}
+          </span>
         </Button>
       </nav>
     </aside>
     
-    <!-- Secondary Sidebar - For all users -->
-    <aside 
-      class="bg-slate-100 border-r border-gray-200 flex flex-col"
-      :class="isAdmin ? 'w-64' : 'w-80'"
-    >
-      <!-- Module Header -->
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Icon name="building" class="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <h1 class="text-lg font-semibold text-gray-900">ClustR</h1>
-            <p class="text-sm text-gray-500">{{ getCurrentModuleLabel() }}</p>
+    <!-- Main Content Container with left margin for primary sidebar -->
+    <div class="flex flex-1" :class="isAdmin ? 'ml-16' : ''">
+      <!-- Secondary Sidebar - For all users -->
+      <aside 
+        class="bg-slate-100 border-r border-gray-200 flex flex-col"
+        :class="isAdmin ? 'w-64' : 'w-80'"
+      >
+        <!-- Module Header -->
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <Icon name="building" class="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h1 class="text-lg font-semibold text-gray-900">ClustR</h1>
+              <p class="text-sm text-gray-500">{{ getCurrentModuleLabel() }}</p>
+            </div>
           </div>
         </div>
-      </div>
-      
-      <!-- Secondary Navigation -->
-      <nav class="flex-1 p-4 space-y-2">
-        <div
-          v-for="navItem in subNavigation"
-          :key="navItem.id"
-          class="group"
-        >
-          <Button
-            :as="NuxtLink"
-            :to="navItem.route"
-            variant="ghost"
-            class="w-full justify-start px-3 py-2.5 text-sm font-medium rounded-lg transition-colors"
-            :class="[
-              $route.path === navItem.route
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'text-gray-700 hover:bg-gray-200 hover:text-gray-900'
-            ]"
+        
+        <!-- Secondary Navigation -->
+        <nav class="flex-1 p-4 space-y-2">
+          <div
+            v-for="navItem in subNavigation"
+            :key="navItem.id"
+            class="group"
           >
-            <Icon :name="navItem.icon" class="w-4 h-4 mr-3" />
-            <span>{{ navItem.label }}</span>
-          </Button>
-        </div>
-      </nav>
-      
-      <!-- User Info -->
-      <div class="p-4 border-t border-gray-200">
-        <div v-if="user" class="flex items-center space-x-3">
-          <Avatar class="w-8 h-8">
-            <AvatarFallback class="bg-blue-600 text-white text-sm font-medium">
-              {{ user.name.charAt(0) }}
-            </AvatarFallback>
-          </Avatar>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-900 truncate">{{ user.name }}</p>
-            <p class="text-xs text-gray-500 truncate">{{ user.role }}</p>
+            <Button
+              :as="NuxtLink"
+              :to="navItem.route"
+              variant="ghost"
+              class="w-full justify-start px-3 py-2.5 text-sm font-medium rounded-lg transition-colors"
+              :class="[
+                $route.path === navItem.route
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'text-gray-700 hover:bg-gray-200 hover:text-gray-900'
+              ]"
+            >
+              <Icon :name="navItem.icon" class="w-4 h-4 mr-3" />
+              <span>{{ navItem.label }}</span>
+            </Button>
+          </div>
+        </nav>
+        
+        <!-- User Info -->
+        <div class="p-4 border-t border-gray-200">
+          <div v-if="user" class="flex items-center space-x-3">
+            <Avatar class="w-8 h-8">
+              <AvatarFallback class="bg-blue-600 text-white text-sm font-medium">
+                {{ user.name.charAt(0) }}
+              </AvatarFallback>
+            </Avatar>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-900 truncate">{{ user.name }}</p>
+              <p class="text-xs text-gray-500 truncate">{{ user.role }}</p>
+            </div>
           </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+      
+      <!-- Main Content Area -->
+      <main class="flex-1">
+        <!-- Your main content goes here -->
+      </main>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
-import { useRoute } from '#app'
+import { useRoute, navigateTo } from '#app'
 import Button from '~/components/ui/button'
 import Avatar from '~/components/ui/avatar'
 import AvatarFallback from '~/components/ui/avatar-fallback'
@@ -107,6 +125,7 @@ const route = useRoute()
 const { user, permissions, isAdmin, availableModules } = useAuth();
 
 const currentModule = ref('property')
+const isSidebarHovered = ref(false)
 
 // Use availableModules for navigation
 const adminModules = availableModules
@@ -158,6 +177,8 @@ const subNavigation = computed(() => {
 
 function setCurrentModule(moduleId) {
   currentModule.value = moduleId
+  // Navigate to the module's overview page
+  navigateTo(`/${moduleId}`)
 }
 
 function getCurrentModuleLabel() {
@@ -177,7 +198,7 @@ watch(() => route.path, (newPath) => {
     }
   }
   // If on root ("/"), set to first available module
-  if (availableModuleIds.length > 0) {
+  if (newPath === '/' && availableModuleIds.length > 0) {
     currentModule.value = availableModuleIds[0]
   }
 }, { immediate: true })
