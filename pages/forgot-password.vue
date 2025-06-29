@@ -21,7 +21,7 @@
       </div>
       <Button type="submit" :disabled="isLoading" class="w-full bg-blue-600 text-white hover:bg-blue-700">
         <span v-if="isLoading">Sending...</span>
-        <span v-else>Send Reset Link</span>
+        <span v-else">Send Reset Link</span>
       </Button>
     </form>
     <p class="text-sm text-gray-600">
@@ -33,9 +33,9 @@
 <script setup>
 import { ref } from 'vue'
 import { definePageMeta, navigateTo } from '#imports'
-
-
-
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { Button } from '~/components/ui/button'
 import Icon from '~/components/Icon.vue'
 import { NuxtLink } from '#components'
 

@@ -50,9 +50,9 @@
 <script setup>
 import { ref } from 'vue'
 import { definePageMeta, navigateTo } from '#imports'
-
-
-
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { Button } from '~/components/ui/button'
 import Icon from '~/components/Icon.vue'
 import SuccessDialog from '~/components/SuccessDialog.vue'
 

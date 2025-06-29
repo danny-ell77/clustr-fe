@@ -11,7 +11,7 @@
 
 <script setup>
 import { definePageMeta, navigateTo, clearError } from '#imports'
-
+import { Button } from '~/components/ui/button'
 
 // This page will automatically use the default layout due to Nuxt's error handling
 // No explicit layout definition needed here.

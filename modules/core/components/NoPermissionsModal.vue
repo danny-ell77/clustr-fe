@@ -1,3 +1,33 @@
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 <template>
   <div class="fixed inset-0 z-50 flex items-center justify-center">
     <!-- Glassmorphism backdrop -->
@@ -46,7 +76,8 @@
 </template>
 
 <script setup>
-
+import { Button } from '~/components/ui/button'
+import Icon from '~/components/Icon.vue'
 
 const router = useRouter()
 const emit = defineEmits(['close'])

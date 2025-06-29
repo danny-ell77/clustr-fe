@@ -2,7 +2,6 @@
   <div class="flex h-screen">
     <!-- Primary Sidebar - Only for Admin users -->
     <aside
-      v-if=isAdmin
       class="fixed left-0 top-0 h-full bg-slate-800 text-white flex flex-col items-start py-4 space-y-6 transition-all duration-300 z-30 max-h-screen"
       :class="isSidebarHovered ? 'w-56 shadow-xl' : 'w-16'"
       @mouseenter="isSidebarHovered = true"
@@ -141,9 +140,8 @@
 import { ref, computed, watch } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
 import { useRoute, navigateTo, useRuntimeConfig } from '#app'
-
-
-
+import { Button } from '~/components/ui/button'
+import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import Icon from '~/components/Icon.vue' // Ensure Icon is imported
 import { NuxtLink } from '#components'
 
@@ -230,4 +228,8 @@ watch(() => route.path, (newPath) => {
     currentModule.value = availableModuleIds[0]
   }
 }, { immediate: true })
+
+// Ensure hooks are called at the top level
+const isAdminRef = ref(isAdmin)
+const isSidebarHoveredRef = ref(isSidebarHovered)
 </script>

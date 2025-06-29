@@ -54,8 +54,16 @@ import { computed } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
 import { usePageMeta } from '../runtime/composables/usePageMeta' // Import the new composable
 import { useRoute, navigateTo, useRuntimeConfig } from '#app' // Import useRuntimeConfig
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback } from '~/components/ui/avatar'
+import { Button } from '~/components/ui/button'
+import { Separator } from '~/components/ui/separator'
 import Icon from '~/components/Icon.vue'
-
 
 const route = useRoute()
 const config = useRuntimeConfig() // Get runtime config
