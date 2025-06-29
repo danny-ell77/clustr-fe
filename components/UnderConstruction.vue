@@ -51,10 +51,10 @@
 </template>
 
 <script setup>
-import Card from '~/components/ui/card'
-import CardContent from '~/components/ui/card-content'
-import CardTitle from '~/components/ui/card-title'
-import Button from '~/components/ui/button'
+
+
+
+
 
 const props = defineProps({
   title: {

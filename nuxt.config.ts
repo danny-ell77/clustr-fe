@@ -1,27 +1,18 @@
 import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
-  modules: [
-    // Core module must be loaded first
-    "~/modules/core/module",
-
-    // Tailwind CSS module
-    "@nuxtjs/tailwindcss",
-    // shadcn-vue module
-    "shadcn-nuxt",
-
-    // Feature modules
+  ssr: true, // Enable server-side rendering
+  modules: [// Core module must be loaded first
+    "~/modules/core/module", // Tailwind CSS module
+    "@nuxtjs/tailwindcss", // shadcn-vue module
+    "shadcn-nuxt", // Icon module
+    "@nuxt/icon", // Feature modules
     "~/modules/property/module",
     "~/modules/security/module",
     "~/modules/shift/module",
     "~/modules/portal/module",
+    "~/modules/accounting/module"
   ],
-
-  // shadcn-vue configuration
-  // shadcn: {
-  //   prefix: "",
-  //   componentDir: "./components/ui",
-  // },
 
   // Module-specific configuration
   core: {
@@ -35,8 +26,6 @@ export default defineNuxtConfig({
   postcss: {
     plugins: {
       "postcss-import": {},
-      "tailwindcss/nesting": {},
-      tailwindcss: {},
       autoprefixer: {},
     },
   },
@@ -61,6 +50,76 @@ export default defineNuxtConfig({
 
   // Auto-imports configuration
   imports: {
-    dirs: ['composables/**', 'utils/**']
+    dirs: ["composables/**", "utils/**"],
   },
+
+  // Auto-import components configuration
+  components: [
+    {
+      path: "~/components",
+      pathPrefix: false,
+    },
+    {
+      path: "~/components/ui",
+      pathPrefix: false,
+      global: true,
+      extensions: ['.vue'],
+    },
+    // Individual UI component folders
+    {
+      path: "~/components/ui/avatar",
+      pathPrefix: false,
+      global: true,
+    },
+    {
+      path: "~/components/ui/badge",
+      pathPrefix: false,
+      global: true,
+    },
+    {
+      path: "~/components/ui/button",
+      pathPrefix: false,
+      global: true,
+    },
+    {
+      path: "~/components/ui/card",
+      pathPrefix: false,
+      global: true,
+    },
+    {
+      path: "~/components/ui/dropdown-menu",
+      pathPrefix: false,
+      global: true,
+    },
+    {
+      path: "~/components/ui/input",
+      pathPrefix: false,
+      global: true,
+    },
+    {
+      path: "~/components/ui/label",
+      pathPrefix: false,
+      global: true,
+    },
+    {
+      path: "~/components/ui/select",
+      pathPrefix: false,
+      global: true,
+    },
+    {
+      path: "~/components/ui/separator",
+      pathPrefix: false,
+      global: true,
+    },
+    {
+      path: "~/components/ui/table",
+      pathPrefix: false,
+      global: true,
+    },
+    {
+      path: "~/components/ui/tabs",
+      pathPrefix: false,
+      global: true,
+    },
+  ],
 });

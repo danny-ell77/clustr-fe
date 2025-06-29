@@ -3,7 +3,7 @@
     <CardContent class="space-y-6">
       <!-- Construction Icon -->
       <div class="w-24 h-24 mx-auto bg-yellow-100 rounded-full flex items-center justify-center">
-        <Icon name="construction" class="w-12 h-12 text-yellow-600" />
+        <Icon name="construction" class="w-34 h-34 text-yellow-600" />
       </div>
       
       <!-- Title -->
@@ -51,10 +51,11 @@
 </template>
 
 <script setup>
-import Card from '~/components/ui/card'
-import CardContent from '~/components/ui/card-content'
-import CardTitle from '~/components/ui/card-title'
-import Button from '~/components/ui/button'
+
+
+
+
+import Icon from '~/components/Icon.vue'
 
 const props = defineProps({
   title: {

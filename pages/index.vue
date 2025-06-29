@@ -76,6 +76,7 @@
 <script setup>
 import { useAuth } from '~/modules/core/runtime/composables/useAuth'
 import { definePageMeta } from '#imports'
+import Icon from '~/components/Icon.vue'
 
 const { user, permissions, availableModules } = useAuth()
 

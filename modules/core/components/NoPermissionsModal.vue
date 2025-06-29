@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import Button from '~/components/ui/button'
+
 
 const router = useRouter()
 const emit = defineEmits(['close'])

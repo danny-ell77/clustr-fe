@@ -4,7 +4,7 @@ import {
   defineNuxtModule,
   extendPages,
 } from "@nuxt/kit";
-import { useAddModulePages } from "~/lib/useAddModulePages";
+import { useAddModulePages } from "../../lib/useAddModulePages";
 
 export interface ModuleOptions {
   features: string[];
@@ -26,9 +26,50 @@ export default defineNuxtModule<ModuleOptions>({
 
     addPlugin(resolver.resolve("./runtime/plugins/accounting"));
 
-    useAddModulePages("accounting", resolver, extendPages)
+    extendPages((pages) => {
+      pages.push({
+        name: "accounting-index",
+        path: "/accounting",
+        file: resolver.resolve("./pages/index.vue"),
+        meta: {
+          title: "Accounting",
+          description: "Manage financial operations",
+        },
+      });
 
-    nuxt.options.runtimeConfig.public.portal = {
+      pages.push({
+        name: "accounting-invoices",
+        path: "/accounting/invoices",
+        file: resolver.resolve("./pages/invoices.vue"),
+        meta: {
+          title: "Invoices",
+          description: "Manage invoices and billing",
+        },
+      });
+
+      pages.push({
+        name: "accounting-payments",
+        path: "/accounting/payments",
+        file: resolver.resolve("./pages/payments.vue"),
+        meta: {
+          title: "Payments",
+          description: "Track incoming and outgoing payments",
+        },
+      });
+
+      pages.push({
+        name: "accounting-reports",
+        path: "/accounting/reports",
+        file: resolver.resolve("./pages/reports.vue"),
+        meta: {
+          title: "Reports",
+          description: "Generate financial reports",
+        },
+      });
+    });
+
+
+    nuxt.options.runtimeConfig.public.accounting = {
       features: options.features,
     };
   },

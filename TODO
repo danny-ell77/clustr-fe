@@ -1,0 +1,7 @@
+1. On the main side bar replace the icon there with ClustR's Logo.
+2. ON the secondary side bar replace the 'ClustR' there with the organizations name.
+3. At the bottom of the main side bar include a settings button that takes to the settings page.
+4. Apply page meta data dynamically by adding a predefined mapping between page names and meta data. 
+undeterministic yes... but that should work for now.
+5. Change font to include what was defined in the ClustR Figma diagram.
+6. Add Dialog ui components

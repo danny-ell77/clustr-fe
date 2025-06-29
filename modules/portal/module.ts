@@ -3,7 +3,7 @@ import {
   createResolver,
   extendPages,
 } from "@nuxt/kit";
-import { useAddModulePages } from "~/lib/useAddModulePages";
+import { useAddModulePages } from "../../lib/useAddModulePages";
 
 export interface ModuleOptions {
   features: string[];

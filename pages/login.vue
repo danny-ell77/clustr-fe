@@ -85,11 +85,10 @@
 import { ref } from 'vue'
 import { useAuth } from '~/modules/core/runtime/composables/useAuth'
 import { definePageMeta, navigateTo } from '#imports'
-import Input from '~/components/ui/input'
-import Button from '~/components/ui/button'
 import Icon from '~/components/Icon.vue'
 import { NuxtLink } from '#components'
-
+import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
 // Use the new auth-layout
 definePageMeta({
   layout: 'auth-layout'

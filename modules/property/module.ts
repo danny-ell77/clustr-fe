@@ -3,7 +3,7 @@ import {
   createResolver,
   extendPages,
 } from "@nuxt/kit";
-import { useAddModulePages } from "~/lib/useAddModulePages";
+import { useAddModulePages } from "../../lib/useAddModulePages";
 
 export interface ModuleOptions {
   features: string[];
@@ -20,7 +20,8 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     features: ["listings", "maintenance", "tenants"],
   },
-  setup(options, nuxt) {
+
+  setup(options: any, nuxt: any) {
     const resolver = createResolver(import.meta.url);
 
     useAddModulePages('property', resolver, extendPages);

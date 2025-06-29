@@ -1,7 +1,8 @@
 <template>
   <div class="flex h-screen">
     <!-- Primary Sidebar - Only for Admin users -->
-    <aside 
+    <aside
+      v-if=isAdmin
       class="fixed left-0 top-0 h-full bg-slate-800 text-white flex flex-col items-start py-4 space-y-6 transition-all duration-300 z-30 max-h-screen"
       :class="isSidebarHovered ? 'w-56 shadow-xl' : 'w-16'"
       @mouseenter="isSidebarHovered = true"
@@ -33,7 +34,7 @@
         >
           <Icon :name="module.icon" class="w-5 h-5" />
           <span
-            class="ml-4 text-base font-medium transition-opacity duration-200"
+            class="ml-4 text-base font-medium transition-opacity duration-1000"
             v-if="isSidebarHovered"
           >
             {{ module.label }}
@@ -140,9 +141,9 @@
 import { ref, computed, watch } from 'vue'
 import { useAuth } from '../runtime/composables/useAuth'
 import { useRoute, navigateTo, useRuntimeConfig } from '#app'
-import Button from '~/components/ui/button'
-import Avatar from '~/components/ui/avatar'
-import AvatarFallback from '~/components/ui/avatar-fallback'
+
+
+
 import Icon from '~/components/Icon.vue' // Ensure Icon is imported
 import { NuxtLink } from '#components'
 
