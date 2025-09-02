@@ -99,6 +99,11 @@ export function usePageMeta() {
     const path = route.path
     let meta = pageMetaMap[path]
 
+    // Special prefixes
+    if (!meta && path.startsWith('/accounting/reports/')) {
+      meta = { title: 'Report Details', description: 'View and update report details' }
+    }
+
     // If a specific path meta is not found, try to derive from module
     if (!meta) {
       const pathSegments = path.split("/").filter(Boolean)

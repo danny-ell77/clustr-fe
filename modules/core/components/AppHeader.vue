@@ -11,10 +11,8 @@
         
         <div class="flex items-center space-x-4">
           <!-- Notifications -->
-          <Button variant="ghost" size="icon" class="text-gray-400 hover:text-gray-600">
-            <Icon name="bell" class="w-5 h-5" />
-          </Button>
-          
+          <NotificationsDropdown />
+
           <!-- User Menu -->
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
@@ -64,6 +62,7 @@ import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
 import { Separator } from '~/components/ui/separator'
 import Icon from '~/components/Icon.vue'
+import NotificationsDropdown from '~/modules/core/components/NotificationsDropdown.vue'
 
 const route = useRoute()
 const config = useRuntimeConfig() // Get runtime config

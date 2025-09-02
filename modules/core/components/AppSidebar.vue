@@ -3,39 +3,25 @@
     <!-- Primary Sidebar - Only for Admin users -->
     <aside
       class="fixed left-0 top-0 h-full bg-slate-800 text-white flex flex-col items-start py-4 space-y-6 transition-all duration-300 z-30 max-h-screen"
-      :class="isSidebarHovered ? 'w-56 shadow-xl' : 'w-16'"
-      @mouseenter="isSidebarHovered = true"
-      @mouseleave="isSidebarHovered = false"
-    >
+      :class="isSidebarHovered ? 'w-56 shadow-xl' : 'w-16'" @mouseenter="isSidebarHovered = true"
+      @mouseleave="isSidebarHovered = false">
       <!-- Logo -->
       <div class="w-10 h-10 rounded-lg flex items-center justify-center ml-3">
         <img src="/images/clustr_logo.png" alt="ClustR Logo" class="w-full h-full object-contain" />
       </div>
-      
+
       <!-- Primary Navigation Icons + Labels -->
       <nav class="flex flex-col space-y-4 w-full p-2 flex-1">
-        <Button
-          v-for="module in availableModules"
-          :key="module.id"
-          :as="NuxtLink"
-          :to="`/${module.id}`"
-          @click="setCurrentModule(module.id)"
-          variant="ghost"
-          size="icon"
-          class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2"
-          :class="[
-            currentModule === module.id 
-              ? 'bg-blue-600 text-white hover:bg-blue-700' 
+        <Button v-for="module in availableModules" :key="module.id" :as="NuxtLink" :to="`/${module.id}`"
+          @click="setCurrentModule(module.id)" variant="ghost" size="icon"
+          class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2" :class="[
+            currentModule === module.id
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'text-gray-400 hover:bg-slate-700 hover:text-white',
-              isSidebarHovered && 'justify-start'
-          ]"
-          :title="module.label"
-        >
+            isSidebarHovered && 'justify-start'
+          ]" :title="module.label">
           <Icon :name="module.icon" class="w-5 h-5" />
-          <span
-            class="ml-4 text-base font-medium transition-opacity duration-1000"
-            v-if="isSidebarHovered"
-          >
+          <span class="ml-4 text-base font-medium transition-opacity duration-1000" v-if="isSidebarHovered">
             {{ module.label }}
           </span>
         </Button>
@@ -43,38 +29,25 @@
 
       <!-- Settings Button at the bottom of the main sidebar -->
       <div class="w-full p-2">
-        <Button
-          :as="NuxtLink"
-          to="/settings"
-          variant="ghost"
-          size="icon"
-          class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2"
-          :class="[
+        <Button :as="NuxtLink" to="/settings" variant="ghost" size="icon"
+          class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2" :class="[
             $route.path === '/settings'
               ? 'bg-blue-600 text-white hover:bg-blue-700'
               : 'text-gray-400 hover:bg-slate-700 hover:text-white',
-              isSidebarHovered && 'justify-start'
-          ]"
-          title="Settings"
-        >
+            isSidebarHovered && 'justify-start'
+          ]" title="Settings">
           <Icon name="settings" class="w-5 h-5" />
-          <span
-            class="ml-4 text-base font-medium transition-opacity duration-200"
-            v-if="isSidebarHovered"
-          >
+          <span class="ml-4 text-base font-medium transition-opacity duration-200" v-if="isSidebarHovered">
             Settings
           </span>
         </Button>
       </div>
     </aside>
-    
+
     <!-- Main Content Container with left margin for primary sidebar -->
     <div class="flex flex-1" :class="isAdmin ? 'ml-16' : ''">
       <!-- Secondary Sidebar - For all users -->
-      <aside 
-        class="bg-slate-100 border-r border-gray-200 flex flex-col"
-        :class="isAdmin ? 'w-64' : 'w-80'"
-      >
+      <aside class="bg-slate-100 border-r border-gray-200 flex flex-col" :class="isAdmin ? 'w-64' : 'w-80'">
         <!-- Module Header -->
         <div class="p-6 border-b border-gray-200">
           <div class="flex items-center space-x-3">
@@ -87,31 +60,22 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Secondary Navigation -->
         <nav class="flex-1 p-4 space-y-2">
-          <div
-            v-for="navItem in subNavigation"
-            :key="navItem.id"
-            class="group"
-          >
-            <Button
-              :as="NuxtLink"
-              :to="navItem.route"
-              variant="ghost"
-              class="w-full justify-start px-3 py-2.5 text-sm font-medium rounded-lg transition-colors"
-              :class="[
+          <div v-for="navItem in subNavigation" :key="navItem.id" class="group">
+            <Button :as="NuxtLink" :to="navItem.route" variant="ghost"
+              class="w-full justify-start px-3 py-2.5 text-sm font-medium rounded-lg transition-colors" :class="[
                 $route.path === navItem.route
                   ? 'bg-blue-600 text-white hover:bg-blue-700'
                   : 'text-gray-700 hover:bg-gray-200 hover:text-gray-900'
-              ]"
-            >
+              ]">
               <Icon :name="navItem.icon" class="w-4 h-4 mr-3" />
               <span>{{ navItem.label }}</span>
             </Button>
           </div>
         </nav>
-        
+
         <!-- User Info -->
         <div class="p-4 border-t border-gray-200">
           <div v-if="user" class="flex items-center space-x-3">
@@ -127,7 +91,7 @@
           </div>
         </div>
       </aside>
-      
+
       <!-- Main Content Area -->
       <main class="flex-1">
         <!-- Your main content goes here -->
@@ -162,7 +126,7 @@ const subNavigation = computed(() => {
     property: [
       { id: 'overview', label: 'Overview', icon: 'home', route: '/property', order: 1 },
       { id: 'listings', label: 'Listings', icon: 'building', route: '/property/listings', order: 2 },
-      { id: 'maintenance', label: 'Maintenance', icon: 'wrench', route: '/property/maintenance', order: 3 },
+      { id: 'maintenance', label: 'Maintenance', icon: 'wrench', route: '/maintenance', order: 3 },
       { id: 'tenants', label: 'Tenants', icon: 'users', route: '/property/tenants', order: 4 },
     ],
     accounting: [
@@ -183,13 +147,14 @@ const subNavigation = computed(() => {
     ],
     portal: [
       { id: 'overview', label: 'Overview', icon: 'message-circle', route: '/portal', order: 1 },
-      { id: 'chat', label: 'Chat', icon: 'message-square', route: '/portal/chat', order: 2 },
-      { id: 'meetings', label: 'Meetings', icon: 'video', route: '/portal/meetings', order: 3 },
+      { id: 'chat', label: 'Chat', icon: 'message-square', route: '/portal', order: 2 },
+      { id: 'meetings', label: 'Meetings', icon: 'video', route: '/meetings', order: 3 },
+      { id: 'reports', label: 'Reports', icon: 'file-text', route: '/reports', order: 4 },
     ],
   }
 
   const navItems = moduleNavs[currentModule.value] || []
-  
+
   // Filter based on permissions for non-admin users
   if (!isAdmin.value) {
     return navItems.filter(item => {

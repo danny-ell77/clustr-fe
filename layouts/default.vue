@@ -3,12 +3,12 @@
     <div class="flex">
       <!-- Sidebar -->
       <AppSidebar />
-      
+
       <!-- Main Content -->
       <div class="flex-1 flex flex-col">
         <!-- Header -->
         <AppHeader />
-        
+
         <!-- Page Content -->
         <main class="flex-1 p-6 max-h-screen overflow-y-auto">
           <slot />
@@ -16,10 +16,13 @@
       </div>
     </div>
     <NoPermissionsModal v-if="showPermissionModal" @close="closePermissionModal" />
+    <ToastContainer />
   </div>
 </template>
 
 <script setup>
 import { usePermissionModal } from '~/modules/core/runtime/composables/usePermissionModal'
+import ToastContainer from '~/components/ToastContainer.vue'
+
 const { showPermissionModal, closePermissionModal } = usePermissionModal()
 </script>
