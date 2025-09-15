@@ -32,44 +32,30 @@
                             </div>
                             <div>
                                 <Label for="timezone">Timezone</Label>
-                                <Select v-model="settings.timezone">
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="UTC">UTC</SelectItem>
-                                        <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                                        <SelectItem value="America/Chicago">Central Time</SelectItem>
-                                        <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                                        <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <DynamicSelect 
+                                    v-model="settings.timezone"
+                                    :options="timezoneOptions"
+                                    placeholder="Select timezone"
+                                    id="timezone"
+                                />
                             </div>
                             <div>
                                 <Label for="language">Language</Label>
-                                <Select v-model="settings.language">
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="en">English</SelectItem>
-                                        <SelectItem value="es">Spanish</SelectItem>
-                                        <SelectItem value="fr">French</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <DynamicSelect 
+                                    v-model="settings.language"
+                                    :options="languageOptions"
+                                    placeholder="Select language"
+                                    id="language"
+                                />
                             </div>
                             <div>
                                 <Label for="dateFormat">Date Format</Label>
-                                <Select v-model="settings.dateFormat">
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
-                                        <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
-                                        <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <DynamicSelect 
+                                    v-model="settings.dateFormat"
+                                    :options="dateFormatOptions"
+                                    placeholder="Select date format"
+                                    id="dateFormat"
+                                />
                             </div>
                         </div>
                     </div>
@@ -200,11 +186,12 @@ import { ref } from 'vue'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+import DynamicSelect from '~/components/shared/DynamicSelect.vue'
 import { Badge } from '~/components/ui/badge'
 import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import Icon from '~/components/Icon.vue'
 import { useToast } from '~/composables/useToast'
+import { useSuccessModal } from '~/composables/useSuccessModal'
 
 definePageMeta({
     title: 'Settings',
@@ -220,6 +207,25 @@ const tabs = [
     { id: 'notifications', label: 'Notifications', icon: 'bell' },
     { id: 'security', label: 'Security', icon: 'shield' }
 ]
+
+// Options for DynamicSelect components
+// Object format with name/value pairs for better display
+const timezoneOptions = [
+    { name: 'UTC', value: 'UTC' },
+    { name: 'Eastern Time', value: 'America/New_York' },
+    { name: 'Central Time', value: 'America/Chicago' },
+    { name: 'Mountain Time', value: 'America/Denver' },
+    { name: 'Pacific Time', value: 'America/Los_Angeles' }
+]
+
+const languageOptions = [
+    { name: 'English', value: 'en' },
+    { name: 'Spanish', value: 'es' },
+    { name: 'French', value: 'fr' }
+]
+
+// String array format - simpler when display and value are the same
+const dateFormatOptions = ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD']
 
 const settings = ref({
     organizationName: 'ClustR Property Management',
@@ -237,13 +243,14 @@ const users = ref([
     { id: '3', name: 'Mike Johnson', email: 'mike@example.com', role: 'maintenance', status: 'inactive' }
 ])
 
-const { success, error } = useToast()
+const { error } = useToast()
+const { showDataSaved } = useSuccessModal()
 
 const saveSettings = () => {
     try {
         console.log('Saving settings:', settings.value)
         // TODO: Implement actual settings save API call
-        success('Settings Saved', 'Your settings have been updated successfully.')
+        showDataSaved()
     } catch (err) {
         error('Save Failed', 'There was an error saving your settings. Please try again.')
     }

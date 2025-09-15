@@ -20,15 +20,12 @@
     </div>
 
     <div class="bg-white border rounded-lg p-4">
-      <Tabs v-model="tabValue">
+      <DynamicTabs v-model="tabValue" :tabs="maintenanceTabs">
         <div class="flex items-center justify-between">
-          <TabsList>
-            <TabsTrigger value="scheduled">Scheduled</TabsTrigger>
-            <TabsTrigger value="in_progress">In progress</TabsTrigger>
-            <TabsTrigger value="recurring">Recurring</TabsTrigger>
-          </TabsList>
+          <!-- This content will be above all tabs -->
         </div>
-        <TabsContent :value="tabValue">
+        
+        <template #scheduled>
           <Table>
             <TableHeader>
               <TableRow>
@@ -55,8 +52,66 @@
             <span class="text-sm">Page {{ page }} / {{ totalPages }}</span>
             <Button variant="outline" @click="page = Math.min(totalPages, page+1)" :disabled="page===totalPages">Next</Button>
           </div>
-        </TabsContent>
-      </Tabs>
+        </template>
+        
+        <template #in_progress>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead>Assignee</TableHead>
+                <TableHead>Due date</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow v-for="i in paginated" :key="i.id">
+                <TableCell class="font-medium">{{ i.title }}</TableCell>
+                <TableCell><Badge :variant="priorityVariant(i.priority)">{{ i.priority }}</Badge></TableCell>
+                <TableCell>{{ i.assignee }}</TableCell>
+                <TableCell>{{ i.dueDate }}</TableCell>
+                <TableCell><Badge :variant="statusVariant(i.status)">{{ label(i.status) }}</Badge></TableCell>
+              </TableRow>
+              <TableEmpty v-if="!paginated.length">No maintenance items</TableEmpty>
+            </TableBody>
+          </Table>
+          <div class="flex items-center justify-end gap-2 mt-3">
+            <Button variant="outline" @click="page = Math.max(1, page-1)" :disabled="page===1">Prev</Button>
+            <span class="text-sm">Page {{ page }} / {{ totalPages }}</span>
+            <Button variant="outline" @click="page = Math.min(totalPages, page+1)" :disabled="page===totalPages">Next</Button>
+          </div>
+        </template>
+        
+        <template #recurring>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead>Assignee</TableHead>
+                <TableHead>Due date</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow v-for="i in paginated" :key="i.id">
+                <TableCell class="font-medium">{{ i.title }}</TableCell>
+                <TableCell><Badge :variant="priorityVariant(i.priority)">{{ i.priority }}</Badge></TableCell>
+                <TableCell>{{ i.assignee }}</TableCell>
+                <TableCell>{{ i.dueDate }}</TableCell>
+                <TableCell><Badge :variant="statusVariant(i.status)">{{ label(i.status) }}</Badge></TableCell>
+              </TableRow>
+              <TableEmpty v-if="!paginated.length">No maintenance items</TableEmpty>
+            </TableBody>
+          </Table>
+          <div class="flex items-center justify-end gap-2 mt-3">
+            <Button variant="outline" @click="page = Math.max(1, page-1)" :disabled="page===1">Prev</Button>
+            <span class="text-sm">Page {{ page }} / {{ totalPages }}</span>
+            <Button variant="outline" @click="page = Math.min(totalPages, page+1)" :disabled="page===totalPages">Next</Button>
+          </div>
+        </template>
+      </DynamicTabs>
     </div>
 
     <Dialog :open="openForm" @update:open="openForm = $event">
@@ -86,6 +141,7 @@ import SimpleBarChart from '~/components/property/SimpleBarChart.vue'
 import AddMaintenanceForm from '~/components/property/AddMaintenanceForm.vue'
 import SuccessDialog from '~/components/SuccessDialog.vue'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
+import DynamicTabs from '~/components/shared/DynamicTabs.vue'
 import type { MaintenanceItem, MaintenancePriority, MaintenanceStatus } from '~/types/property'
 import { useAuth } from '~/modules/core/runtime/composables/useAuth'
 
@@ -94,6 +150,13 @@ definePageMeta({ title: 'Maintenance', description: 'Track maintenance requests 
 import { useMaintenance } from '~/modules/property/runtime/composables/useMaintenance'
 const { list, add: addItem, exportCsv: exportCsvFn } = useMaintenance()
 const items = await list()
+
+// Tabs configuration for DynamicTabs component
+const maintenanceTabs = [
+  { name: 'Scheduled', value: 'scheduled' },
+  { name: 'In progress', value: 'in_progress' },
+  { name: 'Recurring', value: 'recurring' }
+]
 
 const query = ref('')
 const tabValue = ref<'scheduled'|'in_progress'|'recurring'>('scheduled')
@@ -104,7 +167,7 @@ const page = ref(1)
 const pageSize = 10
 const currentList = computed(()=> tabValue.value==='scheduled'? scheduled.value : tabValue.value==='in_progress'? inProgressList.value : recurring.value)
 const totalPages = computed(()=> Math.max(1, Math.ceil(currentList.value.length / pageSize)))
-const paginated = computed(()=> currentList.value.slice((page-1)*pageSize, (page-1)*pageSize + pageSize))
+const paginated = computed(()=> currentList.value.slice((page.value-1)*pageSize, (page.value-1)*pageSize + pageSize))
 
 const kpis = computed(()=> ({
   open: items.value.filter(i=> i.status==='scheduled').length,
@@ -127,6 +190,10 @@ function handleSubmit(item: MaintenanceItem){ addItem(item); openForm.value=fals
 function exportCsv(){ exportCsvFn() }
 
 function priorityVariant(p: MaintenancePriority){ return p==='high'?'destructive': p==='medium'?'secondary':'outline' }
-function statusVariant(s: MaintenanceStatus){ return s==='completed'?'secondary': s==='in_progress'?'default': s==='scheduled'?'secondary':'destructive' }
-function label(s: MaintenanceStatus){ return ({ scheduled:'Scheduled', in_progress:'In progress', completed:'Completed', overdue:'Overdue' } as const)[s] }
+function statusVariant(s: MaintenanceStatus) {
+  return s === 'completed' ? 'secondary' : s === 'in_progress' ? 'default' : s === 'scheduled' ? 'secondary' : 'destructive'
+}
+function label(s: MaintenanceStatus) {
+  return ({ scheduled: 'Scheduled', in_progress: 'In progress', completed: 'Completed', overdue: 'Overdue' } as const)[s]
+}
 </script>

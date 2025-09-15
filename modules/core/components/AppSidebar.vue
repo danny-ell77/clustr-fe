@@ -130,10 +130,8 @@ const subNavigation = computed(() => {
       { id: 'tenants', label: 'Tenants', icon: 'users', route: '/property/tenants', order: 4 },
     ],
     accounting: [
-      { id: 'overview', label: 'Overview', icon: 'dollar-sign', route: '/accounting', order: 1 },
-      { id: 'invoices', label: 'Invoices', icon: 'file-text', route: '/accounting/invoices', order: 2 },
-      { id: 'payments', label: 'Payments', icon: 'credit-card', route: '/accounting/payments', order: 3 },
-      { id: 'reports', label: 'Reports', icon: 'bar-chart', route: '/accounting/reports', order: 4 },
+      { id: 'payments', label: 'Payments', icon: 'smartphone', route: '/accounting/payments', order: 3 },
+      { id: 'e-wallet', label: 'Wallet', icon: 'credit-card', route: '/accounting/e-wallet', order: 4 },
     ],
     security: [
       { id: 'overview', label: 'Overview', icon: 'shield', route: '/security', order: 1 },
@@ -147,9 +145,20 @@ const subNavigation = computed(() => {
     ],
     portal: [
       { id: 'overview', label: 'Overview', icon: 'message-circle', route: '/portal', order: 1 },
-      { id: 'chat', label: 'Chat', icon: 'message-square', route: '/portal', order: 2 },
-      { id: 'meetings', label: 'Meetings', icon: 'video', route: '/meetings', order: 3 },
-      { id: 'reports', label: 'Reports', icon: 'file-text', route: '/reports', order: 4 },
+      { id: 'announcements', label: 'Announcements', icon: 'bell', route: '/portal/announcements', order: 6 },
+      { id: 'chat', label: 'Chat', icon: 'message-square', route: '/portal/chat', order: 2 },
+      { id: 'meetings', label: 'Meetings', icon: 'video', route: '/portal/meetings', order: 3 },
+      { id: 'reports', label: 'Reports', icon: 'file-text', route: '/portal/reports', order: 4 },
+      { id: 'polls', label: 'Polls', icon: 'bar-chart', route: '/portal/polls', order: 5 },
+      { id: 'rulebook', label: 'Rule book', icon: 'book', route: '/portal/rulebook', order: 7 },
+      { id: 'handymen', label: 'Handy Man Services', icon: 'tool', route: '/portal/handymen', order: 8 }
+    ],
+    security: [
+      { id: 'overview', label: 'Overview', icon: 'key', route: '/security', order: 1 },
+      { id: 'logs', label: 'Visitor Logs', icon: 'file-text', route: '/security/logs', order: 3 },
+      { id: 'verify', label: 'Verify Visitor', icon: 'check-circle', route: '/security/verify', order: 2 },
+      { id: 'requests', label: 'Request Entry', icon: 'alert-circle', route: '/security/requests', order: 4 },
+      { id: 'child', label: 'Child Access', icon: 'user-plus', route: '/security/child_access', order: 5 }
     ],
   }
 
@@ -168,8 +177,14 @@ const subNavigation = computed(() => {
 
 function setCurrentModule(moduleId) {
   currentModule.value = moduleId
-  // Navigate to the module's overview page
-  navigateTo(`/${moduleId}`)
+  // Get the first available submenu route for the module
+  const moduleNavs = subNavigation.value
+  if (moduleNavs && moduleNavs.length > 0) {
+    navigateTo(moduleNavs[0].route)
+  } else {
+    // Fallback to module root if no submenus
+    navigateTo(`/${moduleId}`)
+  }
 }
 
 function getCurrentModuleLabel() {

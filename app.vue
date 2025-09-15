@@ -4,5 +4,9 @@
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+
+    <!-- Global Components -->
+    <ToastContainer />
+    <GlobalSuccessModal />
   </div>
 </template>

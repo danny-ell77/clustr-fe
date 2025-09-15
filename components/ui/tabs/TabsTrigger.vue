@@ -1,4 +1,4 @@
-<script setup lang="ts">
+  <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
 import { reactiveOmit } from '@vueuse/core'
 import { TabsTrigger, type TabsTriggerProps, useForwardProps } from 'reka-ui'

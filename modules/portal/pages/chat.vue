@@ -7,7 +7,7 @@
       </div>
       <MessageThread :messages="currentMessages" />
     </div>
-    <MessageComposer @send="(p) => sendMessage(p.text, p.attachments)" />
+    <MessageComposer @send="(p) => sendMessage(p.message, p.attachments)" />
   </div>
 </template>
 

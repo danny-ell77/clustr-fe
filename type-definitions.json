@@ -1,0 +1,6965 @@
+"definitions": {
+    "Account": {
+      "required": [
+        "email_address",
+        "name",
+        "phone_number"
+      ],
+      "type": "object",
+      "properties": {
+        "email_address": {
+          "title": "Email address",
+          "type": "string",
+          "format": "email",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "name": {
+          "title": "Name of user",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "phone_number": {
+          "title": "Phone number",
+          "description": "The phone number for this subscription in E.164 format. See details: https://www.twilio.com/docs/glossary/what-e164",
+          "type": "string",
+          "pattern": "^\\+[1-9]\\d{1,14}$",
+          "maxLength": 16,
+          "minLength": 4
+        },
+        "profile_image_url": {
+          "title": "Profile image url",
+          "description": "Profile image of the user.",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 200
+        },
+        "is_verified": {
+          "title": "Is verified?",
+          "description": "Has this user completed email verification flow?",
+          "type": "boolean",
+          "readOnly": true
+        }
+      }
+    },
+    "StaffAccount": {
+      "required": [
+        "email_address",
+        "name",
+        "phone_number",
+        "roles"
+      ],
+      "type": "object",
+      "properties": {
+        "email_address": {
+          "title": "Email address",
+          "type": "string",
+          "format": "email",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "name": {
+          "title": "Name of user",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "phone_number": {
+          "title": "Phone number",
+          "description": "The phone number for this subscription in E.164 format. See details: https://www.twilio.com/docs/glossary/what-e164",
+          "type": "string",
+          "pattern": "^\\+[1-9]\\d{1,14}$",
+          "maxLength": 16,
+          "minLength": 4
+        },
+        "profile_image_url": {
+          "title": "Profile image url",
+          "description": "Profile image of the user.",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 200
+        },
+        "is_verified": {
+          "title": "Is verified?",
+          "description": "Has this user completed email verification flow?",
+          "type": "boolean",
+          "readOnly": true
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "x-nullable": true
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "SubuserAccount": {
+      "required": [
+        "email_address",
+        "name",
+        "phone_number"
+      ],
+      "type": "object",
+      "properties": {
+        "email_address": {
+          "title": "Email address",
+          "type": "string",
+          "format": "email",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "name": {
+          "title": "Name of user",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "phone_number": {
+          "title": "Phone number",
+          "description": "The phone number for this subscription in E.164 format. See details: https://www.twilio.com/docs/glossary/what-e164",
+          "type": "string",
+          "pattern": "^\\+[1-9]\\d{1,14}$",
+          "maxLength": 16,
+          "minLength": 4
+        },
+        "profile_image_url": {
+          "title": "Profile image url",
+          "description": "Profile image of the user.",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 200
+        },
+        "is_verified": {
+          "title": "Is verified?",
+          "description": "Has this user completed email verification flow?",
+          "type": "boolean",
+          "readOnly": true
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "x-nullable": true
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "PasswordChange": {
+      "required": [
+        "current_password",
+        "new_password"
+      ],
+      "type": "object",
+      "properties": {
+        "current_password": {
+          "title": "Current password",
+          "type": "string",
+          "minLength": 8
+        },
+        "new_password": {
+          "title": "New password",
+          "type": "string",
+          "minLength": 8
+        },
+        "force_logout": {
+          "title": "Force logout",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "EmailVerification": {
+      "required": [
+        "email_address",
+        "verify_mode"
+      ],
+      "type": "object",
+      "properties": {
+        "email_address": {
+          "title": "Email address",
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "verify_mode": {
+          "title": "Verify mode",
+          "type": "string",
+          "enum": [
+            "OTP",
+            "TOKEN"
+          ]
+        }
+      }
+    },
+    "ResidentImportedData": {
+      "required": [
+        "column_mapping",
+        "has_headers"
+      ],
+      "type": "object",
+      "properties": {
+        "column_mapping": {
+          "title": "Column mapping",
+          "description": "A mapping of column header name or index to the Imported Django model entity attribute name.For example, a file can have a header 'The customers first name'. The correct mapping would be{ 'The customers first name': 'first_name' }",
+          "type": "object"
+        },
+        "format": {
+          "title": "Format",
+          "description": "Optional format of the file. If not provided, the format will be guessed. This will only work if the file name has a suffix",
+          "type": "string",
+          "enum": [
+            "CSV",
+            "XLSX",
+            "XLS"
+          ]
+        },
+        "has_headers": {
+          "title": "Has headers",
+          "description": "Does the file have headers?",
+          "type": "boolean"
+        },
+        "file": {
+          "title": "File",
+          "description": "The file to be imported. This file will not be saved permanently. It will only be used to read the import data after which it should be discarded.",
+          "type": "string",
+          "readOnly": true,
+          "format": "uri"
+        },
+        "should_upsert": {
+          "title": "Should upsert",
+          "description": "Should we use the imported data to update data that already exist in your account?",
+          "type": "boolean",
+          "default": true
+        },
+        "default_dialing_code": {
+          "title": "Default dialing code",
+          "description": "The default dialing code of imported phone number without dialing code prefix. If you are importing a column with phone numbers, we require the phone numbers to be in E.164 format and have prefix",
+          "type": "string",
+          "pattern": "^\\+\\d{1,4}$",
+          "default": "",
+          "maxLength": 5,
+          "minLength": 2
+        }
+      }
+    },
+    "OwnerAccount": {
+      "required": [
+        "email_address",
+        "name",
+        "phone_number",
+        "password"
+      ],
+      "type": "object",
+      "properties": {
+        "email_address": {
+          "title": "Email address",
+          "type": "string",
+          "format": "email",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "name": {
+          "title": "Name of user",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "phone_number": {
+          "title": "Phone number",
+          "description": "The phone number for this subscription in E.164 format. See details: https://www.twilio.com/docs/glossary/what-e164",
+          "type": "string",
+          "pattern": "^\\+[1-9]\\d{1,14}$",
+          "maxLength": 16,
+          "minLength": 4
+        },
+        "profile_image_url": {
+          "title": "Profile image url",
+          "description": "Profile image of the user.",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 200
+        },
+        "is_verified": {
+          "title": "Is verified?",
+          "description": "Has this user completed email verification flow?",
+          "type": "boolean",
+          "readOnly": true
+        },
+        "password": {
+          "title": "Password",
+          "type": "string",
+          "minLength": 1
+        },
+        "property_owner": {
+          "title": "Property owner",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "ClusterAdminAccount": {
+      "required": [
+        "name",
+        "admin"
+      ],
+      "type": "object",
+      "properties": {
+        "type": {
+          "title": "Cluster type",
+          "description": "Type of property cluster",
+          "type": "string",
+          "enum": [
+            "ESTATE",
+            "FACILITY",
+            "COMMERCIAL",
+            "MIXED_USE"
+          ]
+        },
+        "name": {
+          "title": "Cluster name",
+          "description": "Name of the cluster",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "admin": {
+          "$ref": "#/definitions/OwnerAccount"
+        }
+      }
+    },
+    "_AuthTokenPair": {
+      "required": [
+        "access",
+        "refresh"
+      ],
+      "type": "object",
+      "properties": {
+        "access": {
+          "title": "Access",
+          "type": "string",
+          "minLength": 1
+        },
+        "refresh": {
+          "title": "Refresh",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "ForgotPassword": {
+      "required": [
+        "email_address"
+      ],
+      "type": "object",
+      "properties": {
+        "email_address": {
+          "title": "Email address",
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "mode": {
+          "title": "Mode",
+          "description": "The type of key to be used for verification",
+          "type": "string",
+          "enum": [
+            "OTP",
+            "TOKEN",
+            "SMS"
+          ],
+          "default": "OTP"
+        }
+      }
+    },
+    "ResetPassword": {
+      "required": [
+        "verification_key",
+        "password"
+      ],
+      "type": "object",
+      "properties": {
+        "verification_key": {
+          "title": "Verification key",
+          "type": "string",
+          "minLength": 1
+        },
+        "password": {
+          "title": "Password",
+          "type": "string",
+          "minLength": 8
+        },
+        "force_logout": {
+          "title": "Force logout",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "AuthTokenPair": {
+      "required": [
+        "email_address",
+        "password"
+      ],
+      "type": "object",
+      "properties": {
+        "email_address": {
+          "title": "Email address",
+          "type": "string",
+          "minLength": 1
+        },
+        "password": {
+          "title": "Password",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "TokenRefresh": {
+      "required": [
+        "refresh"
+      ],
+      "type": "object",
+      "properties": {
+        "refresh": {
+          "title": "Refresh",
+          "type": "string",
+          "minLength": 1
+        },
+        "access": {
+          "title": "Access",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        }
+      }
+    },
+    "UtilityBill": {
+      "required": [
+        "title",
+        "type",
+        "amount",
+        "due_date"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "bill_number": {
+          "title": "Bill number",
+          "description": "Unique bill number",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "title": {
+          "title": "Title",
+          "description": "Bill title",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Bill description",
+          "type": "string",
+          "x-nullable": true
+        },
+        "type": {
+          "title": "Type",
+          "description": "Type of bill",
+          "type": "string",
+          "enum": [
+            "electricity",
+            "water",
+            "security",
+            "maintenance",
+            "service_charge",
+            "waste_management",
+            "electricity_utility",
+            "water_utility",
+            "internet_utility",
+            "cable_tv_utility",
+            "other"
+          ]
+        },
+        "category": {
+          "title": "Category",
+          "description": "Bill category (cluster-managed or user-managed)",
+          "type": "string",
+          "enum": [
+            "cluster_managed",
+            "user_managed"
+          ]
+        },
+        "amount": {
+          "title": "Amount",
+          "description": "Bill amount",
+          "type": "string",
+          "format": "decimal"
+        },
+        "currency": {
+          "title": "Currency",
+          "description": "Currency code",
+          "type": "string",
+          "maxLength": 3,
+          "minLength": 1
+        },
+        "utility_provider": {
+          "title": "Utility provider",
+          "description": "Utility provider for user-managed bills",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "utility_provider_name": {
+          "title": "Utility provider name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "customer_id": {
+          "title": "Customer ID",
+          "description": "Customer ID/meter number for utility bills",
+          "type": "string",
+          "maxLength": 100,
+          "x-nullable": true
+        },
+        "is_automated": {
+          "title": "Is automated",
+          "description": "Whether this bill has automated recurring payments",
+          "type": "boolean"
+        },
+        "due_date": {
+          "title": "Due date",
+          "description": "Bill due date",
+          "type": "string",
+          "format": "date-time"
+        },
+        "paid_amount": {
+          "title": "Paid amount",
+          "description": "Amount already paid",
+          "type": "string",
+          "format": "decimal",
+          "readOnly": true
+        },
+        "remaining_amount": {
+          "title": "Remaining amount",
+          "type": "string",
+          "format": "decimal",
+          "readOnly": true
+        },
+        "paid_at": {
+          "title": "Paid at",
+          "description": "Date and time when bill was paid",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "is_overdue": {
+          "title": "Is overdue",
+          "type": "boolean",
+          "readOnly": true
+        },
+        "metadata": {
+          "title": "Metadata",
+          "description": "Additional bill metadata",
+          "type": "object",
+          "x-nullable": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "UtilityProvider": {
+      "required": [
+        "name",
+        "provider_type",
+        "api_provider",
+        "provider_code"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Name",
+          "description": "Utility provider name",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "provider_type": {
+          "title": "Provider type",
+          "description": "Type of utility service provided",
+          "type": "string",
+          "enum": [
+            "electricity",
+            "water",
+            "security",
+            "maintenance",
+            "service_charge",
+            "waste_management",
+            "electricity_utility",
+            "water_utility",
+            "internet_utility",
+            "cable_tv_utility",
+            "other"
+          ]
+        },
+        "api_provider": {
+          "title": "API provider",
+          "description": "Payment API provider (Paystack/Flutterwave)",
+          "type": "string",
+          "enum": [
+            "paystack",
+            "flutterwave",
+            "bank_transfer",
+            "cash"
+          ]
+        },
+        "provider_code": {
+          "title": "Provider code",
+          "description": "Unique provider code for API calls (e.g., 'ikeja-electric')",
+          "type": "string",
+          "maxLength": 50,
+          "minLength": 1
+        },
+        "is_active": {
+          "title": "Is active",
+          "description": "Whether this provider is currently active",
+          "type": "boolean"
+        },
+        "supports_validation": {
+          "title": "Supports validation",
+          "description": "Whether this provider supports customer validation",
+          "type": "boolean"
+        },
+        "supports_info_lookup": {
+          "title": "Supports info lookup",
+          "description": "Whether this provider supports customer info lookup",
+          "type": "boolean"
+        },
+        "minimum_amount": {
+          "title": "Minimum amount",
+          "description": "Minimum payment amount",
+          "type": "string",
+          "format": "decimal"
+        },
+        "maximum_amount": {
+          "title": "Maximum amount",
+          "description": "Maximum payment amount",
+          "type": "string",
+          "format": "decimal"
+        },
+        "metadata": {
+          "title": "Metadata",
+          "description": "Additional provider metadata and configuration",
+          "type": "object",
+          "x-nullable": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "RecurringUtilityPayment": {
+      "required": [
+        "title",
+        "amount",
+        "frequency",
+        "start_date",
+        "next_payment_date"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "title": {
+          "title": "Title",
+          "description": "Recurring payment title",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Recurring payment description",
+          "type": "string",
+          "x-nullable": true
+        },
+        "amount": {
+          "title": "Amount",
+          "description": "Payment amount",
+          "type": "string",
+          "format": "decimal"
+        },
+        "currency": {
+          "title": "Currency",
+          "description": "Currency code",
+          "type": "string",
+          "maxLength": 3,
+          "minLength": 1
+        },
+        "frequency": {
+          "title": "Frequency",
+          "description": "Payment frequency",
+          "type": "string",
+          "enum": [
+            "daily",
+            "weekly",
+            "monthly",
+            "quarterly",
+            "yearly"
+          ]
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current recurring payment status",
+          "type": "string",
+          "enum": [
+            "active",
+            "paused",
+            "cancelled",
+            "expired"
+          ]
+        },
+        "utility_provider": {
+          "title": "Utility provider",
+          "description": "Utility provider for automated utility payments",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "utility_provider_name": {
+          "title": "Utility provider name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "customer_id": {
+          "title": "Customer ID",
+          "description": "Customer ID/meter number for utility payments",
+          "type": "string",
+          "maxLength": 100,
+          "x-nullable": true
+        },
+        "payment_source": {
+          "title": "Payment source",
+          "description": "Source of payment (wallet or direct)",
+          "type": "string",
+          "enum": [
+            "wallet",
+            "direct"
+          ]
+        },
+        "spending_limit": {
+          "title": "Spending limit",
+          "description": "Maximum amount that can be spent per payment",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "start_date": {
+          "title": "Start date",
+          "description": "Date when recurring payments should start",
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_date": {
+          "title": "End date",
+          "description": "Date when recurring payments should end (optional)",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "next_payment_date": {
+          "title": "Next payment date",
+          "description": "Date of the next scheduled payment",
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_payment_date": {
+          "title": "Last payment date",
+          "description": "Date of the last successful payment",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "total_payments": {
+          "title": "Total payments",
+          "description": "Total number of successful payments made",
+          "type": "integer",
+          "readOnly": true
+        },
+        "failed_attempts": {
+          "title": "Failed attempts",
+          "description": "Number of consecutive failed payment attempts",
+          "type": "integer",
+          "readOnly": true
+        },
+        "max_failed_attempts": {
+          "title": "Max failed attempts",
+          "description": "Maximum failed attempts before pausing",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0
+        },
+        "next_payment_in_days": {
+          "title": "Next payment in days",
+          "type": "string",
+          "readOnly": true
+        },
+        "can_be_paused": {
+          "title": "Can be paused",
+          "type": "string",
+          "readOnly": true
+        },
+        "can_be_resumed": {
+          "title": "Can be resumed",
+          "type": "string",
+          "readOnly": true
+        },
+        "metadata": {
+          "title": "Metadata",
+          "description": "Additional recurring payment metadata",
+          "type": "object",
+          "x-nullable": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "AnnouncementAttachment": {
+      "required": [
+        "file_name",
+        "file_url",
+        "file_size",
+        "file_type"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "file_name": {
+          "title": "File name",
+          "description": "Original name of the uploaded file",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "file_url": {
+          "title": "File URL",
+          "description": "URL to access the uploaded file",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "file_size": {
+          "title": "File size",
+          "description": "Size of the file in bytes",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0
+        },
+        "file_size_formatted": {
+          "title": "File size formatted",
+          "type": "string",
+          "readOnly": true
+        },
+        "file_type": {
+          "title": "File type",
+          "description": "MIME type of the file",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "is_image": {
+          "title": "Is image",
+          "description": "Whether this attachment is an image",
+          "type": "boolean"
+        },
+        "preview_type": {
+          "title": "Preview type",
+          "type": "string",
+          "readOnly": true
+        },
+        "can_preview": {
+          "title": "Can preview",
+          "type": "string",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "AnnouncementComment": {
+      "required": [
+        "content"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "content": {
+          "title": "Content",
+          "description": "Content of the comment",
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        },
+        "author_id": {
+          "title": "Author ID",
+          "description": "ID of the user who created the comment",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "author_name": {
+          "title": "Author name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "Announcement": {
+      "required": [
+        "title",
+        "content"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "title": {
+          "title": "Title",
+          "description": "Title of the announcement",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "content": {
+          "title": "Content",
+          "description": "Content of the announcement",
+          "type": "string",
+          "maxLength": 2000,
+          "minLength": 1
+        },
+        "category": {
+          "title": "Category",
+          "description": "Category of the announcement",
+          "type": "string",
+          "enum": [
+            "News",
+            "Estate Issues",
+            "Others"
+          ]
+        },
+        "author_id": {
+          "title": "Author ID",
+          "description": "ID of the user who created the announcement",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "author_name": {
+          "title": "Author name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "views_count": {
+          "title": "Views count",
+          "description": "Number of times this announcement has been viewed",
+          "type": "integer",
+          "readOnly": true
+        },
+        "likes_count": {
+          "title": "Likes count",
+          "description": "Number of likes this announcement has received",
+          "type": "integer",
+          "readOnly": true
+        },
+        "comments_count": {
+          "title": "Comments count",
+          "description": "Number of comments on this announcement",
+          "type": "integer",
+          "readOnly": true
+        },
+        "published_at": {
+          "title": "Published at",
+          "description": "When the announcement was published",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "expires_at": {
+          "title": "Expires at",
+          "description": "When the announcement expires",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "is_published": {
+          "title": "Is published",
+          "description": "Whether the announcement is published",
+          "type": "boolean"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AnnouncementAttachment"
+          },
+          "readOnly": true
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AnnouncementComment"
+          },
+          "readOnly": true
+        },
+        "is_liked_by_user": {
+          "title": "Is liked by user",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_read_by_user": {
+          "title": "Is read by user",
+          "type": "string",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "AnnouncementCreate": {
+      "required": [
+        "title",
+        "content"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Title",
+          "description": "Title of the announcement",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "content": {
+          "title": "Content",
+          "description": "Content of the announcement",
+          "type": "string",
+          "maxLength": 2000,
+          "minLength": 1
+        },
+        "category": {
+          "title": "Category",
+          "description": "Category of the announcement",
+          "type": "string",
+          "enum": [
+            "News",
+            "Estate Issues",
+            "Others"
+          ]
+        },
+        "published_at": {
+          "title": "Published at",
+          "description": "When the announcement was published",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "expires_at": {
+          "title": "Expires at",
+          "description": "When the announcement expires",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "is_published": {
+          "title": "Is published",
+          "description": "Whether the announcement is published",
+          "type": "boolean"
+        },
+        "attachment_ids": {
+          "description": "List of pre-uploaded attachment IDs to link to the announcement",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      }
+    },
+    "AnnouncementUpdate": {
+      "required": [
+        "title",
+        "content"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Title",
+          "description": "Title of the announcement",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "content": {
+          "title": "Content",
+          "description": "Content of the announcement",
+          "type": "string",
+          "maxLength": 2000,
+          "minLength": 1
+        },
+        "category": {
+          "title": "Category",
+          "description": "Category of the announcement",
+          "type": "string",
+          "enum": [
+            "News",
+            "Estate Issues",
+            "Others"
+          ]
+        },
+        "published_at": {
+          "title": "Published at",
+          "description": "When the announcement was published",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "expires_at": {
+          "title": "Expires at",
+          "description": "When the announcement expires",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "is_published": {
+          "title": "Is published",
+          "description": "Whether the announcement is published",
+          "type": "boolean"
+        }
+      }
+    },
+    "Child": {
+      "required": [
+        "name",
+        "date_of_birth",
+        "gender",
+        "house_number",
+        "parent"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Child name",
+          "description": "Full name of the child",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "date_of_birth": {
+          "title": "Date of birth",
+          "description": "Date of birth of the child",
+          "type": "string",
+          "format": "date"
+        },
+        "gender": {
+          "title": "Gender",
+          "description": "Gender of the child",
+          "type": "string",
+          "enum": [
+            "male",
+            "female"
+          ]
+        },
+        "profile_photo": {
+          "title": "Profile photo",
+          "description": "URL to the child's profile photo",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 500,
+          "x-nullable": true
+        },
+        "house_number": {
+          "title": "House number",
+          "description": "House/unit number where the child lives",
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1
+        },
+        "parent": {
+          "title": "Parent/guardian",
+          "description": "Parent or guardian of the child",
+          "type": "string",
+          "format": "uuid"
+        },
+        "parent_name": {
+          "title": "Parent name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "emergency_contacts": {
+          "title": "Emergency contacts",
+          "description": "List of emergency contact information",
+          "type": "object"
+        },
+        "emergency_contacts_display": {
+          "title": "Emergency contacts display",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_active": {
+          "title": "Is active",
+          "description": "Whether the child is currently active in the system",
+          "type": "boolean"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the child",
+          "type": "string"
+        },
+        "age": {
+          "title": "Age",
+          "type": "string",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "ChildCreate": {
+      "required": [
+        "name",
+        "date_of_birth",
+        "gender",
+        "house_number"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Child name",
+          "description": "Full name of the child",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "date_of_birth": {
+          "title": "Date of birth",
+          "description": "Date of birth of the child",
+          "type": "string",
+          "format": "date"
+        },
+        "gender": {
+          "title": "Gender",
+          "description": "Gender of the child",
+          "type": "string",
+          "enum": [
+            "male",
+            "female"
+          ]
+        },
+        "profile_photo": {
+          "title": "Profile photo",
+          "description": "URL to the child's profile photo",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 500,
+          "x-nullable": true
+        },
+        "house_number": {
+          "title": "House number",
+          "description": "House/unit number where the child lives",
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1
+        },
+        "emergency_contacts": {
+          "title": "Emergency contacts",
+          "description": "List of emergency contact information",
+          "type": "object"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the child",
+          "type": "string"
+        }
+      }
+    },
+    "ChildUpdate": {
+      "required": [
+        "name",
+        "date_of_birth",
+        "gender",
+        "house_number"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Child name",
+          "description": "Full name of the child",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "date_of_birth": {
+          "title": "Date of birth",
+          "description": "Date of birth of the child",
+          "type": "string",
+          "format": "date"
+        },
+        "gender": {
+          "title": "Gender",
+          "description": "Gender of the child",
+          "type": "string",
+          "enum": [
+            "male",
+            "female"
+          ]
+        },
+        "profile_photo": {
+          "title": "Profile photo",
+          "description": "URL to the child's profile photo",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 500,
+          "x-nullable": true
+        },
+        "house_number": {
+          "title": "House number",
+          "description": "House/unit number where the child lives",
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1
+        },
+        "emergency_contacts": {
+          "title": "Emergency contacts",
+          "description": "List of emergency contact information",
+          "type": "object"
+        },
+        "is_active": {
+          "title": "Is active",
+          "description": "Whether the child is currently active in the system",
+          "type": "boolean"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the child",
+          "type": "string"
+        }
+      }
+    },
+    "EmergencyContact": {
+      "required": [
+        "name",
+        "phone_number"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Contact name",
+          "description": "Name of the emergency contact",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "phone_number": {
+          "title": "Phone number",
+          "description": "Contact phone number",
+          "type": "string",
+          "pattern": "^\\+?1?\\d{9,15}$",
+          "maxLength": 20,
+          "minLength": 1
+        },
+        "email": {
+          "title": "Email address",
+          "description": "Contact email address (optional)",
+          "type": "string",
+          "format": "email",
+          "maxLength": 254,
+          "x-nullable": true
+        },
+        "emergency_types": {
+          "title": "Emergency types",
+          "description": "List of emergency types this contact handles",
+          "type": "object"
+        },
+        "emergency_types_display": {
+          "title": "Emergency types display",
+          "type": "string",
+          "readOnly": true
+        },
+        "contact_type": {
+          "title": "Contact type",
+          "description": "Type of emergency contact",
+          "type": "string",
+          "enum": [
+            "personal",
+            "estate_wide",
+            "official"
+          ]
+        },
+        "contact_type_display": {
+          "title": "Contact type display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "user": {
+          "title": "User",
+          "description": "User who owns this contact (null for estate-wide contacts)",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "user_name": {
+          "title": "User name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "is_active": {
+          "title": "Is active",
+          "description": "Whether this contact is active and should receive alerts",
+          "type": "boolean"
+        },
+        "is_primary": {
+          "title": "Is primary",
+          "description": "Whether this is a primary contact for the emergency types",
+          "type": "boolean"
+        },
+        "response_time_minutes": {
+          "title": "Expected response time",
+          "description": "Expected response time in minutes",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "x-nullable": true
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about this contact",
+          "type": "string"
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "EmergencyContactCreate": {
+      "required": [
+        "name",
+        "phone_number"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Contact name",
+          "description": "Name of the emergency contact",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "phone_number": {
+          "title": "Phone number",
+          "description": "Contact phone number",
+          "type": "string",
+          "pattern": "^\\+?1?\\d{9,15}$",
+          "maxLength": 20,
+          "minLength": 1
+        },
+        "email": {
+          "title": "Email address",
+          "description": "Contact email address (optional)",
+          "type": "string",
+          "format": "email",
+          "maxLength": 254,
+          "x-nullable": true
+        },
+        "emergency_types": {
+          "title": "Emergency types",
+          "description": "List of emergency types this contact handles",
+          "type": "object"
+        },
+        "contact_type": {
+          "title": "Contact type",
+          "description": "Type of emergency contact",
+          "type": "string",
+          "enum": [
+            "personal",
+            "estate_wide",
+            "official"
+          ]
+        },
+        "user": {
+          "title": "User",
+          "description": "User who owns this contact (null for estate-wide contacts)",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "is_active": {
+          "title": "Is active",
+          "description": "Whether this contact is active and should receive alerts",
+          "type": "boolean"
+        },
+        "is_primary": {
+          "title": "Is primary",
+          "description": "Whether this is a primary contact for the emergency types",
+          "type": "boolean"
+        },
+        "response_time_minutes": {
+          "title": "Expected response time",
+          "description": "Expected response time in minutes",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "x-nullable": true
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about this contact",
+          "type": "string"
+        }
+      }
+    },
+    "EmergencyContactUpdate": {
+      "required": [
+        "name",
+        "phone_number"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Contact name",
+          "description": "Name of the emergency contact",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "phone_number": {
+          "title": "Phone number",
+          "description": "Contact phone number",
+          "type": "string",
+          "pattern": "^\\+?1?\\d{9,15}$",
+          "maxLength": 20,
+          "minLength": 1
+        },
+        "email": {
+          "title": "Email address",
+          "description": "Contact email address (optional)",
+          "type": "string",
+          "format": "email",
+          "maxLength": 254,
+          "x-nullable": true
+        },
+        "emergency_types": {
+          "title": "Emergency types",
+          "description": "List of emergency types this contact handles",
+          "type": "object"
+        },
+        "is_active": {
+          "title": "Is active",
+          "description": "Whether this contact is active and should receive alerts",
+          "type": "boolean"
+        },
+        "is_primary": {
+          "title": "Is primary",
+          "description": "Whether this is a primary contact for the emergency types",
+          "type": "boolean"
+        },
+        "response_time_minutes": {
+          "title": "Expected response time",
+          "description": "Expected response time in minutes",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "x-nullable": true
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about this contact",
+          "type": "string"
+        }
+      }
+    },
+    "EmergencyResponse": {
+      "required": [
+        "alert",
+        "responder",
+        "response_type"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "alert": {
+          "title": "Alert",
+          "description": "The alert this response is for",
+          "type": "string",
+          "format": "uuid"
+        },
+        "alert_id": {
+          "title": "Alert id",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "responder": {
+          "title": "Responder",
+          "description": "User who responded",
+          "type": "string",
+          "format": "uuid"
+        },
+        "responder_name": {
+          "title": "Responder name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "response_type": {
+          "title": "Response type",
+          "description": "Type of response",
+          "type": "string",
+          "enum": [
+            "acknowledged",
+            "dispatched",
+            "on_scene",
+            "resolved",
+            "cancelled"
+          ]
+        },
+        "response_type_display": {
+          "title": "Response type display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Response notes",
+          "type": "string"
+        },
+        "estimated_arrival": {
+          "title": "Estimated arrival",
+          "description": "Estimated arrival time",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "actual_arrival": {
+          "title": "Actual arrival",
+          "description": "Actual arrival time",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "EmergencyResponseCreate": {
+      "required": [
+        "alert",
+        "response_type"
+      ],
+      "type": "object",
+      "properties": {
+        "alert": {
+          "title": "Alert",
+          "description": "The alert this response is for",
+          "type": "string",
+          "format": "uuid"
+        },
+        "response_type": {
+          "title": "Response type",
+          "description": "Type of response",
+          "type": "string",
+          "enum": [
+            "acknowledged",
+            "dispatched",
+            "on_scene",
+            "resolved",
+            "cancelled"
+          ]
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Response notes",
+          "type": "string"
+        },
+        "estimated_arrival": {
+          "title": "Estimated arrival",
+          "description": "Estimated arrival time",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "actual_arrival": {
+          "title": "Actual arrival",
+          "description": "Actual arrival time",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        }
+      }
+    },
+    "Event": {
+      "required": [
+        "title",
+        "event_date",
+        "event_time",
+        "location",
+        "created_by"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "title": {
+          "title": "Title",
+          "description": "Title of the event",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the event",
+          "type": "string",
+          "x-nullable": true
+        },
+        "event_date": {
+          "title": "Event date",
+          "description": "Date of the event",
+          "type": "string",
+          "format": "date"
+        },
+        "event_time": {
+          "title": "Event time",
+          "description": "Start time of the event",
+          "type": "string"
+        },
+        "end_time": {
+          "title": "End time",
+          "description": "End time of the event",
+          "type": "string",
+          "x-nullable": true
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location of the event",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "access_code": {
+          "title": "Access code",
+          "description": "Unique access code for the event",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "max_guests": {
+          "title": "Maximum guests",
+          "description": "Maximum number of guests allowed (0 for unlimited)",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0
+        },
+        "guests_added": {
+          "title": "Guests added",
+          "description": "Number of guests added to the event",
+          "type": "integer",
+          "readOnly": true
+        },
+        "created_by": {
+          "title": "Created by",
+          "description": "ID of the user who created this event",
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the event",
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "PUBLISHED",
+            "CANCELLED",
+            "COMPLETED"
+          ]
+        },
+        "is_public": {
+          "title": "Is public",
+          "description": "Whether the event is public or private",
+          "type": "boolean"
+        },
+        "requires_approval": {
+          "title": "Requires approval",
+          "description": "Whether guests require approval to attend",
+          "type": "boolean"
+        },
+        "guests_count": {
+          "title": "Guests count",
+          "type": "string",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "EventCreate": {
+      "required": [
+        "title",
+        "event_date",
+        "event_time",
+        "location"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Title",
+          "description": "Title of the event",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the event",
+          "type": "string",
+          "x-nullable": true
+        },
+        "event_date": {
+          "title": "Event date",
+          "description": "Date of the event",
+          "type": "string",
+          "format": "date"
+        },
+        "event_time": {
+          "title": "Event time",
+          "description": "Start time of the event",
+          "type": "string"
+        },
+        "end_time": {
+          "title": "End time",
+          "description": "End time of the event",
+          "type": "string",
+          "x-nullable": true
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location of the event",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "max_guests": {
+          "title": "Maximum guests",
+          "description": "Maximum number of guests allowed (0 for unlimited)",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the event",
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "PUBLISHED",
+            "CANCELLED",
+            "COMPLETED"
+          ]
+        },
+        "is_public": {
+          "title": "Is public",
+          "description": "Whether the event is public or private",
+          "type": "boolean"
+        },
+        "requires_approval": {
+          "title": "Requires approval",
+          "description": "Whether guests require approval to attend",
+          "type": "boolean"
+        }
+      }
+    },
+    "EventGuest": {
+      "required": [
+        "event",
+        "name",
+        "invited_by"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "event": {
+          "title": "Event",
+          "description": "The event this guest is invited to",
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "title": "Guest name",
+          "description": "Name of the guest",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "email": {
+          "title": "Email address",
+          "description": "Email address of the guest",
+          "type": "string",
+          "format": "email",
+          "maxLength": 254,
+          "x-nullable": true
+        },
+        "phone": {
+          "title": "Phone number",
+          "description": "Phone number of the guest",
+          "type": "string",
+          "maxLength": 20,
+          "x-nullable": true
+        },
+        "access_code": {
+          "title": "Access code",
+          "description": "Unique access code for the guest",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "invited_by": {
+          "title": "Invited by",
+          "description": "ID of the user who invited this guest",
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the guest",
+          "type": "string",
+          "enum": [
+            "INVITED",
+            "CONFIRMED",
+            "DECLINED",
+            "ATTENDED",
+            "CANCELLED"
+          ]
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the guest",
+          "type": "string",
+          "x-nullable": true
+        },
+        "check_in_time": {
+          "title": "Check-in time",
+          "description": "Time when the guest checked in",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "check_out_time": {
+          "title": "Check-out time",
+          "description": "Time when the guest checked out",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "EventGuestCreate": {
+      "required": [
+        "name"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Guest name",
+          "description": "Name of the guest",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "email": {
+          "title": "Email address",
+          "description": "Email address of the guest",
+          "type": "string",
+          "format": "email",
+          "maxLength": 254,
+          "x-nullable": true
+        },
+        "phone": {
+          "title": "Phone number",
+          "description": "Phone number of the guest",
+          "type": "string",
+          "maxLength": 20,
+          "x-nullable": true
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the guest",
+          "type": "string",
+          "x-nullable": true
+        }
+      }
+    },
+    "EventGuestCheckIn": {
+      "type": "object",
+      "properties": {
+        "notes": {
+          "title": "Notes",
+          "type": "string"
+        }
+      }
+    },
+    "EventGuestCheckOut": {
+      "type": "object",
+      "properties": {
+        "notes": {
+          "title": "Notes",
+          "type": "string"
+        }
+      }
+    },
+    "EventUpdate": {
+      "required": [
+        "title",
+        "event_date",
+        "event_time",
+        "location"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Title",
+          "description": "Title of the event",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the event",
+          "type": "string",
+          "x-nullable": true
+        },
+        "event_date": {
+          "title": "Event date",
+          "description": "Date of the event",
+          "type": "string",
+          "format": "date"
+        },
+        "event_time": {
+          "title": "Event time",
+          "description": "Start time of the event",
+          "type": "string"
+        },
+        "end_time": {
+          "title": "End time",
+          "description": "End time of the event",
+          "type": "string",
+          "x-nullable": true
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location of the event",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "max_guests": {
+          "title": "Maximum guests",
+          "description": "Maximum number of guests allowed (0 for unlimited)",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the event",
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "PUBLISHED",
+            "CANCELLED",
+            "COMPLETED"
+          ]
+        },
+        "is_public": {
+          "title": "Is public",
+          "description": "Whether the event is public or private",
+          "type": "boolean"
+        },
+        "requires_approval": {
+          "title": "Requires approval",
+          "description": "Whether guests require approval to attend",
+          "type": "boolean"
+        }
+      }
+    },
+    "BulkGuestCreate": {
+      "required": [
+        "guests"
+      ],
+      "type": "object",
+      "properties": {
+        "guests": {
+          "description": "List of guests to add to the event",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "x-nullable": true
+            }
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "UserSummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Name of user",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "email_address": {
+          "title": "Email address",
+          "type": "string",
+          "format": "email",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "profile_image_url": {
+          "title": "Profile image url",
+          "description": "Profile image of the user.",
+          "type": "string",
+          "format": "uri",
+          "readOnly": true,
+          "minLength": 1
+        }
+      }
+    },
+    "IssueTicketList": {
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "issue_no": {
+          "title": "Issue number",
+          "description": "Unique issue number for tracking",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "title": {
+          "title": "Title",
+          "description": "Brief title describing the issue",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "issue_type": {
+          "title": "Issue type",
+          "description": "Type of issue being reported",
+          "type": "string",
+          "enum": [
+            "CARPENTRY",
+            "PLUMBING",
+            "ELECTRICAL",
+            "CLEANING",
+            "SECURITY",
+            "OTHER"
+          ]
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the issue",
+          "type": "string",
+          "enum": [
+            "SUBMITTED",
+            "OPEN",
+            "IN_PROGRESS",
+            "PENDING",
+            "RESOLVED",
+            "CLOSED"
+          ]
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the issue",
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "URGENT"
+          ]
+        },
+        "reported_by": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "assigned_to": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "comments_count": {
+          "title": "Comments count",
+          "type": "string",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "due_date": {
+          "title": "Due date",
+          "description": "Expected resolution date",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        }
+      }
+    },
+    "IssueTicketUpdate": {
+      "required": [
+        "title",
+        "description"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Title",
+          "description": "Brief title describing the issue",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the issue",
+          "type": "string",
+          "minLength": 1
+        },
+        "issue_type": {
+          "title": "Issue type",
+          "description": "Type of issue being reported",
+          "type": "string",
+          "enum": [
+            "CARPENTRY",
+            "PLUMBING",
+            "ELECTRICAL",
+            "CLEANING",
+            "SECURITY",
+            "OTHER"
+          ]
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the issue",
+          "type": "string",
+          "enum": [
+            "SUBMITTED",
+            "OPEN",
+            "IN_PROGRESS",
+            "PENDING",
+            "RESOLVED",
+            "CLOSED"
+          ]
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the issue",
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "URGENT"
+          ]
+        },
+        "assigned_to": {
+          "title": "Assigned to",
+          "description": "Staff member assigned to handle the issue",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "resolution_notes": {
+          "title": "Resolution notes",
+          "description": "Notes about how the issue was resolved",
+          "type": "string"
+        },
+        "due_date": {
+          "title": "Due date",
+          "description": "Expected resolution date",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        }
+      }
+    },
+    "IssueAttachment": {
+      "required": [
+        "file_name",
+        "file_url",
+        "file_size",
+        "file_type"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "file_name": {
+          "title": "File name",
+          "description": "Original name of the uploaded file",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "file_url": {
+          "title": "File URL",
+          "description": "URL to access the uploaded file",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "file_size": {
+          "title": "File size",
+          "description": "Size of the file in bytes",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0
+        },
+        "file_type": {
+          "title": "File type",
+          "description": "MIME type of the file",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "uploaded_by": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "IssueComment": {
+      "required": [
+        "content"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "content": {
+          "title": "Content",
+          "description": "Content of the comment",
+          "type": "string",
+          "minLength": 1
+        },
+        "author": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "is_internal": {
+          "title": "Is internal",
+          "description": "Whether this comment is internal (staff only)",
+          "type": "boolean"
+        },
+        "parent": {
+          "title": "Parent comment",
+          "description": "Parent comment for threaded discussions",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IssueAttachment"
+          },
+          "readOnly": true
+        },
+        "replies": {
+          "title": "Replies",
+          "type": "string",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "IssueStatusHistory": {
+      "required": [
+        "to_status"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "from_status": {
+          "title": "From status",
+          "description": "Previous status",
+          "type": "string",
+          "enum": [
+            "SUBMITTED",
+            "OPEN",
+            "IN_PROGRESS",
+            "PENDING",
+            "RESOLVED",
+            "CLOSED"
+          ],
+          "x-nullable": true
+        },
+        "to_status": {
+          "title": "To status",
+          "description": "New status",
+          "type": "string",
+          "enum": [
+            "SUBMITTED",
+            "OPEN",
+            "IN_PROGRESS",
+            "PENDING",
+            "RESOLVED",
+            "CLOSED"
+          ]
+        },
+        "changed_by": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Notes about the status change",
+          "type": "string"
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "IssueTicketDetail": {
+      "required": [
+        "title",
+        "description"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "issue_no": {
+          "title": "Issue number",
+          "description": "Unique issue number for tracking",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "title": {
+          "title": "Title",
+          "description": "Brief title describing the issue",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the issue",
+          "type": "string",
+          "minLength": 1
+        },
+        "issue_type": {
+          "title": "Issue type",
+          "description": "Type of issue being reported",
+          "type": "string",
+          "enum": [
+            "CARPENTRY",
+            "PLUMBING",
+            "ELECTRICAL",
+            "CLEANING",
+            "SECURITY",
+            "OTHER"
+          ]
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the issue",
+          "type": "string",
+          "enum": [
+            "SUBMITTED",
+            "OPEN",
+            "IN_PROGRESS",
+            "PENDING",
+            "RESOLVED",
+            "CLOSED"
+          ]
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the issue",
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "URGENT"
+          ]
+        },
+        "reported_by": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "assigned_to": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IssueComment"
+          },
+          "readOnly": true
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IssueAttachment"
+          },
+          "readOnly": true
+        },
+        "status_history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IssueStatusHistory"
+          },
+          "readOnly": true
+        },
+        "comments_count": {
+          "title": "Comments count",
+          "type": "string",
+          "readOnly": true
+        },
+        "resolution_notes": {
+          "title": "Resolution notes",
+          "description": "Notes about how the issue was resolved",
+          "type": "string"
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "resolved_at": {
+          "title": "Resolved at",
+          "description": "Timestamp when the issue was resolved",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "closed_at": {
+          "title": "Closed at",
+          "description": "Timestamp when the issue was closed",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "escalated_at": {
+          "title": "Escalated at",
+          "description": "Timestamp when the issue was escalated",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "due_date": {
+          "title": "Due date",
+          "description": "Expected resolution date",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        }
+      }
+    },
+    "IssueAttachmentCreate": {
+      "required": [
+        "file_name",
+        "file_url",
+        "file_size",
+        "file_type"
+      ],
+      "type": "object",
+      "properties": {
+        "file_name": {
+          "title": "File name",
+          "description": "Original name of the uploaded file",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "file_url": {
+          "title": "File URL",
+          "description": "URL to access the uploaded file",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "file_size": {
+          "title": "File size",
+          "description": "Size of the file in bytes",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0
+        },
+        "file_type": {
+          "title": "File type",
+          "description": "MIME type of the file",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        }
+      }
+    },
+    "IssueCommentCreate": {
+      "required": [
+        "content"
+      ],
+      "type": "object",
+      "properties": {
+        "content": {
+          "title": "Content",
+          "description": "Content of the comment",
+          "type": "string",
+          "minLength": 1
+        },
+        "is_internal": {
+          "title": "Is internal",
+          "description": "Whether this comment is internal (staff only)",
+          "type": "boolean"
+        },
+        "parent": {
+          "title": "Parent comment",
+          "description": "Parent comment for threaded discussions",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        }
+      }
+    },
+    "Visitor": {
+      "required": [
+        "name",
+        "phone",
+        "estimated_arrival",
+        "invited_by",
+        "valid_date"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Visitor name",
+          "description": "Full name of the visitor",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "email": {
+          "title": "Email address",
+          "description": "Email address of the visitor",
+          "type": "string",
+          "format": "email",
+          "maxLength": 254,
+          "x-nullable": true
+        },
+        "phone": {
+          "title": "Phone number",
+          "description": "Phone number of the visitor",
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1
+        },
+        "estimated_arrival": {
+          "title": "Estimated arrival",
+          "description": "Expected date and time of arrival",
+          "type": "string",
+          "format": "date-time"
+        },
+        "visit_type": {
+          "title": "Visit type",
+          "description": "Type of visit",
+          "type": "string",
+          "enum": [
+            "ONE_TIME",
+            "SHORT_STAY",
+            "EXTENDED_STAY"
+          ]
+        },
+        "access_code": {
+          "title": "Access code",
+          "description": "Unique access code for the visitor",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "invited_by": {
+          "title": "Invited by",
+          "description": "ID of the user who invited this visitor",
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the visitor",
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "APPROVED",
+            "REJECTED",
+            "CHECKED_IN",
+            "CHECKED_OUT",
+            "EXPIRED"
+          ]
+        },
+        "valid_for": {
+          "title": "Valid for",
+          "description": "Validity type of the access code",
+          "type": "string",
+          "enum": [
+            "ONE_TIME",
+            "MULTIPLE"
+          ]
+        },
+        "valid_date": {
+          "title": "Valid date",
+          "description": "Date until which the access code is valid",
+          "type": "string",
+          "format": "date"
+        },
+        "purpose": {
+          "title": "Purpose of visit",
+          "description": "Purpose or reason for the visit",
+          "type": "string",
+          "x-nullable": true
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the visitor",
+          "type": "string",
+          "x-nullable": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "Invitation": {
+      "required": [
+        "visitor",
+        "title",
+        "start_date",
+        "end_date"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "visitor": {
+          "title": "Visitor",
+          "description": "The visitor this invitation is for",
+          "type": "string",
+          "format": "uuid"
+        },
+        "visitor_details": {
+          "$ref": "#/definitions/Visitor"
+        },
+        "title": {
+          "title": "Title",
+          "description": "Title or purpose of the invitation",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the invitation",
+          "type": "string",
+          "x-nullable": true
+        },
+        "start_date": {
+          "title": "Start date",
+          "description": "Date when the invitation becomes valid",
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "title": "End date",
+          "description": "Date when the invitation expires",
+          "type": "string",
+          "format": "date"
+        },
+        "recurrence_type": {
+          "title": "Recurrence type",
+          "description": "Type of recurrence for this invitation",
+          "type": "string",
+          "enum": [
+            "NONE",
+            "DAILY",
+            "WEEKLY",
+            "MONTHLY",
+            "CUSTOM"
+          ]
+        },
+        "recurrence_days": {
+          "title": "Recurrence days",
+          "description": "Days of the week for weekly recurrence (comma-separated numbers, 0=Monday)",
+          "type": "string",
+          "maxLength": 50,
+          "x-nullable": true
+        },
+        "recurrence_day_of_month": {
+          "title": "Recurrence day of month",
+          "description": "Day of the month for monthly recurrence",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "x-nullable": true
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the invitation",
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "REVOKED",
+            "EXPIRED",
+            "COMPLETED"
+          ]
+        },
+        "created_by": {
+          "title": "Created by",
+          "description": "ID of the user who created this invitation",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "revoked_by": {
+          "title": "Revoked by",
+          "description": "ID of the user who revoked this invitation",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "revoked_at": {
+          "title": "Revoked at",
+          "description": "Date and time when the invitation was revoked",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "revocation_reason": {
+          "title": "Revocation reason",
+          "description": "Reason for revoking the invitation",
+          "type": "string",
+          "x-nullable": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "InvitationCreate": {
+      "required": [
+        "visitor",
+        "title",
+        "start_date",
+        "end_date"
+      ],
+      "type": "object",
+      "properties": {
+        "visitor": {
+          "title": "Visitor",
+          "description": "The visitor this invitation is for",
+          "type": "string",
+          "format": "uuid"
+        },
+        "title": {
+          "title": "Title",
+          "description": "Title or purpose of the invitation",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the invitation",
+          "type": "string",
+          "x-nullable": true
+        },
+        "start_date": {
+          "title": "Start date",
+          "description": "Date when the invitation becomes valid",
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "title": "End date",
+          "description": "Date when the invitation expires",
+          "type": "string",
+          "format": "date"
+        },
+        "recurrence_type": {
+          "title": "Recurrence type",
+          "description": "Type of recurrence for this invitation",
+          "type": "string",
+          "enum": [
+            "NONE",
+            "DAILY",
+            "WEEKLY",
+            "MONTHLY",
+            "CUSTOM"
+          ]
+        },
+        "recurrence_days": {
+          "title": "Recurrence days",
+          "description": "Days of the week for weekly recurrence (comma-separated numbers, 0=Monday)",
+          "type": "string",
+          "maxLength": 50,
+          "x-nullable": true
+        },
+        "recurrence_day_of_month": {
+          "title": "Recurrence day of month",
+          "description": "Day of the month for monthly recurrence",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "x-nullable": true
+        }
+      }
+    },
+    "InvitationUpdate": {
+      "required": [
+        "title",
+        "start_date",
+        "end_date"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Title",
+          "description": "Title or purpose of the invitation",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the invitation",
+          "type": "string",
+          "x-nullable": true
+        },
+        "start_date": {
+          "title": "Start date",
+          "description": "Date when the invitation becomes valid",
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "title": "End date",
+          "description": "Date when the invitation expires",
+          "type": "string",
+          "format": "date"
+        },
+        "recurrence_type": {
+          "title": "Recurrence type",
+          "description": "Type of recurrence for this invitation",
+          "type": "string",
+          "enum": [
+            "NONE",
+            "DAILY",
+            "WEEKLY",
+            "MONTHLY",
+            "CUSTOM"
+          ]
+        },
+        "recurrence_days": {
+          "title": "Recurrence days",
+          "description": "Days of the week for weekly recurrence (comma-separated numbers, 0=Monday)",
+          "type": "string",
+          "maxLength": 50,
+          "x-nullable": true
+        },
+        "recurrence_day_of_month": {
+          "title": "Recurrence day of month",
+          "description": "Day of the month for monthly recurrence",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "x-nullable": true
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the invitation",
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "REVOKED",
+            "EXPIRED",
+            "COMPLETED"
+          ]
+        }
+      }
+    },
+    "InvitationRevoke": {
+      "type": "object",
+      "properties": {
+        "revocation_reason": {
+          "title": "Revocation reason",
+          "description": "Reason for revoking the invitation",
+          "type": "string",
+          "x-nullable": true
+        }
+      }
+    },
+    "MaintenanceLog": {
+      "required": [
+        "title",
+        "description",
+        "property_location"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "maintenance_number": {
+          "title": "Maintenance number",
+          "description": "Unique maintenance number for tracking",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "title": {
+          "title": "Maintenance title",
+          "description": "Brief title describing the maintenance activity",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the maintenance work performed",
+          "type": "string",
+          "minLength": 1
+        },
+        "maintenance_type": {
+          "title": "Maintenance type",
+          "description": "Type of maintenance activity",
+          "type": "string",
+          "enum": [
+            "PREVENTIVE",
+            "CORRECTIVE",
+            "EMERGENCY",
+            "ROUTINE",
+            "INSPECTION",
+            "UPGRADE",
+            "OTHER"
+          ]
+        },
+        "maintenance_type_display": {
+          "title": "Maintenance type display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "property_type": {
+          "title": "Property type",
+          "description": "Type of property or equipment maintained",
+          "type": "string",
+          "enum": [
+            "BUILDING",
+            "ELECTRICAL",
+            "PLUMBING",
+            "HVAC",
+            "SECURITY",
+            "LANDSCAPING",
+            "EQUIPMENT",
+            "INFRASTRUCTURE",
+            "OTHER"
+          ]
+        },
+        "property_type_display": {
+          "title": "Property type display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "property_location": {
+          "title": "Property location",
+          "description": "Specific location of the property or equipment",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "equipment_name": {
+          "title": "Equipment name",
+          "description": "Name or model of the equipment (if applicable)",
+          "type": "string",
+          "maxLength": 200
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the maintenance",
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "URGENT"
+          ]
+        },
+        "priority_display": {
+          "title": "Priority display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the maintenance",
+          "type": "string",
+          "enum": [
+            "SCHEDULED",
+            "IN_PROGRESS",
+            "COMPLETED",
+            "CANCELLED",
+            "POSTPONED"
+          ]
+        },
+        "status_display": {
+          "title": "Status display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "performed_by": {
+          "$ref": "#/definitions/Account"
+        },
+        "supervised_by": {
+          "$ref": "#/definitions/Account"
+        },
+        "requested_by": {
+          "$ref": "#/definitions/Account"
+        },
+        "scheduled_date": {
+          "title": "Scheduled date",
+          "description": "Scheduled date and time for the maintenance",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "started_at": {
+          "title": "Started at",
+          "description": "Timestamp when maintenance was started",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "completed_at": {
+          "title": "Completed at",
+          "description": "Timestamp when maintenance was completed",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "estimated_duration": {
+          "title": "Estimated duration",
+          "description": "Estimated time to complete the maintenance",
+          "type": "string",
+          "x-nullable": true
+        },
+        "actual_duration": {
+          "title": "Actual duration",
+          "description": "Actual time spent on the maintenance",
+          "type": "string",
+          "x-nullable": true
+        },
+        "cost": {
+          "title": "Cost",
+          "description": "Total cost of the maintenance",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "materials_used": {
+          "title": "Materials used",
+          "description": "List of materials and parts used",
+          "type": "string"
+        },
+        "tools_used": {
+          "title": "Tools used",
+          "description": "List of tools and equipment used",
+          "type": "string"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the maintenance",
+          "type": "string"
+        },
+        "completion_notes": {
+          "title": "Completion notes",
+          "description": "Notes about maintenance completion and results",
+          "type": "string"
+        },
+        "next_maintenance_due": {
+          "title": "Next maintenance due",
+          "description": "When the next maintenance is due for this item",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "warranty_expiry": {
+          "title": "Warranty expiry",
+          "description": "Warranty expiry date for the equipment",
+          "type": "string",
+          "format": "date",
+          "x-nullable": true
+        },
+        "is_under_warranty": {
+          "title": "Is under warranty",
+          "description": "Whether the equipment is still under warranty",
+          "type": "boolean"
+        },
+        "is_overdue": {
+          "title": "Is overdue",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_due_soon": {
+          "title": "Is due soon",
+          "type": "string",
+          "readOnly": true
+        },
+        "time_remaining": {
+          "title": "Time remaining",
+          "type": "string",
+          "readOnly": true
+        },
+        "duration_worked": {
+          "title": "Duration worked",
+          "type": "string",
+          "readOnly": true
+        },
+        "attachments_count": {
+          "title": "Attachments count",
+          "type": "string",
+          "readOnly": true
+        },
+        "comments_count": {
+          "title": "Comments count",
+          "type": "string",
+          "readOnly": true
+        },
+        "total_cost": {
+          "title": "Total cost",
+          "type": "string",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "MaintenanceLogCreate": {
+      "required": [
+        "title",
+        "description",
+        "property_location"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Maintenance title",
+          "description": "Brief title describing the maintenance activity",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the maintenance work performed",
+          "type": "string",
+          "minLength": 1
+        },
+        "maintenance_type": {
+          "title": "Maintenance type",
+          "description": "Type of maintenance activity",
+          "type": "string",
+          "enum": [
+            "PREVENTIVE",
+            "CORRECTIVE",
+            "EMERGENCY",
+            "ROUTINE",
+            "INSPECTION",
+            "UPGRADE",
+            "OTHER"
+          ]
+        },
+        "property_type": {
+          "title": "Property type",
+          "description": "Type of property or equipment maintained",
+          "type": "string",
+          "enum": [
+            "BUILDING",
+            "ELECTRICAL",
+            "PLUMBING",
+            "HVAC",
+            "SECURITY",
+            "LANDSCAPING",
+            "EQUIPMENT",
+            "INFRASTRUCTURE",
+            "OTHER"
+          ]
+        },
+        "property_location": {
+          "title": "Property location",
+          "description": "Specific location of the property or equipment",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "equipment_name": {
+          "title": "Equipment name",
+          "description": "Name or model of the equipment (if applicable)",
+          "type": "string",
+          "maxLength": 200
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the maintenance",
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "URGENT"
+          ]
+        },
+        "scheduled_date": {
+          "title": "Scheduled date",
+          "description": "Scheduled date and time for the maintenance",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "estimated_duration": {
+          "title": "Estimated duration",
+          "description": "Estimated time to complete the maintenance",
+          "type": "string",
+          "x-nullable": true
+        },
+        "cost": {
+          "title": "Cost",
+          "description": "Total cost of the maintenance",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "materials_used": {
+          "title": "Materials used",
+          "description": "List of materials and parts used",
+          "type": "string"
+        },
+        "tools_used": {
+          "title": "Tools used",
+          "description": "List of tools and equipment used",
+          "type": "string"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the maintenance",
+          "type": "string"
+        },
+        "next_maintenance_due": {
+          "title": "Next maintenance due",
+          "description": "When the next maintenance is due for this item",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "warranty_expiry": {
+          "title": "Warranty expiry",
+          "description": "Warranty expiry date for the equipment",
+          "type": "string",
+          "format": "date",
+          "x-nullable": true
+        }
+      }
+    },
+    "MaintenanceLogUpdate": {
+      "required": [
+        "title",
+        "description",
+        "property_location"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Maintenance title",
+          "description": "Brief title describing the maintenance activity",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the maintenance work performed",
+          "type": "string",
+          "minLength": 1
+        },
+        "maintenance_type": {
+          "title": "Maintenance type",
+          "description": "Type of maintenance activity",
+          "type": "string",
+          "enum": [
+            "PREVENTIVE",
+            "CORRECTIVE",
+            "EMERGENCY",
+            "ROUTINE",
+            "INSPECTION",
+            "UPGRADE",
+            "OTHER"
+          ]
+        },
+        "property_type": {
+          "title": "Property type",
+          "description": "Type of property or equipment maintained",
+          "type": "string",
+          "enum": [
+            "BUILDING",
+            "ELECTRICAL",
+            "PLUMBING",
+            "HVAC",
+            "SECURITY",
+            "LANDSCAPING",
+            "EQUIPMENT",
+            "INFRASTRUCTURE",
+            "OTHER"
+          ]
+        },
+        "property_location": {
+          "title": "Property location",
+          "description": "Specific location of the property or equipment",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "equipment_name": {
+          "title": "Equipment name",
+          "description": "Name or model of the equipment (if applicable)",
+          "type": "string",
+          "maxLength": 200
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the maintenance",
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "URGENT"
+          ]
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the maintenance",
+          "type": "string",
+          "enum": [
+            "SCHEDULED",
+            "IN_PROGRESS",
+            "COMPLETED",
+            "CANCELLED",
+            "POSTPONED"
+          ]
+        },
+        "scheduled_date": {
+          "title": "Scheduled date",
+          "description": "Scheduled date and time for the maintenance",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "estimated_duration": {
+          "title": "Estimated duration",
+          "description": "Estimated time to complete the maintenance",
+          "type": "string",
+          "x-nullable": true
+        },
+        "actual_duration": {
+          "title": "Actual duration",
+          "description": "Actual time spent on the maintenance",
+          "type": "string",
+          "x-nullable": true
+        },
+        "cost": {
+          "title": "Cost",
+          "description": "Total cost of the maintenance",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "materials_used": {
+          "title": "Materials used",
+          "description": "List of materials and parts used",
+          "type": "string"
+        },
+        "tools_used": {
+          "title": "Tools used",
+          "description": "List of tools and equipment used",
+          "type": "string"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the maintenance",
+          "type": "string"
+        },
+        "completion_notes": {
+          "title": "Completion notes",
+          "description": "Notes about maintenance completion and results",
+          "type": "string"
+        },
+        "next_maintenance_due": {
+          "title": "Next maintenance due",
+          "description": "When the next maintenance is due for this item",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "warranty_expiry": {
+          "title": "Warranty expiry",
+          "description": "Warranty expiry date for the equipment",
+          "type": "string",
+          "format": "date",
+          "x-nullable": true
+        }
+      }
+    },
+    "MaintenanceSchedule": {
+      "required": [
+        "name",
+        "description",
+        "property_type",
+        "property_location",
+        "next_due_date"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Schedule name",
+          "description": "Name of the maintenance schedule",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Description of the scheduled maintenance",
+          "type": "string",
+          "minLength": 1
+        },
+        "property_type": {
+          "title": "Property type",
+          "description": "Type of property or equipment",
+          "type": "string",
+          "enum": [
+            "BUILDING",
+            "ELECTRICAL",
+            "PLUMBING",
+            "HVAC",
+            "SECURITY",
+            "LANDSCAPING",
+            "EQUIPMENT",
+            "INFRASTRUCTURE",
+            "OTHER"
+          ]
+        },
+        "property_type_display": {
+          "title": "Property type display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "property_location": {
+          "title": "Property location",
+          "description": "Specific location of the property or equipment",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "equipment_name": {
+          "title": "Equipment name",
+          "description": "Name or model of the equipment (if applicable)",
+          "type": "string",
+          "maxLength": 200
+        },
+        "frequency_type": {
+          "title": "Frequency type",
+          "description": "How often the maintenance should be performed",
+          "type": "string",
+          "enum": [
+            "DAILY",
+            "WEEKLY",
+            "MONTHLY",
+            "QUARTERLY",
+            "SEMI_ANNUAL",
+            "ANNUAL",
+            "CUSTOM"
+          ]
+        },
+        "frequency_type_display": {
+          "title": "Frequency type display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "frequency_value": {
+          "title": "Frequency value",
+          "description": "Numeric value for custom frequency (e.g., every 3 months)",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0
+        },
+        "next_due_date": {
+          "title": "Next due date",
+          "description": "When the next maintenance is due",
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_duration": {
+          "title": "Estimated duration",
+          "description": "Estimated time to complete the maintenance",
+          "type": "string",
+          "x-nullable": true
+        },
+        "estimated_cost": {
+          "title": "Estimated cost",
+          "description": "Estimated cost of the maintenance",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "assigned_to": {
+          "$ref": "#/definitions/Account"
+        },
+        "is_active": {
+          "title": "Is active",
+          "description": "Whether this schedule is active",
+          "type": "boolean"
+        },
+        "instructions": {
+          "title": "Instructions",
+          "description": "Instructions for performing the maintenance",
+          "type": "string"
+        },
+        "materials_needed": {
+          "title": "Materials needed",
+          "description": "List of materials typically needed",
+          "type": "string"
+        },
+        "tools_needed": {
+          "title": "Tools needed",
+          "description": "List of tools typically needed",
+          "type": "string"
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "MaintenanceScheduleCreate": {
+      "required": [
+        "name",
+        "description",
+        "property_type",
+        "property_location",
+        "next_due_date"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Schedule name",
+          "description": "Name of the maintenance schedule",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Description of the scheduled maintenance",
+          "type": "string",
+          "minLength": 1
+        },
+        "property_type": {
+          "title": "Property type",
+          "description": "Type of property or equipment",
+          "type": "string",
+          "enum": [
+            "BUILDING",
+            "ELECTRICAL",
+            "PLUMBING",
+            "HVAC",
+            "SECURITY",
+            "LANDSCAPING",
+            "EQUIPMENT",
+            "INFRASTRUCTURE",
+            "OTHER"
+          ]
+        },
+        "property_location": {
+          "title": "Property location",
+          "description": "Specific location of the property or equipment",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "equipment_name": {
+          "title": "Equipment name",
+          "description": "Name or model of the equipment (if applicable)",
+          "type": "string",
+          "maxLength": 200
+        },
+        "frequency_type": {
+          "title": "Frequency type",
+          "description": "How often the maintenance should be performed",
+          "type": "string",
+          "enum": [
+            "DAILY",
+            "WEEKLY",
+            "MONTHLY",
+            "QUARTERLY",
+            "SEMI_ANNUAL",
+            "ANNUAL",
+            "CUSTOM"
+          ]
+        },
+        "frequency_value": {
+          "title": "Frequency value",
+          "description": "Numeric value for custom frequency (e.g., every 3 months)",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0
+        },
+        "next_due_date": {
+          "title": "Next due date",
+          "description": "When the next maintenance is due",
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_duration": {
+          "title": "Estimated duration",
+          "description": "Estimated time to complete the maintenance",
+          "type": "string",
+          "x-nullable": true
+        },
+        "estimated_cost": {
+          "title": "Estimated cost",
+          "description": "Estimated cost of the maintenance",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "instructions": {
+          "title": "Instructions",
+          "description": "Instructions for performing the maintenance",
+          "type": "string"
+        },
+        "materials_needed": {
+          "title": "Materials needed",
+          "description": "List of materials typically needed",
+          "type": "string"
+        },
+        "tools_needed": {
+          "title": "Tools needed",
+          "description": "List of tools typically needed",
+          "type": "string"
+        }
+      }
+    },
+    "Role": {
+      "required": [
+        "name"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "ID",
+          "type": "integer",
+          "readOnly": true
+        },
+        "owner": {
+          "title": "Owner",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "description": "Description of the role.",
+          "type": "string"
+        },
+        "total_subusers": {
+          "title": "Total subusers",
+          "type": "integer",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "StaffSummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Name of user",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "email_address": {
+          "title": "Email address",
+          "type": "string",
+          "format": "email",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "phone_number": {
+          "title": "Phone number",
+          "description": "The phone number for this subscription in E.164 format. See details: https://www.twilio.com/docs/glossary/what-e164",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        }
+      }
+    },
+    "ShiftAttendance": {
+      "type": "object",
+      "properties": {
+        "clock_in_time": {
+          "title": "Clock in time",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "clock_out_time": {
+          "title": "Clock out time",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "break_start_time": {
+          "title": "Break start time",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "break_end_time": {
+          "title": "Break end time",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "total_break_duration": {
+          "title": "Total break duration",
+          "description": "Total time spent on breaks",
+          "type": "string"
+        },
+        "overtime_hours": {
+          "title": "Overtime hours",
+          "description": "Hours worked beyond scheduled time",
+          "type": "string",
+          "readOnly": true
+        },
+        "overtime_hours_decimal": {
+          "title": "Overtime hours decimal",
+          "type": "string",
+          "readOnly": true
+        },
+        "late_arrival_minutes": {
+          "title": "Late arrival minutes",
+          "description": "Minutes late for shift start",
+          "type": "integer",
+          "readOnly": true
+        },
+        "early_departure_minutes": {
+          "title": "Early departure minutes",
+          "description": "Minutes left before shift end",
+          "type": "integer",
+          "readOnly": true
+        },
+        "actual_work_duration_hours": {
+          "title": "Actual work duration hours",
+          "type": "string",
+          "readOnly": true
+        },
+        "attendance_notes": {
+          "title": "Attendance notes",
+          "description": "Notes about attendance issues or special circumstances",
+          "type": "string"
+        }
+      }
+    },
+    "Shift": {
+      "required": [
+        "title",
+        "assigned_staff",
+        "start_time",
+        "end_time"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "title": {
+          "title": "Shift title",
+          "description": "Title or description of the shift",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "shift_type": {
+          "title": "Shift type",
+          "description": "Type of work shift",
+          "type": "string",
+          "enum": [
+            "SECURITY",
+            "MAINTENANCE",
+            "CLEANING",
+            "RECEPTION",
+            "GARDENING",
+            "OTHER"
+          ]
+        },
+        "shift_type_display": {
+          "title": "Shift type display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "assigned_staff": {
+          "title": "Assigned staff",
+          "description": "Staff member assigned to this shift",
+          "type": "string",
+          "format": "uuid"
+        },
+        "assigned_staff_details": {
+          "$ref": "#/definitions/StaffSummary"
+        },
+        "start_time": {
+          "title": "Start time",
+          "description": "Scheduled start time of the shift",
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "title": "End time",
+          "description": "Scheduled end time of the shift",
+          "type": "string",
+          "format": "date-time"
+        },
+        "actual_start_time": {
+          "title": "Actual start time",
+          "description": "Actual time the staff clocked in",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "actual_end_time": {
+          "title": "Actual end time",
+          "description": "Actual time the staff clocked out",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the shift",
+          "type": "string",
+          "enum": [
+            "SCHEDULED",
+            "IN_PROGRESS",
+            "COMPLETED",
+            "CANCELLED",
+            "NO_SHOW"
+          ],
+          "readOnly": true
+        },
+        "status_display": {
+          "title": "Status display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location where the shift takes place",
+          "type": "string",
+          "maxLength": 200
+        },
+        "responsibilities": {
+          "title": "Responsibilities",
+          "description": "Description of responsibilities for this shift",
+          "type": "string"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the shift",
+          "type": "string"
+        },
+        "is_recurring": {
+          "title": "Is recurring",
+          "description": "Whether this shift repeats",
+          "type": "boolean"
+        },
+        "recurrence_pattern": {
+          "title": "Recurrence pattern",
+          "description": "Pattern for recurring shifts (daily, weekly, monthly)",
+          "type": "string",
+          "maxLength": 50
+        },
+        "duration_hours": {
+          "title": "Duration hours",
+          "type": "string",
+          "readOnly": true
+        },
+        "actual_duration_hours": {
+          "title": "Actual duration hours",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_overdue": {
+          "title": "Is overdue",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_upcoming": {
+          "title": "Is upcoming",
+          "type": "string",
+          "readOnly": true
+        },
+        "attendance": {
+          "$ref": "#/definitions/ShiftAttendance"
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "ShiftSwapRequest": {
+      "required": [
+        "original_shift",
+        "requested_by",
+        "requested_with",
+        "reason"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "original_shift": {
+          "title": "Original shift",
+          "type": "string",
+          "format": "uuid"
+        },
+        "original_shift_details": {
+          "$ref": "#/definitions/Shift"
+        },
+        "requested_by": {
+          "title": "Requested by",
+          "type": "string",
+          "format": "uuid"
+        },
+        "requested_by_details": {
+          "$ref": "#/definitions/StaffSummary"
+        },
+        "requested_with": {
+          "title": "Requested with",
+          "type": "string",
+          "format": "uuid"
+        },
+        "requested_with_details": {
+          "$ref": "#/definitions/StaffSummary"
+        },
+        "target_shift": {
+          "title": "Target shift",
+          "description": "The shift to swap with (optional for coverage requests)",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "target_shift_details": {
+          "$ref": "#/definitions/Shift"
+        },
+        "reason": {
+          "title": "Reason",
+          "description": "Reason for the swap request",
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "title": "Status",
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "APPROVED",
+            "REJECTED",
+            "CANCELLED"
+          ],
+          "readOnly": true
+        },
+        "status_display": {
+          "title": "Status display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "approved_by": {
+          "title": "Approved by",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "approved_by_details": {
+          "$ref": "#/definitions/StaffSummary"
+        },
+        "approved_at": {
+          "title": "Approved at",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "response_message": {
+          "title": "Response message",
+          "description": "Response message from the other staff member or admin",
+          "type": "string"
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "ShiftSwapRequestCreate": {
+      "required": [
+        "original_shift",
+        "requested_with",
+        "reason"
+      ],
+      "type": "object",
+      "properties": {
+        "original_shift": {
+          "title": "Original shift",
+          "type": "string",
+          "format": "uuid"
+        },
+        "requested_with": {
+          "title": "Requested with",
+          "type": "string",
+          "format": "uuid"
+        },
+        "target_shift": {
+          "title": "Target shift",
+          "description": "The shift to swap with (optional for coverage requests)",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "reason": {
+          "title": "Reason",
+          "description": "Reason for the swap request",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "ShiftList": {
+      "required": [
+        "title",
+        "start_time",
+        "end_time"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid"
+        },
+        "title": {
+          "title": "Shift title",
+          "description": "Title or description of the shift",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "shift_type": {
+          "title": "Shift type",
+          "description": "Type of work shift",
+          "type": "string",
+          "enum": [
+            "SECURITY",
+            "MAINTENANCE",
+            "CLEANING",
+            "RECEPTION",
+            "GARDENING",
+            "OTHER"
+          ]
+        },
+        "shift_type_display": {
+          "title": "Shift type display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "assigned_staff_name": {
+          "title": "Assigned staff name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "start_time": {
+          "title": "Start time",
+          "description": "Scheduled start time of the shift",
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "title": "End time",
+          "description": "Scheduled end time of the shift",
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the shift",
+          "type": "string",
+          "enum": [
+            "SCHEDULED",
+            "IN_PROGRESS",
+            "COMPLETED",
+            "CANCELLED",
+            "NO_SHOW"
+          ]
+        },
+        "status_display": {
+          "title": "Status display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location where the shift takes place",
+          "type": "string",
+          "maxLength": 200
+        },
+        "duration_hours": {
+          "title": "Duration hours",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_overdue": {
+          "title": "Is overdue",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_upcoming": {
+          "title": "Is upcoming",
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "ShiftCreate": {
+      "required": [
+        "title",
+        "assigned_staff",
+        "start_time",
+        "end_time"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Shift title",
+          "description": "Title or description of the shift",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "shift_type": {
+          "title": "Shift type",
+          "description": "Type of work shift",
+          "type": "string",
+          "enum": [
+            "SECURITY",
+            "MAINTENANCE",
+            "CLEANING",
+            "RECEPTION",
+            "GARDENING",
+            "OTHER"
+          ]
+        },
+        "assigned_staff": {
+          "title": "Assigned staff",
+          "description": "Staff member assigned to this shift",
+          "type": "string",
+          "format": "uuid"
+        },
+        "start_time": {
+          "title": "Start time",
+          "description": "Scheduled start time of the shift",
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "title": "End time",
+          "description": "Scheduled end time of the shift",
+          "type": "string",
+          "format": "date-time"
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location where the shift takes place",
+          "type": "string",
+          "maxLength": 200
+        },
+        "responsibilities": {
+          "title": "Responsibilities",
+          "description": "Description of responsibilities for this shift",
+          "type": "string"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the shift",
+          "type": "string"
+        },
+        "is_recurring": {
+          "title": "Is recurring",
+          "description": "Whether this shift repeats",
+          "type": "boolean"
+        },
+        "recurrence_pattern": {
+          "title": "Recurrence pattern",
+          "description": "Pattern for recurring shifts (daily, weekly, monthly)",
+          "type": "string",
+          "maxLength": 50
+        }
+      }
+    },
+    "ShiftUpdate": {
+      "required": [
+        "title",
+        "assigned_staff",
+        "start_time",
+        "end_time"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Shift title",
+          "description": "Title or description of the shift",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "shift_type": {
+          "title": "Shift type",
+          "description": "Type of work shift",
+          "type": "string",
+          "enum": [
+            "SECURITY",
+            "MAINTENANCE",
+            "CLEANING",
+            "RECEPTION",
+            "GARDENING",
+            "OTHER"
+          ]
+        },
+        "assigned_staff": {
+          "title": "Assigned staff",
+          "description": "Staff member assigned to this shift",
+          "type": "string",
+          "format": "uuid"
+        },
+        "start_time": {
+          "title": "Start time",
+          "description": "Scheduled start time of the shift",
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "title": "End time",
+          "description": "Scheduled end time of the shift",
+          "type": "string",
+          "format": "date-time"
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location where the shift takes place",
+          "type": "string",
+          "maxLength": 200
+        },
+        "responsibilities": {
+          "title": "Responsibilities",
+          "description": "Description of responsibilities for this shift",
+          "type": "string"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the shift",
+          "type": "string"
+        },
+        "is_recurring": {
+          "title": "Is recurring",
+          "description": "Whether this shift repeats",
+          "type": "boolean"
+        },
+        "recurrence_pattern": {
+          "title": "Recurrence pattern",
+          "description": "Pattern for recurring shifts (daily, weekly, monthly)",
+          "type": "string",
+          "maxLength": 50
+        }
+      }
+    },
+    "SOSAlert": {
+      "required": [
+        "user",
+        "emergency_type"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "alert_id": {
+          "title": "Alert ID",
+          "description": "Unique identifier for the alert",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "user": {
+          "title": "User",
+          "description": "User who triggered the alert",
+          "type": "string",
+          "format": "uuid"
+        },
+        "user_name": {
+          "title": "User name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "emergency_type": {
+          "title": "Emergency type",
+          "description": "Type of emergency",
+          "type": "string",
+          "enum": [
+            "health",
+            "theft",
+            "domestic_violence",
+            "fire",
+            "security",
+            "accident",
+            "other"
+          ]
+        },
+        "emergency_type_display": {
+          "title": "Emergency type display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Optional description of the emergency",
+          "type": "string"
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location of the emergency",
+          "type": "string",
+          "maxLength": 200
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the alert",
+          "type": "string",
+          "enum": [
+            "active",
+            "acknowledged",
+            "responding",
+            "resolved",
+            "cancelled",
+            "false_alarm"
+          ]
+        },
+        "status_display": {
+          "title": "Status display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the alert",
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "priority_display": {
+          "title": "Priority display",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "acknowledged_at": {
+          "title": "Acknowledged at",
+          "description": "When the alert was acknowledged",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "acknowledged_by": {
+          "title": "Acknowledged by",
+          "description": "User who acknowledged the alert",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "acknowledged_by_name": {
+          "title": "Acknowledged by name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "responded_at": {
+          "title": "Responded at",
+          "description": "When response began",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "responded_by": {
+          "title": "Responded by",
+          "description": "User who responded to the alert",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "responded_by_name": {
+          "title": "Responded by name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "resolved_at": {
+          "title": "Resolved at",
+          "description": "When the alert was resolved",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "resolved_by": {
+          "title": "Resolved by",
+          "description": "User who resolved the alert",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "resolved_by_name": {
+          "title": "Resolved by name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "resolution_notes": {
+          "title": "Resolution notes",
+          "description": "Notes about the resolution",
+          "type": "string"
+        },
+        "cancelled_at": {
+          "title": "Cancelled at",
+          "description": "When the alert was cancelled",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "cancelled_by": {
+          "title": "Cancelled by",
+          "description": "User who cancelled the alert",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "cancelled_by_name": {
+          "title": "Cancelled by name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "cancellation_reason": {
+          "title": "Cancellation reason",
+          "description": "Reason for cancellation",
+          "type": "string"
+        },
+        "response_time_minutes": {
+          "title": "Response time minutes",
+          "type": "string",
+          "readOnly": true
+        },
+        "resolution_time_minutes": {
+          "title": "Resolution time minutes",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_active": {
+          "title": "Is active",
+          "type": "string",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "SOSAlertCreate": {
+      "required": [
+        "emergency_type"
+      ],
+      "type": "object",
+      "properties": {
+        "emergency_type": {
+          "title": "Emergency type",
+          "description": "Type of emergency",
+          "type": "string",
+          "enum": [
+            "health",
+            "theft",
+            "domestic_violence",
+            "fire",
+            "security",
+            "accident",
+            "other"
+          ]
+        },
+        "description": {
+          "title": "Description",
+          "description": "Optional description of the emergency",
+          "type": "string"
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location of the emergency",
+          "type": "string",
+          "maxLength": 200
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the alert",
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        }
+      }
+    },
+    "SOSAlertUpdate": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "title": "Description",
+          "description": "Optional description of the emergency",
+          "type": "string"
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location of the emergency",
+          "type": "string",
+          "maxLength": 200
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the alert",
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "resolution_notes": {
+          "title": "Resolution notes",
+          "description": "Notes about the resolution",
+          "type": "string"
+        },
+        "cancellation_reason": {
+          "title": "Cancellation reason",
+          "description": "Reason for cancellation",
+          "type": "string"
+        }
+      }
+    },
+    "TaskComment": {
+      "required": [
+        "content"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "content": {
+          "title": "Content",
+          "description": "Content of the comment",
+          "type": "string",
+          "minLength": 1
+        },
+        "author": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "is_internal": {
+          "title": "Is internal",
+          "description": "Whether this comment is internal (staff only)",
+          "type": "boolean"
+        },
+        "parent": {
+          "title": "Parent comment",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "replies": {
+          "title": "Replies",
+          "type": "string",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "TaskCommentCreate": {
+      "required": [
+        "content"
+      ],
+      "type": "object",
+      "properties": {
+        "content": {
+          "title": "Content",
+          "description": "Content of the comment",
+          "type": "string",
+          "minLength": 1
+        },
+        "is_internal": {
+          "title": "Is internal",
+          "description": "Whether this comment is internal (staff only)",
+          "type": "boolean"
+        },
+        "parent": {
+          "title": "Parent comment",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        }
+      }
+    },
+    "TaskList": {
+      "required": [
+        "title"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "task_number": {
+          "title": "Task number",
+          "description": "Unique task number for tracking",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "title": {
+          "title": "Task title",
+          "description": "Brief title describing the task",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "task_type": {
+          "title": "Task type",
+          "description": "Type of task",
+          "type": "string",
+          "enum": [
+            "MAINTENANCE",
+            "SECURITY",
+            "CLEANING",
+            "ADMINISTRATIVE",
+            "INSPECTION",
+            "REPAIR",
+            "OTHER"
+          ]
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the task",
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "URGENT"
+          ]
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the task",
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "ASSIGNED",
+            "IN_PROGRESS",
+            "COMPLETED",
+            "CANCELLED",
+            "OVERDUE"
+          ]
+        },
+        "assigned_to": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "created_by": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "due_date": {
+          "title": "Due date",
+          "description": "Expected completion date",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location where the task should be performed",
+          "type": "string",
+          "maxLength": 200
+        },
+        "estimated_hours": {
+          "title": "Estimated hours",
+          "description": "Estimated time to complete the task in hours",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "actual_hours": {
+          "title": "Actual hours",
+          "description": "Actual time spent on the task in hours",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "escalated_to": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "escalated_at": {
+          "title": "Escalated at",
+          "description": "Timestamp when task was escalated",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "started_at": {
+          "title": "Started at",
+          "description": "Timestamp when task was started",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "completed_at": {
+          "title": "Completed at",
+          "description": "Timestamp when task was completed",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "is_overdue": {
+          "title": "Is overdue",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_due_soon": {
+          "title": "Is due soon",
+          "type": "string",
+          "readOnly": true
+        },
+        "time_remaining": {
+          "title": "Time remaining",
+          "type": "string",
+          "readOnly": true
+        },
+        "duration_worked": {
+          "title": "Duration worked",
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "TaskCreate": {
+      "required": [
+        "title",
+        "description"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Task title",
+          "description": "Brief title describing the task",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the task",
+          "type": "string",
+          "minLength": 1
+        },
+        "task_type": {
+          "title": "Task type",
+          "description": "Type of task",
+          "type": "string",
+          "enum": [
+            "MAINTENANCE",
+            "SECURITY",
+            "CLEANING",
+            "ADMINISTRATIVE",
+            "INSPECTION",
+            "REPAIR",
+            "OTHER"
+          ]
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the task",
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "URGENT"
+          ]
+        },
+        "assigned_to_id": {
+          "title": "Assigned to id",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "due_date": {
+          "title": "Due date",
+          "description": "Expected completion date",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "estimated_hours": {
+          "title": "Estimated hours",
+          "description": "Estimated time to complete the task in hours",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location where the task should be performed",
+          "type": "string",
+          "maxLength": 200
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the task",
+          "type": "string"
+        }
+      }
+    },
+    "TaskAttachment": {
+      "required": [
+        "file_name",
+        "file_url",
+        "file_size",
+        "file_type"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "file_name": {
+          "title": "File name",
+          "description": "Original name of the uploaded file",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "file_url": {
+          "title": "File URL",
+          "description": "URL to access the uploaded file",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "file_size": {
+          "title": "File size",
+          "description": "Size of the file in bytes",
+          "type": "integer",
+          "maximum": 2147483647,
+          "minimum": 0
+        },
+        "file_type": {
+          "title": "File type",
+          "description": "MIME type of the file",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "attachment_type": {
+          "title": "Attachment type",
+          "description": "Type of attachment",
+          "type": "string",
+          "enum": [
+            "INSTRUCTION",
+            "REFERENCE",
+            "EVIDENCE",
+            "COMPLETION",
+            "OTHER"
+          ]
+        },
+        "uploaded_by": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "TaskStatusHistory": {
+      "required": [
+        "to_status"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "from_status": {
+          "title": "From status",
+          "description": "Previous status",
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "ASSIGNED",
+            "IN_PROGRESS",
+            "COMPLETED",
+            "CANCELLED",
+            "OVERDUE"
+          ],
+          "x-nullable": true
+        },
+        "to_status": {
+          "title": "To status",
+          "description": "New status",
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "ASSIGNED",
+            "IN_PROGRESS",
+            "COMPLETED",
+            "CANCELLED",
+            "OVERDUE"
+          ]
+        },
+        "changed_by": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Notes about the status change",
+          "type": "string"
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "TaskEscalationHistory": {
+      "required": [
+        "reason"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "escalated_to": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "escalated_by": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "reason": {
+          "title": "Escalation reason",
+          "description": "Reason for escalation",
+          "type": "string",
+          "minLength": 1
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "TaskDetail": {
+      "required": [
+        "title",
+        "description"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "task_number": {
+          "title": "Task number",
+          "description": "Unique task number for tracking",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "title": {
+          "title": "Task title",
+          "description": "Brief title describing the task",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the task",
+          "type": "string",
+          "minLength": 1
+        },
+        "task_type": {
+          "title": "Task type",
+          "description": "Type of task",
+          "type": "string",
+          "enum": [
+            "MAINTENANCE",
+            "SECURITY",
+            "CLEANING",
+            "ADMINISTRATIVE",
+            "INSPECTION",
+            "REPAIR",
+            "OTHER"
+          ]
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the task",
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "URGENT"
+          ]
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the task",
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "ASSIGNED",
+            "IN_PROGRESS",
+            "COMPLETED",
+            "CANCELLED",
+            "OVERDUE"
+          ]
+        },
+        "assigned_to": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "created_by": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "due_date": {
+          "title": "Due date",
+          "description": "Expected completion date",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "started_at": {
+          "title": "Started at",
+          "description": "Timestamp when task was started",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "completed_at": {
+          "title": "Completed at",
+          "description": "Timestamp when task was completed",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "estimated_hours": {
+          "title": "Estimated hours",
+          "description": "Estimated time to complete the task in hours",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "actual_hours": {
+          "title": "Actual hours",
+          "description": "Actual time spent on the task in hours",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location where the task should be performed",
+          "type": "string",
+          "maxLength": 200
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the task",
+          "type": "string"
+        },
+        "completion_notes": {
+          "title": "Completion notes",
+          "description": "Notes about task completion",
+          "type": "string"
+        },
+        "escalated_at": {
+          "title": "Escalated at",
+          "description": "Timestamp when task was escalated",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "escalated_to": {
+          "$ref": "#/definitions/UserSummary"
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TaskAttachment"
+          },
+          "readOnly": true
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TaskComment"
+          },
+          "readOnly": true
+        },
+        "status_history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TaskStatusHistory"
+          },
+          "readOnly": true
+        },
+        "escalation_history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TaskEscalationHistory"
+          },
+          "readOnly": true
+        },
+        "assignment_history": {
+          "title": "Assignment history",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_overdue": {
+          "title": "Is overdue",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_due_soon": {
+          "title": "Is due soon",
+          "type": "string",
+          "readOnly": true
+        },
+        "time_remaining": {
+          "title": "Time remaining",
+          "type": "string",
+          "readOnly": true
+        },
+        "duration_worked": {
+          "title": "Duration worked",
+          "type": "string",
+          "readOnly": true
+        },
+        "comments_count": {
+          "title": "Comments count",
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "TaskUpdate": {
+      "required": [
+        "title",
+        "description"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Task title",
+          "description": "Brief title describing the task",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the task",
+          "type": "string",
+          "minLength": 1
+        },
+        "task_type": {
+          "title": "Task type",
+          "description": "Type of task",
+          "type": "string",
+          "enum": [
+            "MAINTENANCE",
+            "SECURITY",
+            "CLEANING",
+            "ADMINISTRATIVE",
+            "INSPECTION",
+            "REPAIR",
+            "OTHER"
+          ]
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the task",
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "URGENT"
+          ]
+        },
+        "assigned_to_id": {
+          "title": "Assigned to id",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "due_date": {
+          "title": "Due date",
+          "description": "Expected completion date",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "estimated_hours": {
+          "title": "Estimated hours",
+          "description": "Estimated time to complete the task in hours",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "actual_hours": {
+          "title": "Actual hours",
+          "description": "Actual time spent on the task in hours",
+          "type": "string",
+          "format": "decimal",
+          "x-nullable": true
+        },
+        "location": {
+          "title": "Location",
+          "description": "Location where the task should be performed",
+          "type": "string",
+          "maxLength": 200
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the task",
+          "type": "string"
+        }
+      }
+    },
+    "Bill": {
+      "required": [
+        "title",
+        "type",
+        "amount",
+        "due_date"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "bill_number": {
+          "title": "Bill number",
+          "description": "Unique bill number",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "user_id": {
+          "title": "User id",
+          "description": "The ID of the user this bill is for (null for cluster-wide bills)",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "title": {
+          "title": "Title",
+          "description": "Bill title",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Bill description",
+          "type": "string",
+          "x-nullable": true
+        },
+        "type": {
+          "title": "Type",
+          "description": "Type of bill",
+          "type": "string",
+          "enum": [
+            "electricity",
+            "water",
+            "security",
+            "maintenance",
+            "service_charge",
+            "waste_management",
+            "electricity_utility",
+            "water_utility",
+            "internet_utility",
+            "cable_tv_utility",
+            "other"
+          ]
+        },
+        "category": {
+          "title": "Category",
+          "description": "Bill category (cluster-managed or user-managed)",
+          "type": "string",
+          "enum": [
+            "cluster_managed",
+            "user_managed"
+          ]
+        },
+        "amount": {
+          "title": "Amount",
+          "description": "Bill amount",
+          "type": "string",
+          "format": "decimal"
+        },
+        "currency": {
+          "title": "Currency",
+          "description": "Currency code",
+          "type": "string",
+          "maxLength": 3,
+          "minLength": 1
+        },
+        "acknowledged_by": {
+          "description": "Users who have acknowledged this bill",
+          "type": "array",
+          "items": {
+            "description": "Users who have acknowledged this bill",
+            "type": "string",
+            "format": "uuid"
+          },
+          "readOnly": true,
+          "uniqueItems": true
+        },
+        "acknowledgment_count": {
+          "title": "Acknowledgment count",
+          "type": "integer",
+          "readOnly": true
+        },
+        "allow_payment_after_due": {
+          "title": "Allow payment after due",
+          "description": "Whether payment is allowed after due date",
+          "type": "boolean"
+        },
+        "is_disputed": {
+          "title": "Is disputed",
+          "type": "string",
+          "readOnly": true
+        },
+        "dispute_count": {
+          "title": "Dispute count",
+          "type": "string",
+          "readOnly": true
+        },
+        "due_date": {
+          "title": "Due date",
+          "description": "Bill due date",
+          "type": "string",
+          "format": "date-time"
+        },
+        "paid_amount": {
+          "title": "Paid amount",
+          "description": "Amount already paid",
+          "type": "string",
+          "format": "decimal",
+          "readOnly": true
+        },
+        "paid_at": {
+          "title": "Paid at",
+          "description": "Date and time when bill was paid",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "remaining_amount": {
+          "title": "Remaining amount",
+          "type": "string",
+          "format": "decimal",
+          "readOnly": true
+        },
+        "is_overdue": {
+          "title": "Is overdue",
+          "type": "boolean",
+          "readOnly": true
+        },
+        "is_cluster_wide": {
+          "title": "Is cluster wide",
+          "type": "boolean",
+          "readOnly": true
+        },
+        "is_fully_paid": {
+          "title": "Is fully paid",
+          "type": "boolean",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "MembersEmergencyContactSerializer": {
+      "required": [
+        "name",
+        "phone_number",
+        "contact_type"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Contact name",
+          "description": "Name of the emergency contact",
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "phone_number": {
+          "title": "Phone number",
+          "description": "Contact phone number",
+          "type": "string",
+          "pattern": "^\\+?1?\\d{9,15}$",
+          "maxLength": 20,
+          "minLength": 1
+        },
+        "email": {
+          "title": "Email address",
+          "description": "Contact email address (optional)",
+          "type": "string",
+          "format": "email",
+          "maxLength": 254,
+          "x-nullable": true
+        },
+        "emergency_types": {
+          "title": "Emergency types",
+          "description": "List of emergency types this contact handles",
+          "type": "object"
+        },
+        "contact_type": {
+          "title": "Contact type",
+          "type": "string",
+          "enum": [
+            "personal",
+            "estate_wide",
+            "official"
+          ]
+        },
+        "is_primary": {
+          "title": "Is primary",
+          "description": "Whether this is a primary contact for the emergency types",
+          "type": "boolean"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about this contact",
+          "type": "string"
+        }
+      }
+    },
+    "EntryExitLog": {
+      "required": [
+        "child",
+        "log_type",
+        "date",
+        "reason"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "child": {
+          "title": "Child",
+          "description": "The child this log entry is for",
+          "type": "string",
+          "format": "uuid"
+        },
+        "child_name": {
+          "title": "Child name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "exit_request": {
+          "title": "Exit request",
+          "description": "The exit request associated with this log",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "log_type": {
+          "title": "Log type",
+          "description": "Type of log entry",
+          "type": "string",
+          "enum": [
+            "exit",
+            "entry"
+          ]
+        },
+        "date": {
+          "title": "Date",
+          "description": "Date of the entry/exit",
+          "type": "string",
+          "format": "date"
+        },
+        "exit_time": {
+          "title": "Exit time",
+          "description": "Time when the child exited",
+          "type": "string",
+          "x-nullable": true
+        },
+        "entry_time": {
+          "title": "Entry time",
+          "description": "Time when the child returned",
+          "type": "string",
+          "x-nullable": true
+        },
+        "expected_return_time": {
+          "title": "Expected return time",
+          "description": "Expected time for the child to return",
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true
+        },
+        "actual_return_time": {
+          "title": "Actual return time",
+          "description": "Actual time when the child returned",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "reason": {
+          "title": "Reason",
+          "description": "Reason for the exit",
+          "type": "string",
+          "minLength": 1
+        },
+        "destination": {
+          "title": "Destination",
+          "description": "Where the child went",
+          "type": "string",
+          "maxLength": 200
+        },
+        "accompanying_adult": {
+          "title": "Accompanying adult",
+          "description": "Name of the adult accompanying the child",
+          "type": "string",
+          "maxLength": 100
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the entry/exit",
+          "type": "string",
+          "enum": [
+            "scheduled",
+            "in_progress",
+            "completed",
+            "overdue"
+          ]
+        },
+        "verified_by": {
+          "title": "Verified by",
+          "description": "Security personnel who verified the exit/entry",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "verified_by_name": {
+          "title": "Verified by name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the entry/exit",
+          "type": "string"
+        },
+        "is_overdue": {
+          "title": "Is overdue",
+          "type": "string",
+          "readOnly": true
+        },
+        "duration_minutes": {
+          "title": "Duration minutes",
+          "type": "string",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "ExitRequest": {
+      "required": [
+        "child",
+        "requested_by",
+        "reason",
+        "expected_return_time",
+        "expires_at"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "request_id": {
+          "title": "Request ID",
+          "description": "Unique identifier for the exit request",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "child": {
+          "title": "Child",
+          "description": "The child this exit request is for",
+          "type": "string",
+          "format": "uuid"
+        },
+        "child_name": {
+          "title": "Child name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "requested_by": {
+          "title": "Requested by",
+          "description": "User who requested the exit",
+          "type": "string",
+          "format": "uuid"
+        },
+        "requested_by_name": {
+          "title": "Requested by name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "reason": {
+          "title": "Reason for exit",
+          "description": "Reason for the child's exit",
+          "type": "string",
+          "minLength": 1
+        },
+        "expected_return_time": {
+          "title": "Expected return time",
+          "description": "Expected time for the child to return",
+          "type": "string",
+          "format": "date-time"
+        },
+        "destination": {
+          "title": "Destination",
+          "description": "Where the child is going",
+          "type": "string",
+          "maxLength": 200
+        },
+        "accompanying_adult": {
+          "title": "Accompanying adult",
+          "description": "Name of the adult accompanying the child",
+          "type": "string",
+          "maxLength": 100
+        },
+        "accompanying_adult_phone": {
+          "title": "Accompanying adult phone",
+          "description": "Phone number of the accompanying adult",
+          "type": "string",
+          "pattern": "^\\+?1?\\d{9,15}$",
+          "maxLength": 20
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the exit request",
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "denied",
+            "expired"
+          ]
+        },
+        "approved_by": {
+          "title": "Approved by",
+          "description": "User who approved the exit request",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "approved_by_name": {
+          "title": "Approved by name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "approved_at": {
+          "title": "Approved at",
+          "description": "When the exit request was approved",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "denied_by": {
+          "title": "Denied by",
+          "description": "User who denied the exit request",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "denied_by_name": {
+          "title": "Denied by name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "denied_at": {
+          "title": "Denied at",
+          "description": "When the exit request was denied",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true,
+          "x-nullable": true
+        },
+        "denial_reason": {
+          "title": "Denial reason",
+          "description": "Reason for denying the exit request",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "expires_at": {
+          "title": "Expires at",
+          "description": "When the exit request expires",
+          "type": "string",
+          "format": "date-time"
+        },
+        "is_expired": {
+          "title": "Is expired",
+          "type": "string",
+          "readOnly": true
+        },
+        "is_pending": {
+          "title": "Is pending",
+          "type": "string",
+          "readOnly": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "ExitRequestCreate": {
+      "required": [
+        "child",
+        "reason",
+        "expected_return_time",
+        "expires_at"
+      ],
+      "type": "object",
+      "properties": {
+        "child": {
+          "title": "Child",
+          "description": "The child this exit request is for",
+          "type": "string",
+          "format": "uuid"
+        },
+        "reason": {
+          "title": "Reason for exit",
+          "description": "Reason for the child's exit",
+          "type": "string",
+          "minLength": 1
+        },
+        "expected_return_time": {
+          "title": "Expected return time",
+          "description": "Expected time for the child to return",
+          "type": "string",
+          "format": "date-time"
+        },
+        "destination": {
+          "title": "Destination",
+          "description": "Where the child is going",
+          "type": "string",
+          "maxLength": 200
+        },
+        "accompanying_adult": {
+          "title": "Accompanying adult",
+          "description": "Name of the adult accompanying the child",
+          "type": "string",
+          "maxLength": 100
+        },
+        "accompanying_adult_phone": {
+          "title": "Accompanying adult phone",
+          "description": "Phone number of the accompanying adult",
+          "type": "string",
+          "pattern": "^\\+?1?\\d{9,15}$",
+          "maxLength": 20
+        },
+        "expires_at": {
+          "title": "Expires at",
+          "description": "When the exit request expires",
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ExitRequestUpdate": {
+      "required": [
+        "reason",
+        "expected_return_time",
+        "expires_at"
+      ],
+      "type": "object",
+      "properties": {
+        "reason": {
+          "title": "Reason for exit",
+          "description": "Reason for the child's exit",
+          "type": "string",
+          "minLength": 1
+        },
+        "expected_return_time": {
+          "title": "Expected return time",
+          "description": "Expected time for the child to return",
+          "type": "string",
+          "format": "date-time"
+        },
+        "destination": {
+          "title": "Destination",
+          "description": "Where the child is going",
+          "type": "string",
+          "maxLength": 200
+        },
+        "accompanying_adult": {
+          "title": "Accompanying adult",
+          "description": "Name of the adult accompanying the child",
+          "type": "string",
+          "maxLength": 100
+        },
+        "accompanying_adult_phone": {
+          "title": "Accompanying adult phone",
+          "description": "Phone number of the accompanying adult",
+          "type": "string",
+          "pattern": "^\\+?1?\\d{9,15}$",
+          "maxLength": 20
+        },
+        "expires_at": {
+          "title": "Expires at",
+          "description": "When the exit request expires",
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "IssueTicketCreate": {
+      "required": [
+        "title",
+        "description"
+      ],
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Title",
+          "description": "Brief title describing the issue",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "title": "Description",
+          "description": "Detailed description of the issue",
+          "type": "string",
+          "minLength": 1
+        },
+        "issue_type": {
+          "title": "Issue type",
+          "description": "Type of issue being reported",
+          "type": "string",
+          "enum": [
+            "CARPENTRY",
+            "PLUMBING",
+            "ELECTRICAL",
+            "CLEANING",
+            "SECURITY",
+            "OTHER"
+          ]
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Priority level of the issue",
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "URGENT"
+          ]
+        }
+      }
+    },
+    "MemberProfile": {
+      "required": [
+        "name",
+        "phone_number"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Name of user",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "email_address": {
+          "title": "Email address",
+          "type": "string",
+          "format": "email",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "phone_number": {
+          "title": "Phone number",
+          "description": "The phone number for this subscription in E.164 format. See details: https://www.twilio.com/docs/glossary/what-e164",
+          "type": "string",
+          "pattern": "^\\+[1-9]\\d{1,14}$",
+          "maxLength": 16,
+          "minLength": 4
+        },
+        "unit_address": {
+          "title": "Unit address",
+          "description": "This is the address of the resident in the cluster",
+          "type": "string",
+          "minLength": 1,
+          "x-nullable": true
+        },
+        "profile_image_url": {
+          "title": "Profile image url",
+          "description": "Profile image of the user.",
+          "type": "string",
+          "format": "uri",
+          "maxLength": 200
+        },
+        "property_owner": {
+          "title": "Property owner",
+          "type": "boolean"
+        },
+        "is_verified": {
+          "title": "Is verified?",
+          "description": "Has this user completed email verification flow?",
+          "type": "boolean",
+          "readOnly": true
+        },
+        "is_phone_verified": {
+          "title": "Is phone verified?",
+          "description": "Has this user completed phone verification flow?",
+          "type": "boolean",
+          "readOnly": true
+        },
+        "emergency_contacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MembersEmergencyContactSerializer"
+          }
+        }
+      }
+    },
+    "MemberRegistration": {
+      "required": [
+        "email_address",
+        "name",
+        "phone_number",
+        "unit_address",
+        "password",
+        "confirm_password",
+        "cluster_id"
+      ],
+      "type": "object",
+      "properties": {
+        "email_address": {
+          "title": "Email address",
+          "type": "string",
+          "format": "email",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "name": {
+          "title": "Name of user",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "phone_number": {
+          "title": "Phone number",
+          "description": "The phone number for this subscription in E.164 format. See details: https://www.twilio.com/docs/glossary/what-e164",
+          "type": "string",
+          "pattern": "^\\+[1-9]\\d{1,14}$",
+          "maxLength": 16,
+          "minLength": 4
+        },
+        "unit_address": {
+          "title": "Unit address",
+          "description": "This is the address of the resident in the cluster",
+          "type": "string",
+          "minLength": 1,
+          "x-nullable": true
+        },
+        "password": {
+          "title": "Password",
+          "type": "string",
+          "minLength": 1
+        },
+        "confirm_password": {
+          "title": "Confirm password",
+          "type": "string",
+          "minLength": 1
+        },
+        "property_owner": {
+          "title": "Property owner",
+          "type": "boolean",
+          "default": false
+        },
+        "cluster_id": {
+          "title": "Cluster id",
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "VisitorLog": {
+      "required": [
+        "visitor"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "description": "UUID primary key",
+          "type": "string",
+          "format": "uuid",
+          "readOnly": true
+        },
+        "visitor": {
+          "title": "Visitor",
+          "description": "The visitor this log entry is for",
+          "type": "string",
+          "format": "uuid"
+        },
+        "visitor_name": {
+          "title": "Visitor name",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        },
+        "date": {
+          "title": "Date",
+          "description": "Date of the log entry",
+          "type": "string",
+          "format": "date",
+          "readOnly": true
+        },
+        "arrival_time": {
+          "title": "Arrival time",
+          "description": "Time when the visitor arrived",
+          "type": "string",
+          "x-nullable": true
+        },
+        "departure_time": {
+          "title": "Departure time",
+          "description": "Time when the visitor departed",
+          "type": "string",
+          "x-nullable": true
+        },
+        "log_type": {
+          "title": "Log type",
+          "description": "Type of log entry",
+          "type": "string",
+          "enum": [
+            "SCHEDULED",
+            "CHECKED_IN",
+            "CHECKED_OUT",
+            "CANCELLED"
+          ]
+        },
+        "checked_in_by": {
+          "title": "Checked in by",
+          "description": "ID of the user who checked in the visitor",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "checked_out_by": {
+          "title": "Checked out by",
+          "description": "ID of the user who checked out the visitor",
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the visit",
+          "type": "string",
+          "x-nullable": true
+        },
+        "created_at": {
+          "title": "Creation date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "last_modified_at": {
+          "title": "Last modified date",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "VisitorCreate": {
+      "required": [
+        "name",
+        "phone",
+        "estimated_arrival",
+        "valid_date"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Visitor name",
+          "description": "Full name of the visitor",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "email": {
+          "title": "Email address",
+          "description": "Email address of the visitor",
+          "type": "string",
+          "format": "email",
+          "maxLength": 254,
+          "x-nullable": true
+        },
+        "phone": {
+          "title": "Phone number",
+          "description": "Phone number of the visitor",
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1
+        },
+        "estimated_arrival": {
+          "title": "Estimated arrival",
+          "description": "Expected date and time of arrival",
+          "type": "string",
+          "format": "date-time"
+        },
+        "visit_type": {
+          "title": "Visit type",
+          "description": "Type of visit",
+          "type": "string",
+          "enum": [
+            "ONE_TIME",
+            "SHORT_STAY",
+            "EXTENDED_STAY"
+          ]
+        },
+        "valid_for": {
+          "title": "Valid for",
+          "description": "Validity type of the access code",
+          "type": "string",
+          "enum": [
+            "ONE_TIME",
+            "MULTIPLE"
+          ]
+        },
+        "valid_date": {
+          "title": "Valid date",
+          "description": "Date until which the access code is valid",
+          "type": "string",
+          "format": "date"
+        },
+        "purpose": {
+          "title": "Purpose of visit",
+          "description": "Purpose or reason for the visit",
+          "type": "string",
+          "x-nullable": true
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the visitor",
+          "type": "string",
+          "x-nullable": true
+        }
+      }
+    },
+    "VisitorUpdate": {
+      "required": [
+        "name",
+        "phone",
+        "estimated_arrival",
+        "valid_date"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Visitor name",
+          "description": "Full name of the visitor",
+          "type": "string",
+          "maxLength": 255,
+          "minLength": 1
+        },
+        "email": {
+          "title": "Email address",
+          "description": "Email address of the visitor",
+          "type": "string",
+          "format": "email",
+          "maxLength": 254,
+          "x-nullable": true
+        },
+        "phone": {
+          "title": "Phone number",
+          "description": "Phone number of the visitor",
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1
+        },
+        "estimated_arrival": {
+          "title": "Estimated arrival",
+          "description": "Expected date and time of arrival",
+          "type": "string",
+          "format": "date-time"
+        },
+        "visit_type": {
+          "title": "Visit type",
+          "description": "Type of visit",
+          "type": "string",
+          "enum": [
+            "ONE_TIME",
+            "SHORT_STAY",
+            "EXTENDED_STAY"
+          ]
+        },
+        "status": {
+          "title": "Status",
+          "description": "Current status of the visitor",
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "APPROVED",
+            "REJECTED",
+            "CHECKED_IN",
+            "CHECKED_OUT",
+            "EXPIRED"
+          ]
+        },
+        "valid_for": {
+          "title": "Valid for",
+          "description": "Validity type of the access code",
+          "type": "string",
+          "enum": [
+            "ONE_TIME",
+            "MULTIPLE"
+          ]
+        },
+        "valid_date": {
+          "title": "Valid date",
+          "description": "Date until which the access code is valid",
+          "type": "string",
+          "format": "date"
+        },
+        "purpose": {
+          "title": "Purpose of visit",
+          "description": "Purpose or reason for the visit",
+          "type": "string",
+          "x-nullable": true
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Additional notes about the visitor",
+          "type": "string",
+          "x-nullable": true
+        }
+      }
+    }
+  }

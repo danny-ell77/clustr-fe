@@ -1,4 +1,5 @@
-import type { Resolver } from '@nuxt/kit';
+import type { Resolver } from "@nuxt/kit";
+import { fs, path } from "./node-utils";
 
 /**
  * Registers all .vue files in the given module's pages directory as Nuxt pages.
@@ -6,24 +7,45 @@ import type { Resolver } from '@nuxt/kit';
  * @param resolver The Nuxt resolver instance
  * @param extendPages The Nuxt extendPages function
  */
-export function useAddModulePages(moduleName: string, resolver: Resolver, extendPages: (cb: (pages: any[]) => void) => void) {
-    extendPages((pages) => {
-        const pagesDir = resolver.resolve('./pages');
-        const { resolve } = resolver;
-        const fs = require('fs');
+export function useAddModulePages(
+  moduleName: string,
+  resolver: Resolver,
+  extendPages: (cb: (pages: any[]) => void) => void
+) {
+  extendPages((pages) => {
+    const pagesDir = resolver.resolve("./pages");
+    const { resolve } = resolver;
 
-        if (fs.existsSync(pagesDir)) {
-            const files = fs.readdirSync(pagesDir);
-            files.forEach((file: string) => {
-                if (file.endsWith('.vue')) {
-                    const name = file.replace(/\.vue$/, '');
-                    pages.push({
-                        name: `${moduleName}-${name}`,
-                        path: `/${moduleName}/${name === 'index' ? '' : name}`,
-                        file: resolve(pagesDir, file),
-                    });
-                }
+    function addPagesRecursively(dir: string, basePath: string = "") {
+      if (fs.existsSync(dir)) {
+        const items = fs.readdirSync(dir);
+        items.forEach((item: string) => {
+          const fullPath = path.join(dir, item);
+          const stat = fs.statSync(fullPath);
+
+          if (stat.isDirectory()) {
+            // Handle directories
+            addPagesRecursively(fullPath, `${basePath}/${item}`);
+          } else if (item.endsWith(".vue")) {
+            // Handle .vue files
+            const name = item.replace(/\.vue$/, "");
+            const routePath =
+              name === "index"
+                ? basePath
+                : name.startsWith("[") && name.endsWith("]")
+                ? `${basePath}/:${name.slice(1, -1)}` // Convert [id].vue to /:id
+                : `${basePath}/${name}`;
+
+            pages.push({
+              name: `${moduleName}${basePath.replace(/\//g, "-")}-${name}`,
+              path: `/${moduleName}${routePath}`,
+              file: fullPath,
             });
-        }
-    });
+          }
+        });
+      }
+    }
+
+    addPagesRecursively(pagesDir);
+  });
 }

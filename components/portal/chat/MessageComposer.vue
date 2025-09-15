@@ -8,7 +8,8 @@
       <Button class="bg-blue-600 text-white" :disabled="!text.trim() && !attachments.length" @click="send">Send</Button>
     </div>
     <div v-if="showUpload" class="max-w-3xl mx-auto mt-2">
-      <FileUpload id="chat-upload" label="Attachments" accept="image/*,.pdf,.doc,.docx" @uploaded="onUploaded" />
+      <FileUpload id="chat-upload" label="Attachments" accept="image/*,.pdf,.doc,.docx" :max-size="5 * 1024 * 1024"
+        :max-files="3" @uploaded="onUploaded" @error="onUploadError" />
     </div>
   </div>
 </template>
@@ -26,6 +27,11 @@ const showUpload = ref(false)
 
 function onUploaded(files: { name: string; url: string }[]) {
   attachments.value = files
+}
+
+function onUploadError(message: string) {
+  console.error('Chat upload error:', message)
+  // TODO: Show toast notification for error
 }
 function send() {
   if (!text.value.trim() && !attachments.value.length) return

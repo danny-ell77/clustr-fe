@@ -102,7 +102,7 @@ const props = defineProps({
 
 const totalReports = computed(() => props.reports.length)
 const completedReports = computed(() => props.reports.filter(r => r.status === 'completed').length)
-const inProgressReports = computed(() => props.reports.filter(r => r.status === 'in-progress').length)
+const inProgressReports = computed(() => props.reports.filter(r => r.status === 'in_progress').length)
 const pendingReports = computed(() => props.reports.filter(r => r.status === 'pending').length)
 
 const reportsByType = computed(() => {

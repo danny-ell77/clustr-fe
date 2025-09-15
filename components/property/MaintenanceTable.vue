@@ -176,7 +176,7 @@ const getPriorityVariant = (priority) => {
 const getStatusVariant = (status) => {
     switch (status) {
         case 'completed': return 'default'
-        case 'in-progress': return 'secondary'
+        case 'in_progress': return 'secondary'
         case 'scheduled': return 'outline'
         case 'overdue': return 'destructive'
         default: return 'secondary'
