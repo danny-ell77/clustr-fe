@@ -27,7 +27,7 @@ The current implementations are impressive technically but fail the **"Will a pr
 ### **Available Components**
 - **UI Components**: `~/components/ui/*` - Complete shadcn/ui component library
 - **Shared Components**: `~/components/shared/*` - Reusable business components
-  - `DataTable.vue` - Focused data table with server/client/infinite modes
+  - `GenericTable.vue` - Focused data table with server/client/infinite modes
   - `DynamicSelect.vue` - Smart select component
   - `FileUpload.vue` - File handling component
   - `InfiniteLoader.vue` - Pagination component
@@ -65,7 +65,7 @@ The current implementations are impressive technically but fail the **"Will a pr
 <!-- ✅ Good: Simple, focused component -->
 <template>
   <div class="bill-list">
-    <DataTable 
+    <GenericTable 
       :data="bills" 
       :columns="columns"
       @edit="editBill"
@@ -88,14 +88,14 @@ const editBill = (bill) => navigateTo(`/bills/${bill.id}/edit`)
       <CardTitle>{{ $formatters.currency(total) }}</CardTitle>
     </CardHeader>
     <CardContent>
-      <DataTable :data="payments" :columns="paymentColumns" />
+      <GenericTable :data="payments" :columns="paymentColumns" />
     </CardContent>
   </Card>
 </template>
 
 <script setup>
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import DataTable from '~/components/shared/DataTable.vue'
+import GenericTable from '~/components/shared/GenericTable.vue'
 </script>
 ```
 
@@ -152,7 +152,7 @@ const { data, refresh } = useLazyAsyncData('bills', fetchBills)
 ### **2. Feature Creep**
 ```vue
 <!-- ❌ Bad: Everything and the kitchen sink -->
-<DataTable 
+<GenericTable 
   :enable-virtual-scrolling="true"
   :enable-real-time-updates="true"
   :enable-advanced-filtering="true"
@@ -161,7 +161,7 @@ const { data, refresh } = useLazyAsyncData('bills', fetchBills)
 />
 
 <!-- ✅ Good: What they actually need -->
-<DataTable 
+<GenericTable 
   :data="bills"
   :columns="columns"
   :enable-search="true"
@@ -214,7 +214,7 @@ Before implementing any feature, ask:
 - Mobile-first responsive design
 
 ### **Data Display**
-- Use `DataTable.vue` for tabular data
+- Use `GenericTable.vue` for tabular data
 - Leverage `$formatters` for consistent data presentation
 - Show loading states and empty states clearly
 

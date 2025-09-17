@@ -3,18 +3,9 @@
     <!-- Left Section: Forms -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white max-h-screen overflow-y-auto">
       <div class="max-w-md w-full">
-        <div class="mb-8">
+        <div class="mt-20">
           <h1 class="text-3xl font-bold text-gray-900">Welcome to ClustR!</h1>
           <p class="text-gray-600 mt-2">Let's get you set up.</p>
-        </div>
-
-        <!-- Step Indicator -->
-        <div class="flex justify-between items-center mb-8 text-sm font-medium text-gray-500">
-          <div :class="{'text-blue-600 font-semibold': currentStep === 1}">Estate Sign Up</div>
-          <Icon name="chevron-right" class="w-4 h-4 text-gray-400"/>
-          <div :class="{'text-blue-600 font-semibold': currentStep === 2}">Add Users</div>
-          <Icon name="chevron-right" class="w-4 h-4 text-gray-400" />
-          <div :class="{'text-blue-600 font-semibold': currentStep === 3}">Profile Picture</div>
         </div>
 
         <!-- Current Step Form -->
@@ -39,8 +30,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import EstateSignUpForm from '~/components/onboarding/EstateSignUpForm.vue'
+import DomainConfigForm from '~/components/onboarding/DomainConfigForm.vue'
 import AddUserForm from '~/components/onboarding/AddUserForm.vue'
-import ProfileUploadForm from '~/components/onboarding/ProfileUploadForm.vue'
 import { definePageMeta, navigateTo } from '#imports'
 import Icon from '~/components/Icon.vue'
 
@@ -53,9 +44,13 @@ const currentStep = ref(1)
 
 const components = [
   EstateSignUpForm,
+  DomainConfigForm,
   AddUserForm,
-  ProfileUploadForm
+  ResidentImport
 ]
+
+// Import the ResidentImport component
+import ResidentImport from '~/components/onboarding/ResidentImport.vue'
 
 const currentFormComponent = computed(() => {
   return components[currentStep.value - 1]

@@ -7,7 +7,7 @@ import { fs, path } from "./node-utils";
  * @param resolver The Nuxt resolver instance
  * @param extendPages The Nuxt extendPages function
  */
-export function useAddModulePages(
+export function addModulePages(
   moduleName: string,
   resolver: Resolver,
   extendPages: (cb: (pages: any[]) => void) => void

@@ -2,7 +2,8 @@ import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
   ssr: true, // Enable server-side rendering
-  modules: [// Core module must be loaded first
+  modules: [
+    // Core module must be loaded first
     "~/modules/core/module", // Tailwind CSS module
     "@nuxtjs/tailwindcss", // shadcn-vue module
     "shadcn-nuxt", // Icon module
@@ -11,7 +12,7 @@ export default defineNuxtConfig({
     "~/modules/security/module",
     "~/modules/shift/module",
     "~/modules/portal/module",
-    "~/modules/accounting/module"
+    "~/modules/accounting/module",
   ],
 
   // Module-specific configuration
@@ -38,7 +39,7 @@ export default defineNuxtConfig({
 
     // Public keys (available client-side)
     public: {
-      apiBase: process.env.API_BASE || "http://localhost:3000/api",
+      apiBase: process.env.API_BASE || "http://localhost:8000/api/v1/",
       appName: "ClustR",
     },
   },
@@ -63,7 +64,7 @@ export default defineNuxtConfig({
       path: "~/components/ui",
       pathPrefix: false,
       global: true,
-      extensions: ['.vue'],
+      extensions: [".vue"],
     },
     // Individual UI component folders
     {

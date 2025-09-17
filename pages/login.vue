@@ -110,8 +110,12 @@ async function handleLogin() {
   isLoading.value = true
   
   try {
-    const result = await login(form.value.email, form.value.password)
-    
+    const data = {
+      emailAddress: form.value.email,
+      password: form.value.password
+    }
+    const result = await login(data)
+
     if (result.success) {
       await navigateTo('/')
     } else {

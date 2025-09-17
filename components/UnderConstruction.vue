@@ -7,7 +7,7 @@
       </div>
       
       <!-- Title -->
-      <CardTitle class="text-2xl font-bold text-gray-900">{{ title }}</CardTitle>
+      <CardTitle class="text-2xl mx-auto font-bold text-gray-900">{{ title }}</CardTitle>
       
       <!-- Description -->
       <p class="text-gray-600 max-w-2xl mx-auto">{{ description }}</p>

@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const config = useRuntimeConfig();
 
-  return await $fetch(`${config.backendUrl}/auth/${path}`, {
+  return await $fetch(`${config.public.apiBase}auth/${path}/`, {
     method,
     headers: { "Content-Type": "application/json" },
     body,

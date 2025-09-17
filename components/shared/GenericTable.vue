@@ -1,7 +1,12 @@
 <template>
-    <div class="w-full">
-        <!-- Header with search, filters, and actions -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+    <BaseTable
+        :loading="loading"
+        :isEmpty="isEmpty"
+        :emptyMessage="emptyMessage"
+        :columnCount="columns.length + (showRowActions ? 1 : 0)"
+    >
+        <!-- Header -->
+        <template #header>
             <div class="flex items-center space-x-4">
                 <div class="relative" v-if="enableSearch">
                     <Input
@@ -38,168 +43,150 @@
                 </Button>
                 <slot name="custom-actions" />
             </div>
-        </div>
+        </template>
 
-        <!-- Loading overlay -->
-        <div v-if="loading && displayData.length === 0" class="relative">
-            <div class="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-10">
-                <div class="flex items-center space-x-2">
-                    <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-                    <span class="text-sm text-gray-600">Loading...</span>
+        <!-- Column Headers -->
+        <template #column-headers>
+            <TableHead 
+                v-for="column in columns" 
+                :key="column.key"
+                :class="{'text-right': column.align === 'right', 'cursor-pointer hover:bg-gray-50': column.sortable}"
+                @click="column.sortable ? onSort(column.key) : null"
+            >
+                <div class="flex items-center space-x-1">
+                    <span>{{ column.label }}</span>
+                    <Icon 
+                        v-if="column.sortable && sortKey === column.key" 
+                        :name="sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'" 
+                        class="w-4 h-4" 
+                    />
+                    <Icon 
+                        v-else-if="column.sortable" 
+                        name="chevrons-up-down" 
+                        class="w-4 h-4 opacity-30" 
+                    />
                 </div>
-            </div>
-        </div>
+            </TableHead>
+            <TableHead class="w-[100px]" v-if="showRowActions">Actions</TableHead>
+        </template>
 
-        <!-- Table content -->
-        <div class="overflow-x-auto">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead 
-                            v-for="column in columns" 
-                            :key="column.key"
-                            :class="{'text-right': column.align === 'right', 'cursor-pointer hover:bg-gray-50': column.sortable}"
-                            @click="column.sortable ? onSort(column.key) : null"
-                        >
-                            <div class="flex items-center space-x-1">
-                                <span>{{ column.label }}</span>
-                                <Icon 
-                                    v-if="column.sortable && sortKey === column.key" 
-                                    :name="sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'" 
-                                    class="w-4 h-4" 
-                                />
-                                <Icon 
-                                    v-else-if="column.sortable" 
-                                    name="chevrons-up-down" 
-                                    class="w-4 h-4 opacity-30" 
-                                />
-                            </div>
-                        </TableHead>
-                        <TableHead class="w-[100px]" v-if="showRowActions">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <TableRow 
-                        v-for="row in displayData" 
-                        :key="row[idKey]"
-                        class="hover:bg-gray-50"
-                    >
-                        <TableCell 
-                            v-for="column in columns" 
-                            :key="column.key"
-                            :class="{'text-right': column.align === 'right'}"
-                        >
-                            <div v-if="column.format">
-                                {{ column.format(row[column.key], row) }}
-                            </div>
-                            <div v-else-if="column.component">
-                                <component :is="column.component" :value="row[column.key]" :row="row" />
-                            </div>
-                            <div v-else>
-                                {{ row[column.key] }}
-                            </div>
-                        </TableCell>
-                        <TableCell v-if="showRowActions">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger as="div">
-                                    <Button variant="ghost" size="icon">
-                                        <Icon name="more-vertical" class="w-4 h-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem 
-                                        v-for="action in rowActions" 
-                                        :key="action.key"
-                                        @click="$emit(action.key, row)"
-                                        :class="action.destructive ? 'text-red-600' : ''"
-                                        :disabled="action.disabled?.(row)"
-                                    >
-                                        <Icon :name="action.icon" class="w-4 h-4 mr-2" />
-                                        {{ action.label }}
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
-                    </TableRow>
-                    
-                    <!-- Empty state -->
-                    <TableRow v-if="isEmpty">
-                        <TableCell :colspan="columns.length + (showRowActions ? 1 : 0)" class="h-24 text-center">
-                            <div class="flex flex-col items-center space-y-2">
-                                <Icon name="inbox" class="w-8 h-8 text-gray-400" />
-                                <span class="text-gray-500">{{ emptyMessage }}</span>
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                    
-                    <!-- Loading state for additional rows -->
-                    <TableRow v-if="loading && displayData.length > 0">
-                        <TableCell :colspan="columns.length + (showRowActions ? 1 : 0)" class="h-12 text-center">
-                            <div class="flex items-center justify-center space-x-2">
-                                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                                <span class="text-sm text-gray-600">Loading more...</span>
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </div>
+        <!-- Table Body -->
+        <template #table-body>
+            <TableRow 
+                v-for="row in displayData" 
+                :key="row[idKey]"
+                class="hover:bg-gray-50"
+            >
+                <TableCell 
+                    v-for="column in columns" 
+                    :key="column.key"
+                    :class="{'text-right': column.align === 'right'}"
+                >
+                    <div v-if="column.format">
+                        {{ column.format(row[column.key], row) }}
+                    </div>
+                    <div v-else-if="column.component">
+                        <component :is="column.component" :value="row[column.key]" :row="row" />
+                    </div>
+                    <div v-else>
+                        {{ row[column.key] }}
+                    </div>
+                </TableCell>
+                <TableCell v-if="showRowActions">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as="div">
+                            <Button variant="ghost" size="icon">
+                                <Icon name="more-vertical" class="w-4 h-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem 
+                                v-for="action in rowActions" 
+                                :key="action.key"
+                                @click="$emit(action.key, row)"
+                                :class="action.destructive ? 'text-red-600' : ''"
+                                :disabled="action.disabled?.(row)"
+                            >
+                                <Icon :name="action.icon" class="w-4 h-4 mr-2" />
+                                {{ action.label }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </TableCell>
+            </TableRow>
+            
+            <!-- Loading state for additional rows -->
+            <TableRow v-if="loading && displayData.length > 0">
+                <TableCell :colspan="columns.length + (showRowActions ? 1 : 0)" class="h-12 text-center">
+                    <div class="flex items-center justify-center space-x-2">
+                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <span class="text-sm text-gray-600">Loading more...</span>
+                    </div>
+                </TableCell>
+            </TableRow>
+        </template>
 
-        <!-- Pagination or Load More -->
-        <div v-if="mode === 'pagination'" class="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-            <div class="text-sm text-gray-500">
-                <span v-if="totalCount > 0">
-                    Showing {{ startIndex + 1 }} to {{ endIndex }} of {{ totalCount }} entries
-                </span>
-                <span v-else>No entries found</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <Button 
-                    variant="outline" 
-                    size="sm"
-                    :disabled="currentPage === 1 || loading"
-                    @click="goToPage(currentPage - 1)"
+        <!-- Footer with Pagination -->
+        <template #footer-content>
+            <template v-if="mode === 'pagination'">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-500">
+                        <span v-if="totalCount > 0">
+                            Showing {{ startIndex + 1 }} to {{ endIndex }} of {{ totalCount }} entries
+                        </span>
+                        <span v-else>No entries found</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <Button 
+                            variant="outline" 
+                            size="sm"
+                            :disabled="currentPage === 1 || loading"
+                            @click="goToPage(currentPage - 1)"
+                        >
+                            Previous
+                        </Button>
+                        <Button 
+                            v-for="page in pageNumbers" 
+                            :key="page"
+                            variant="outline"
+                            size="sm"
+                            :class="{'bg-blue-50 text-blue-600': currentPage === page}"
+                            @click="goToPage(page)"
+                            :disabled="loading"
+                        >
+                            {{ page }}
+                        </Button>
+                        <Button 
+                            variant="outline" 
+                            size="sm"
+                            :disabled="currentPage === totalPages || loading || !hasNextPage"
+                            @click="goToPage(currentPage + 1)"
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </div>
+            </template>
+            
+            <!-- Infinite scroll trigger -->
+            <template v-if="mode === 'infinite' && hasNextPage && !loading">
+                <div 
+                    ref="infiniteScrollTrigger"
+                    class="flex items-center justify-center"
                 >
-                    Previous
-                </Button>
-                <Button 
-                    v-for="page in pageNumbers" 
-                    :key="page"
-                    variant="outline"
-                    size="sm"
-                    :class="{'bg-blue-50 text-blue-600': currentPage === page}"
-                    @click="goToPage(page)"
-                    :disabled="loading"
-                >
-                    {{ page }}
-                </Button>
-                <Button 
-                    variant="outline" 
-                    size="sm"
-                    :disabled="currentPage === totalPages || loading || !hasNextPage"
-                    @click="goToPage(currentPage + 1)"
-                >
-                    Next
-                </Button>
-            </div>
-        </div>
-        
-        <!-- Infinite scroll trigger -->
-        <div 
-            v-if="mode === 'infinite' && hasNextPage && !loading"
-            ref="infiniteScrollTrigger"
-            class="flex items-center justify-center py-4 border-t border-gray-200"
-        >
-            <Button variant="outline" @click="loadMore" :disabled="loading">
-                <Icon name="refresh-cw" class="w-4 h-4 mr-2" />
-                Load More
-            </Button>
-        </div>
-    </div>
+                    <Button variant="outline" @click="loadMore" :disabled="loading">
+                        <Icon name="refresh-cw" class="w-4 h-4 mr-2" />
+                        Load More
+                    </Button>
+                </div>
+            </template>
+        </template>
+    </BaseTable>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import BaseTable from './BaseTable.vue'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { 
@@ -224,6 +211,8 @@ import {
     DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import Icon from '~/components/Icon.vue'
+import {  type PaginatedResponse } from '~/composables/usePagination'
+
 
 interface Column {
     key: string
@@ -235,17 +224,17 @@ interface Column {
 }
 
 interface RowAction {
-    key: string
+    key: 'export' | 'filter' | 'view' | 'edit' | 'delete' | 'sort' | 'search' | 'page-change'
     label: string
     icon: string
     destructive?: boolean
     disabled?: (row: any) => boolean
 }
 
-interface DataTableProps {
+interface GenericTableProps {
     // Data source
     data?: any[]
-    fetchFn?: Function
+    fetchFn?: (params: any) => Promise<PaginatedResponse<any>>
     
     // Table configuration
     columns: Column[]
@@ -276,7 +265,7 @@ interface DataTableProps {
     initialFilters?: Record<string, any>
 }
 
-const props = withDefaults(defineProps<DataTableProps>(), {
+const props = withDefaults(defineProps<GenericTableProps>(), {
     data: () => [],
     idKey: 'id',
     mode: 'client',
@@ -300,7 +289,7 @@ const props = withDefaults(defineProps<DataTableProps>(), {
 })
 
 // Dynamic emits
-const emit = defineEmits(['export', 'filter', 'view', 'edit', 'delete', 'sort', 'search', 'page-change'])
+const emit = defineEmits()
 
 // Reactive state
 const searchQuery = ref('')

@@ -1,21 +1,10 @@
 <template>
   <div class="p-6 space-y-6">
-    <!-- Tab Navigation and Add Button - TOP LEVEL -->
+    <!-- Header with Add Button -->
     <div class="flex items-center justify-between">
-      <div class="flex space-x-1 bg-gray-100 rounded-lg p-1">
-        <button
-          v-for="tab in tabs"
-          :key="tab.key"
-          @click="activeTab = tab.key"
-          :class="[
-            'px-4 py-2 text-sm font-medium rounded-md transition-colors',
-            activeTab === tab.key
-              ? 'bg-blue-600 text-white shadow-sm'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-          ]"
-        >
-          {{ tab.label }}
-        </button>
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Payments</h1>
+        <p class="text-gray-600 mt-1">Track incoming and outgoing payments</p>
       </div>
       
       <Button @click="navigateToForm" class="bg-blue-600 hover:bg-blue-700">
@@ -24,125 +13,150 @@
       </Button>
     </div>
 
-    <!-- Statistics Cards - Different for each tab -->
-    <!-- Income & Expenses Tabs: Total Revenue, Total Expenses, Donut Chart -->
-    <div v-if="activeTab === 'income' || activeTab === 'expenses'" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Total Revenue Card -->
-      <Card class="bg-gradient-to-br from-blue-50 to-blue-100">
-        <CardContent class="p-6">
-          <div class="flex justify-between items-start">
-            <div>
-              <h3 class="text-sm font-medium text-blue-700 mb-2">Total Revenue</h3>
-              <p class="text-2xl font-bold text-blue-900">{{ formatCurrency(totalRevenue) }}</p>
-              <p class="text-xs text-blue-600 mt-1">{{ currentMonth }}</p>
-            </div>
-            <div class="p-2">
-              <Icon name="trending-up" class="w-6 h-6 text-blue-600" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <!-- Payment Tabs -->
+    <div class="bg-white rounded-lg shadow">
+      <DynamicTabs v-model="activeTab" :tabs="tabs">
+        <!-- Income Tab -->
+        <template #income>
+          <div class="p-6 space-y-6">
+            <!-- Income Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Total Revenue Card -->
+              <Card class="bg-gradient-to-br from-blue-50 to-blue-100">
+                <CardContent class="p-6">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="text-sm font-medium text-blue-700 mb-2">Total Revenue</h3>
+                      <p class="text-2xl font-bold text-blue-900">{{ formatCurrency(totalRevenue) }}</p>
+                      <p class="text-xs text-blue-600 mt-1">{{ currentMonth }}</p>
+                    </div>
+                    <div class="p-2">
+                      <Icon name="trending-up" class="w-6 h-6 text-blue-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-      <!-- Total Expenses Card -->
-      <Card class="bg-gradient-to-br from-yellow-50 to-yellow-100">
-        <CardContent class="p-6">
-          <div class="flex justify-between items-start">
-            <div>
-              <h3 class="text-sm font-medium text-yellow-700 mb-2">Total Expenses</h3>
-              <p class="text-2xl font-bold text-yellow-900">{{ formatCurrency(totalExpenses) }}</p>
-              <p class="text-xs text-yellow-600 mt-1">{{ currentMonth }}</p>
-            </div>
-            <div class="p-2">
-              <Icon name="trending-down" class="w-6 h-6 text-yellow-600" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+              <!-- Total Expenses Card -->
+              <Card class="bg-gradient-to-br from-yellow-50 to-yellow-100">
+                <CardContent class="p-6">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="text-sm font-medium text-yellow-700 mb-2">Total Expenses</h3>
+                      <p class="text-2xl font-bold text-yellow-900">{{ formatCurrency(totalExpenses) }}</p>
+                      <p class="text-xs text-yellow-600 mt-1">{{ currentMonth }}</p>
+                    </div>
+                    <div class="p-2">
+                      <Icon name="trending-down" class="w-6 h-6 text-yellow-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-      <!-- Revenue/Expenses Donut Chart -->
-      <Card>
-        <CardContent class="p-6">
-          <h3 class="text-sm font-medium text-gray-700 mb-4">Revenue vs Expenses</h3>
-          <div class="flex items-center justify-center">
-            <div class="relative w-32 h-32">
-              <!-- Simplified donut chart representation -->
-              <div class="w-32 h-32 rounded-full border-8 border-blue-200" style="border-top-color: #3B82F6; border-right-color: #3B82F6; border-bottom-color: #FCD34D; border-left-color: #FCD34D; transform: rotate(45deg);"></div>
-              <div class="absolute inset-0 flex items-center justify-center">
-                <div class="text-center transform -rotate-45">
-                  <div class="text-xs text-gray-600">Revenue</div>
-                  <div class="text-sm font-bold text-blue-600">{{ revenuePercentage }}%</div>
-                </div>
-              </div>
+              <!-- Revenue/Expenses Donut Chart -->
+              <Card>
+                <CardContent class="p-6">
+                  <h3 class="text-sm font-medium text-gray-700 mb-4">Revenue vs Expenses</h3>
+                  <div class="flex items-center justify-center">
+                    <div class="relative w-32 h-32">
+                      <!-- Simplified donut chart representation -->
+                      <div class="w-32 h-32 rounded-full border-8 border-blue-200" style="border-top-color: #3B82F6; border-right-color: #3B82F6; border-bottom-color: #FCD34D; border-left-color: #FCD34D; transform: rotate(45deg);"></div>
+                      <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="text-center transform -rotate-45">
+                          <div class="text-xs text-gray-600">Revenue</div>
+                          <div class="text-sm font-bold text-blue-600">{{ revenuePercentage }}%</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-4 space-y-2">
+                    <div class="flex items-center text-xs">
+                      <div class="w-3 h-3 bg-blue-500 rounded mr-2"></div>
+                      <span>Revenue {{ revenuePercentage }}%</span>
+                    </div>
+                    <div class="flex items-center text-xs">
+                      <div class="w-3 h-3 bg-yellow-400 rounded mr-2"></div>
+                      <span>Expenses {{ expensesPercentage }}%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
-          <div class="mt-4 space-y-2">
-            <div class="flex items-center text-xs">
-              <div class="w-3 h-3 bg-blue-500 rounded mr-2"></div>
-              <span>Revenue {{ revenuePercentage }}%</span>
-            </div>
-            <div class="flex items-center text-xs">
-              <div class="w-3 h-3 bg-yellow-400 rounded mr-2"></div>
-              <span>Expenses {{ expensesPercentage }}%</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        </template>
 
-    <!-- Invoice Tab: Total Paid, Total Overdue, Total Draft -->
-    <div v-if="activeTab === 'invoice'" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Total Paid -->
-      <Card class="bg-gradient-to-br from-blue-50 to-blue-100">
-        <CardContent class="p-6">
-          <div class="flex justify-between items-start">
-            <div>
-              <h3 class="text-sm font-medium text-blue-700 mb-2">Total paid</h3>
-              <p class="text-2xl font-bold text-blue-900">{{ formatCurrency(invoiceStats.totalPaid) }}</p>
-              <p class="text-xs text-blue-600 mt-1">{{ invoiceStats.paidCount }} invoices</p>
-            </div>
-            <div class="p-2">
-              <Icon name="check-circle" class="w-6 h-6 text-blue-600" />
+        <!-- Expenses Tab -->
+        <template #expenses>
+          <div class="p-6">
+            <!-- Expenses content would go here -->
+            <div class="text-gray-500 text-center py-8">
+              <Icon name="receipt" class="w-12 h-12 mx-auto mb-4 text-gray-400" />
+              <p>Expenses tracking content</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </template>
 
-      <!-- Total Overdue -->
-      <Card class="bg-gradient-to-br from-red-50 to-red-100">
-        <CardContent class="p-6">
-          <div class="flex justify-between items-start">
-            <div>
-              <h3 class="text-sm font-medium text-red-700 mb-2">Total Overdue</h3>
-              <p class="text-2xl font-bold text-red-900">{{ formatCurrency(invoiceStats.totalOverdue) }}</p>
-              <p class="text-xs text-red-600 mt-1">{{ invoiceStats.overdueCount }} invoices</p>
-            </div>
-            <div class="p-2">
-              <Icon name="alert-triangle" class="w-6 h-6 text-red-600" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        <!-- Invoice Tab -->
+        <template #invoice>
+          <div class="p-6 space-y-6">
+            <!-- Invoice Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Total Paid -->
+              <Card class="bg-gradient-to-br from-blue-50 to-blue-100">
+                <CardContent class="p-6">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="text-sm font-medium text-blue-700 mb-2">Total paid</h3>
+                      <p class="text-2xl font-bold text-blue-900">{{ formatCurrency(invoiceStats.totalPaid) }}</p>
+                      <p class="text-xs text-blue-600 mt-1">{{ invoiceStats.paidCount }} invoices</p>
+                    </div>
+                    <div class="p-2">
+                      <Icon name="check-circle" class="w-6 h-6 text-blue-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-      <!-- Total Draft -->
-      <Card class="bg-gradient-to-br from-green-50 to-green-100">
-        <CardContent class="p-6">
-          <div class="flex justify-between items-start">
-            <div>
-              <h3 class="text-sm font-medium text-green-700 mb-2">Total Draft</h3>
-              <p class="text-2xl font-bold text-green-900">{{ formatCurrency(invoiceStats.totalDraft) }}</p>
-              <p class="text-xs text-green-600 mt-1">{{ invoiceStats.draftCount }} invoices</p>
-            </div>
-            <div class="p-2">
-              <Icon name="edit" class="w-6 h-6 text-green-600" />
+              <!-- Total Overdue -->
+              <Card class="bg-gradient-to-br from-red-50 to-red-100">
+                <CardContent class="p-6">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="text-sm font-medium text-red-700 mb-2">Total Overdue</h3>
+                      <p class="text-2xl font-bold text-red-900">{{ formatCurrency(invoiceStats.totalOverdue) }}</p>
+                      <p class="text-xs text-red-600 mt-1">{{ invoiceStats.overdueCount }} invoices</p>
+                    </div>
+                    <div class="p-2">
+                      <Icon name="alert-triangle" class="w-6 h-6 text-red-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <!-- Total Draft -->
+              <Card class="bg-gradient-to-br from-green-50 to-green-100">
+                <CardContent class="p-6">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="text-sm font-medium text-green-700 mb-2">Total Draft</h3>
+                      <p class="text-2xl font-bold text-green-900">{{ formatCurrency(invoiceStats.totalDraft) }}</p>
+                      <p class="text-xs text-green-600 mt-1">{{ invoiceStats.draftCount }} invoices</p>
+                    </div>
+                    <div class="p-2">
+                      <Icon name="edit" class="w-6 h-6 text-green-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </template>
+      </DynamicTabs>
     </div>
 
     <!-- Data Table -->
     <Card>
-      <DataTable
+      <GenericTable
         :data="currentTabData"
         :columns="currentTabColumns"
         :row-actions="tableActions"
@@ -177,33 +191,25 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { definePageMeta } from '#imports'
-import { useFormatters } from '~/composables/useFormatters'
-import { useToast } from '~/composables/useToast'
-import DataTable from '~/components/shared/DataTable.vue'
-import IncomeForm from '~/components/forms/IncomeForm.vue'
-import ExpenseForm from '~/components/forms/ExpenseForm.vue'
-import InvoiceForm from '~/components/forms/InvoiceForm.vue'
-import Icon from '~/components/Icon.vue'
-import { Button } from '~/components/ui/button'
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from '~/components/ui/card'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '~/components/ui/dialog'
 
-definePageMeta({
-  title: 'Payments',
-  description: 'Track incoming and outgoing payments'
+// Mock composables for this example
+const useFormatters = () => ({
+  formatCurrency: (value) => new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN'
+  }).format(value),
+  formatDate: (value) => new Date(value).toLocaleDateString(),
+  formatDateLong: (value) => new Date(value).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+})
+
+const useToast = () => ({
+  showToast: (message, type = 'info') => {
+    console.log(`Toast: ${message} (${type})`)
+  }
 })
 
 const { formatCurrency, formatDate, formatDateLong } = useFormatters()
@@ -212,9 +218,9 @@ const { showToast } = useToast()
 // Tab management
 const activeTab = ref('income')
 const tabs = [
-  { key: 'income', label: 'Income' },
-  { key: 'expenses', label: 'Expenses' },
-  { key: 'invoice', label: 'Invoice' }
+  { name: 'Income', value: 'income' },
+  { name: 'Expenses', value: 'expenses' },
+  { name: 'Invoice', value: 'invoice' }
 ]
 
 // Form modal states

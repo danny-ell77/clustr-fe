@@ -7,7 +7,7 @@ interface PaginationOptions {
   infiniteScroll?: boolean;
 }
 
-interface PaginatedResponse<T> {
+export interface PaginatedResponse<T> {
   results: T[];
   count: number;
   next: string | null;

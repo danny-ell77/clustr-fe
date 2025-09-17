@@ -3,11 +3,6 @@
 
 import { computed, readonly } from "vue";
 
-// Enhanced Permission System - Role-based Access Control
-// Aligned with Django backend permissions structure
-
-import { computed, readonly } from "vue";
-
 // Permission constants matching Django backend
 export const PERMISSIONS = {
   // Access Control Permissions
@@ -53,6 +48,12 @@ export const PERMISSIONS = {
     MANAGE_OPTIONS: "ManageOptions",
     VIEW_RESPONSES: "ViewResponses",
     MANAGE_RESPONSES: "ManageResponses",
+    VIEW_CHAT: "ViewChat",
+    MANAGE_CHAT: "ManageChat",
+    MODERATE_CHAT: "ModerateChat",
+    VIEW_MEETING: "ViewMeeting",
+    MANAGE_MEETING: "ManageMeeting",
+    RECORD_MEETING: "RecordMeeting",
   },
 
   // Documentation Permissions
@@ -141,7 +142,16 @@ export const PERMISSIONS = {
 } as const;
 
 // Role definitions matching Django backend
-export const ROLES = {
+export type Role = Record<
+  string,
+  {
+    name: string;
+    description: string;
+    hierarchy: number;
+    permissions: string[] | string;
+  }
+>;
+export const ROLES: Role = {
   // Primary Admin Role (matches PRIMARY_ROLE_NAME from Django)
   ADMIN: {
     name: "Admin",
@@ -209,57 +219,7 @@ export const ROLES = {
     ],
   },
 
-  RESIDENT: {
-    name: "Resident",
-    description: "Basic resident role with limited permissions",
-    hierarchy: 6,
-    permissions: [
-      // Access control (limited)
-      PERMISSIONS.ACCESS_CONTROL.VIEW_INVITATION,
-      PERMISSIONS.ACCESS_CONTROL.MANAGE_INVITATION,
-      PERMISSIONS.ACCESS_CONTROL.VIEW_VISIT_REQUEST,
-      PERMISSIONS.ACCESS_CONTROL.MANAGE_VISIT_REQUEST,
-      PERMISSIONS.ACCESS_CONTROL.VIEW_GUEST,
-      PERMISSIONS.ACCESS_CONTROL.VIEW_EVENT,
-
-      // Communications (view only)
-      PERMISSIONS.COMMUNICATIONS.VIEW_ANNOUNCEMENT,
-      PERMISSIONS.COMMUNICATIONS.VIEW_POLL,
-      PERMISSIONS.COMMUNICATIONS.VIEW_OPTIONS,
-      PERMISSIONS.COMMUNICATIONS.VIEW_RESPONSES,
-      PERMISSIONS.COMMUNICATIONS.VIEW_COMPLAINT,
-      PERMISSIONS.COMMUNICATIONS.MANAGE_COMPLAINT,
-
-      // Documentation
-      PERMISSIONS.DOCUMENTATION.VIEW_DOCUMENTS,
-
-      // Marketplace
-      PERMISSIONS.MARKETPLACE.VIEW_POST,
-      PERMISSIONS.MARKETPLACE.VIEW_SELLER,
-      PERMISSIONS.MARKETPLACE.VIEW_TAGS,
-      PERMISSIONS.MARKETPLACE.VIEW_REVIEW,
-
-      // Notifications
-      PERMISSIONS.NOTIFICATIONS.VIEW_NOTIFICATION,
-      PERMISSIONS.NOTIFICATIONS.RECEIVE_NOTIFICATIONS,
-
-      // Payments (limited)
-      PERMISSIONS.PAYMENTS.VIEW_WALLET,
-      PERMISSIONS.PAYMENTS.VIEW_BILL,
-      PERMISSIONS.PAYMENTS.PAY_BILLS,
-      PERMISSIONS.PAYMENTS.VIEW_TRANSACTION,
-
-      // Servicemen
-      PERMISSIONS.SERVICEMEN.VIEW_HANDY_MEN,
-
-      // Staff Tracker
-      PERMISSIONS.STAFF_TRACKER.VIEW_DOMESTIC_STAFF,
-      PERMISSIONS.STAFF_TRACKER.MANAGE_DOMESTIC_STAFF,
-
-      // Profile
-      ...Object.values(PERMISSIONS.PROFILE),
-    ],
-  },
+  // NOTE: No need for Resident roles here since we are on the managemntent side
 } as const;
 
 export interface PermissionOptions {
@@ -268,13 +228,7 @@ export interface PermissionOptions {
 }
 
 export const usePermissions = () => {
-  const {
-    user,
-    permissions: userPermissions,
-    isAdmin,
-    hasPermission: baseHasPermission,
-    hasAnyPermission: baseHasAnyPermission,
-  } = useAuth();
+  const { user, permissions: userPermissions, isAdmin } = useAuth();
 
   // Enhanced permission checking with exact match and role-based checks
   const hasPermission = (
@@ -289,11 +243,6 @@ export const usePermissions = () => {
     }
 
     // Direct permission check (exact match)
-    if (baseHasPermission(permission)) {
-      return true;
-    }
-
-    // Check if user has the exact permission string
     if (userPermissions.includes(permission)) {
       return true;
     }

@@ -58,7 +58,7 @@ export interface DynamicTabsEmits {
 }
 
 const props = withDefaults(defineProps<DynamicTabsProps>(), {
-  iconClass: 'w-4 h-4 mr-2'
+  iconClass: 'w-4 h-4 mr-2 inline'
 })
 
 const emit = defineEmits<DynamicTabsEmits>()
@@ -79,11 +79,13 @@ const normalizedTabs = computed<TabOption[]>(() => {
 // Internal v-model handling with tab change event
 const internalValue = computed({
   get: () => props.modelValue,
-  set: (value) => {
-    emit('update:modelValue', value)
-    const tab = normalizedTabs.value.find(t => t.value === value)
-    if (tab) {
-      emit('tab-change', value, tab)
+  set: (value: string | undefined) => {
+    if (value) {
+      emit('update:modelValue', value)
+      const tab = normalizedTabs.value.find(t => t.value === value)
+      if (tab) {
+        emit('tab-change', value, tab)
+      }
     }
   }
 })

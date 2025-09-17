@@ -19,8 +19,8 @@
       </div>
     </div>
 
-    <DataTable 
-      :data="filteredTransactions"
+    <GenericTable 
+      :data="[]"
       :columns="transactionColumns"
       search-placeholder="Search transactions..."
       empty-message="No transactions found"
@@ -35,7 +35,7 @@
 import { ref, computed, h } from 'vue'
 import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
-import DataTable from '~/components/shared/DataTable.vue'
+import GenericTable from '~/components/shared/GenericTable.vue'
 import { 
   formatTransactionType,
   formatWalletBalance,

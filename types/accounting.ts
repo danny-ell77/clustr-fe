@@ -64,24 +64,11 @@ interface BaseModel {
   lastModifiedAt?: string;
 }
 
-export interface UtilityBill extends BaseModel {
-  billNumber?: string;
-  title: string;
-  description?: string;
-  type: TypeEnum;
-  category?: CategoryEnum;
-  amount: string;
-  currency?: string;
+export interface UtilityBill extends Bill {
   utilityProvider?: string;
   utilityProviderName?: string;
   customerId?: string;
   isAutomated?: boolean;
-  dueDate: string;
-  paidAmount?: string;
-  remainingAmount?: string;
-  paidAt?: string;
-  isOverdue?: boolean;
-  metadata?: Record<string, any>;
 }
 
 export interface UtilityProvider extends BaseModel {
@@ -97,16 +84,9 @@ export interface UtilityProvider extends BaseModel {
   metadata?: Record<string, any>;
 }
 
-export interface RecurringUtilityPayment extends BaseModel {
-  title: string;
-  description?: string;
-  amount: string;
-  currency?: string;
+export interface RecurringUtilityPayment extends UtilityBill {
   frequency: FrequencyEnum;
   status?: StatusEnum;
-  utilityProvider?: string;
-  utilityProviderName?: string;
-  customerId?: string;
   paymentSource?: PaymentSourceEnum;
   spendingLimit?: string;
   startDate: string;
@@ -119,7 +99,6 @@ export interface RecurringUtilityPayment extends BaseModel {
   nextPaymentInDays?: string;
   canBePaused?: string;
   canBeResumed?: string;
-  metadata?: Record<string, any>;
 }
 
 export interface Bill extends BaseModel {

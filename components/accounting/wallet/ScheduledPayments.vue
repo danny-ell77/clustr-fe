@@ -104,15 +104,5 @@ const confirmCancel = () => {
 </script>
 
 <style scoped>
-.btn-primary {
-  @apply px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90;
-}
 
-.btn-secondary {
-  @apply px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80;
-}
-
-.btn-destructive {
-  @apply px-4 py-2 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90;
-}
 </style>

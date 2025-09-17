@@ -1,9 +1,5 @@
-import {
-  defineNuxtModule,
-  createResolver,
-  extendPages,
-} from "@nuxt/kit";
-import { useAddModulePages } from "../../lib/useAddModulePages";
+import { defineNuxtModule, createResolver, extendPages } from "@nuxt/kit";
+import { addModulePages } from "../../lib/addModulePages";
 
 export interface ModuleOptions {
   features: string[];
@@ -22,7 +18,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url);
-    useAddModulePages("portal", resolver, extendPages)
+    addModulePages("portal", resolver, extendPages);
 
     // Provide module options to runtime config
     nuxt.options.runtimeConfig.public.portal = {

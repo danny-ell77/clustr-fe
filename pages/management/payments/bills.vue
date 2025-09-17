@@ -1,4 +1,4 @@
-<!-- Example Management Bills Page - Testing DataTable Integration -->
+<!-- Example Management Bills Page - Testing GenericTable Integration -->
 <template>
   <div class="bills-management">
     <!-- Page Header -->
@@ -130,7 +130,7 @@
 
     <!-- Data Table -->
     <Card>
-      <DataTable
+      <GenericTable
         :data="Array.isArray(billsData) ? billsData : (billsData as any)?.results || []"
         :columns="tableColumns"
         :row-actions="tableActions"
@@ -169,7 +169,7 @@
             Delete Selected ({{ selectedBills.length }})
           </Button>
         </template>
-      </DataTable>
+      </GenericTable>
     </Card>
 
     <!-- Create Bill Modal -->
@@ -218,7 +218,7 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import DataTable from '~/components/shared/DataTable.vue'
+import GenericTable from '~/components/shared/GenericTable.vue'
 import Icon from '~/components/Icon.vue'
 
 // Import composables

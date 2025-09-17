@@ -18,11 +18,11 @@
         </div>
       </CardHeader>
       <CardContent>
-        <ScheduledPayments
+        <!-- <ScheduledPayments
           :payments="scheduledPayments"
           @edit="$emit('editScheduledPayment', $event)"
           @cancel="$emit('cancelScheduledPayment', $event)"
-        />
+        /> -->
       </CardContent>
     </Card>
 

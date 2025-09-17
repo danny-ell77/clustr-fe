@@ -71,7 +71,7 @@ clustr-fe/
 │   └── cluster.ts               # Cluster/tenant types
 └── components/
     ├── shared/
-    │   ├── DataTable.vue        # Universal data table
+    │   ├── GenericTable.vue        # Universal data table
     │   ├── InfiniteLoader.vue   # Infinite scroll component
     │   └── FileUpload.vue       # File upload component
     └── ui/                      # shadcn/ui components
@@ -1110,7 +1110,7 @@ export const useEmergency = () => {
     
     <InfiniteLoader :fetch-fn="fetchBills" :page-size="20">
       <template #default="{ items, loading }">
-        <DataTable 
+        <GenericTable 
           :data="items" 
           :columns="columns" 
           :actions="tableActions"
@@ -1443,7 +1443,7 @@ export interface ExitRequest {
 - **Loading states** - for all async operations
 
 ### File Naming Conventions
-- **Components**: PascalCase (e.g., `DataTable.vue`, `PaymentForm.vue`)
+- **Components**: PascalCase (e.g., `GenericTable.vue`, `PaymentForm.vue`)
 - **Composables**: camelCase with "use" prefix (e.g., `usePayments.ts`, `useMaintenance.ts`)
 - **Pages**: kebab-case (e.g., `scheduled-payments.vue`, `user-management.vue`)
 - **Types**: PascalCase interfaces (e.g., `interface Bill {}`, `interface User {}`)
@@ -1523,11 +1523,11 @@ interface Bill {
   - [ ] Reporting system
 
 ### Data Management
-- [ ] Server-side data fetching strategy
-- [ ] Client-side caching with `useLazyAsyncData`
-- [ ] Infinite loading implementation
-- [ ] Data filtering and search
-- [ ] Real-time updates where needed
+- [x] Server-side data fetching strategy
+- [x] Client-side caching with `useLazyAsyncData`
+- [x] Infinite loading implementation
+- [x] Data filtering and search
+- [x] Real-time updates where needed
 
 ### UI/UX Polish
 - [ ] Responsive design for mobile/tablet
@@ -1543,8 +1543,8 @@ This architecture provides a **management-focused** foundation for the ClustR fr
 ## 🚧 PENDING TASKS - Implementation Session September 13, 2025
 
 ### Immediate Next Steps
-- [ ] **Complete DataTable Integration**
-  - [ ] Refactor existing `components/shared/DataTable.vue` to integrate with `usePagination` composable
+- [ ] **Complete GenericTable Integration**
+  - [ ] Refactor existing `components/shared/GenericTable.vue` to integrate with `usePagination` composable
   - [ ] Support both server-side and client-side pagination modes
   - [ ] Add infinite scroll mode support
   - [ ] Maintain existing component API for backwards compatibility

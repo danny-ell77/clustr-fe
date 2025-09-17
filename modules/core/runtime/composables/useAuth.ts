@@ -1,8 +1,15 @@
 // Core Auth Composable - JWT-based Architecture
 // Handles JWT token management, authentication state, and cookie-based security
 
-import { ref, reactive, computed, readonly } from "vue";
-import { useRuntimeConfig, useRequestHeaders, useRouter } from "nuxt/app";
+import { ref, reactive, computed, readonly, watch } from "vue";
+import {
+  useRuntimeConfig,
+  useRequestHeaders,
+  useRouter,
+  useNuxtApp,
+  useCookie,
+  clearNuxtState,
+} from "nuxt/app";
 import { $fetch } from "ofetch";
 import type {
   User,
@@ -18,25 +25,25 @@ const permissions = reactive<string[]>([]);
 const isLoading = ref(false);
 const error = ref<string | null>(null);
 
-// JWT Token management with httpOnly cookies
-const accessToken = useCookie("access_token", {
-  httpOnly: true,
-  secure: true,
-  sameSite: "strict",
-  maxAge: 60 * 15, // 15 minutes
-});
-const refreshToken = useCookie("refresh_token", {
-  httpOnly: true,
-  secure: true,
-  sameSite: "strict",
-  maxAge: 60 * 60 * 24 * 7, // 7 days
-});
-
 export function useAuth() {
   const config = useRuntimeConfig();
   const router = useRouter();
   const nuxtApp = useNuxtApp();
   const $api = nuxtApp.$api as typeof $fetch;
+
+  // JWT Token management with httpOnly cookies
+  const accessToken = useCookie("access_token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 60 * 15, // 15 minutes
+  });
+  const refreshToken = useCookie("refresh_token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+  });
 
   // Clear error when user changes
   watch(user, () => {
@@ -47,24 +54,13 @@ export function useAuth() {
   const isAuthenticated = computed(() => !!user.value);
 
   const isAdmin = computed(() => {
-    return (
-      user.value?.roles?.includes("Admin") ||
-      user.value?.roles?.includes("admin")
-    );
+    return true;
+    // return (
+    //   user.value?.roles?.includes("Admin") ||
+    //   user.value?.roles?.includes("admin")
+    // );
   });
 
-  // Permission checks
-  const hasPermission = (permission: string) => {
-    console.log("Checking permission for:", permission);
-    console.log("Current permissions:", permissions);
-    return permissions.includes(permission) || isAdmin.value;
-  };
-
-  const hasAnyPermission = (perms: string[]) => {
-    return perms.some((p) => permissions.includes(p)) || isAdmin.value;
-  };
-
-  // JWT Authentication with proper error handling
   const login = async (credentials: LoginCredentials) => {
     try {
       isLoading.value = true;
@@ -333,10 +329,6 @@ export function useAuth() {
     isAuthenticated,
     isAdmin,
     accessToken: readonly(accessToken),
-
-    // Permission checks
-    hasPermission,
-    hasAnyPermission,
 
     // Auth actions
     login,

@@ -8,8 +8,8 @@
       <Button class="bg-blue-600 text-white" :disabled="!text.trim() && !attachments.length" @click="send">Send</Button>
     </div>
     <div v-if="showUpload" class="max-w-3xl mx-auto mt-2">
-      <FileUpload id="chat-upload" label="Attachments" accept="image/*,.pdf,.doc,.docx" :max-size="5 * 1024 * 1024"
-        :max-files="3" @uploaded="onUploaded" @error="onUploadError" />
+      <!-- <FileUpload id="chat-upload" label="Attachments" accept="image/*,.pdf,.doc,.docx" :max-size="5 * 1024 * 1024"
+        :max-files="3" @uploaded="onUploaded" @error="onUploadError" /> -->
     </div>
   </div>
 </template>
@@ -17,7 +17,7 @@
 import { ref } from 'vue'
 import { Button } from '~/components/ui/button'
 import Icon from '~/components/Icon.vue'
-import FileUpload from '~/components/shared/FileUpload.vue'
+// import FileUpload from '~/components/shared/FileUpload.vue'
 import { Textarea } from '~/components/ui/textarea'
 
 const emit = defineEmits<{ (e: 'send', payload: { message: string; attachments: { name: string; url: string }[] }): void }>()

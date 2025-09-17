@@ -8,176 +8,167 @@
 
         <!-- Settings Tabs -->
         <div class="bg-white rounded-lg shadow">
-            <div class="border-b border-gray-200">
-                <nav class="flex space-x-8 px-6" aria-label="Tabs">
-                    <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id"
-                        class="py-4 px-1 border-b-2 font-medium text-sm" :class="activeTab === tab.id
-                            ? 'border-blue-500 text-blue-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'">
-                        <Icon :name="tab.icon" class="w-4 h-4 mr-2 inline" />
-                        {{ tab.label }}
-                    </button>
-                </nav>
+    <DynamicTabs v-model="activeTab" :tabs="tabs">
+      <!-- General Settings -->
+      <template #general>
+        <div class="space-y-6">
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">General Settings</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label for="orgName">Organization Name</Label>
+                <Input id="orgName" v-model="settings.organizationName" />
+              </div>
+              <div>
+                <Label for="timezone">Timezone</Label>
+                <DynamicSelect 
+                  v-model="settings.timezone"
+                  :options="timezoneOptions"
+                  placeholder="Select timezone"
+                  id="timezone"
+                />
+              </div>
+              <div>
+                <Label for="language">Language</Label>
+                <DynamicSelect 
+                  v-model="settings.language"
+                  :options="languageOptions"
+                  placeholder="Select language"
+                  id="language"
+                />
+              </div>
+              <div>
+                <Label for="dateFormat">Date Format</Label>
+                <DynamicSelect 
+                  v-model="settings.dateFormat"
+                  :options="dateFormatOptions"
+                  placeholder="Select date format"
+                  id="dateFormat"
+                />
+              </div>
             </div>
-
-            <div class="p-6">
-                <!-- General Settings -->
-                <div v-if="activeTab === 'general'" class="space-y-6">
-                    <div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">General Settings</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <Label for="orgName">Organization Name</Label>
-                                <Input id="orgName" v-model="settings.organizationName" />
-                            </div>
-                            <div>
-                                <Label for="timezone">Timezone</Label>
-                                <DynamicSelect 
-                                    v-model="settings.timezone"
-                                    :options="timezoneOptions"
-                                    placeholder="Select timezone"
-                                    id="timezone"
-                                />
-                            </div>
-                            <div>
-                                <Label for="language">Language</Label>
-                                <DynamicSelect 
-                                    v-model="settings.language"
-                                    :options="languageOptions"
-                                    placeholder="Select language"
-                                    id="language"
-                                />
-                            </div>
-                            <div>
-                                <Label for="dateFormat">Date Format</Label>
-                                <DynamicSelect 
-                                    v-model="settings.dateFormat"
-                                    :options="dateFormatOptions"
-                                    placeholder="Select date format"
-                                    id="dateFormat"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- User Management -->
-                <div v-if="activeTab === 'users'" class="space-y-6">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-medium text-gray-900">User Management</h3>
-                        <Button @click="showAddUser = true">
-                            <Icon name="plus" class="w-4 h-4 mr-2" />
-                            Add User
-                        </Button>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status
-                                    </th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <Avatar class="w-8 h-8 mr-3">
-                                                <AvatarFallback>{{ user.name.charAt(0) }}</AvatarFallback>
-                                            </Avatar>
-                                            <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.email }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <Badge variant="outline" class="capitalize">{{ user.role }}</Badge>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <Badge :variant="user.status === 'active' ? 'default' : 'secondary'">
-                                            {{ user.status }}
-                                        </Badge>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex justify-end gap-2">
-                                            <Button variant="ghost" size="sm">
-                                                <Icon name="edit" class="w-4 h-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="sm" class="text-red-600">
-                                                <Icon name="trash" class="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <div v-if="activeTab === 'notifications'" class="space-y-6">
-                    <h3 class="text-lg font-medium text-gray-900">Notification Preferences</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <Label class="text-base font-medium">Email Notifications</Label>
-                                <p class="text-sm text-gray-500">Receive notifications via email</p>
-                            </div>
-                            <input type="checkbox" v-model="settings.emailNotifications" class="rounded" />
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <Label class="text-base font-medium">Maintenance Alerts</Label>
-                                <p class="text-sm text-gray-500">Get notified about maintenance updates</p>
-                            </div>
-                            <input type="checkbox" v-model="settings.maintenanceAlerts" class="rounded" />
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <Label class="text-base font-medium">Meeting Reminders</Label>
-                                <p class="text-sm text-gray-500">Receive meeting reminder notifications</p>
-                            </div>
-                            <input type="checkbox" v-model="settings.meetingReminders" class="rounded" />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Security -->
-                <div v-if="activeTab === 'security'" class="space-y-6">
-                    <h3 class="text-lg font-medium text-gray-900">Security Settings</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <Label for="currentPassword">Current Password</Label>
-                            <Input id="currentPassword" type="password" />
-                        </div>
-                        <div>
-                            <Label for="newPassword">New Password</Label>
-                            <Input id="newPassword" type="password" />
-                        </div>
-                        <div>
-                            <Label for="confirmPassword">Confirm New Password</Label>
-                            <Input id="confirmPassword" type="password" />
-                        </div>
-                        <Button>Update Password</Button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Save Button -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
-                <Button @click="saveSettings" class="bg-blue-600 hover:bg-blue-700">
-                    Save Changes
-                </Button>
-            </div>
+          </div>
         </div>
+      </template>
+
+      <!-- User Management -->
+      <template #users>
+        <div class="space-y-6">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-medium text-gray-900">User Management</h3>
+            <Button @click="showAddUser = true">
+              <Icon name="plus" class="w-4 h-4 mr-2" />
+              Add User
+            </Button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <Avatar class="w-8 h-8 mr-3">
+                        <AvatarFallback>{{ user.name.charAt(0) }}</AvatarFallback>
+                      </Avatar>
+                      <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.email }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <Badge variant="outline" class="capitalize">{{ user.role }}</Badge>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <Badge :variant="user.status === 'active' ? 'default' : 'secondary'">
+                      {{ user.status }}
+                    </Badge>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex justify-end gap-2">
+                      <Button variant="ghost" size="sm">
+                        <Icon name="edit" class="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" class="text-red-600">
+                        <Icon name="trash" class="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </template>
+
+      <!-- Notifications -->
+      <template #notifications>
+        <div class="space-y-6">
+          <h3 class="text-lg font-medium text-gray-900">Notification Preferences</h3>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <Label class="text-base font-medium">Email Notifications</Label>
+                <p class="text-sm text-gray-500">Receive notifications via email</p>
+              </div>
+              <input type="checkbox" v-model="settings.emailNotifications" class="rounded" />
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <Label class="text-base font-medium">Maintenance Alerts</Label>
+                <p class="text-sm text-gray-500">Get notified about maintenance updates</p>
+              </div>
+              <input type="checkbox" v-model="settings.maintenanceAlerts" class="rounded" />
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <Label class="text-base font-medium">Meeting Reminders</Label>
+                <p class="text-sm text-gray-500">Receive meeting reminder notifications</p>
+              </div>
+              <input type="checkbox" v-model="settings.meetingReminders" class="rounded" />
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Security -->
+      <template #security>
+        <div class="space-y-6">
+          <h3 class="text-lg font-medium text-gray-900">Security Settings</h3>
+          <div class="space-y-4">
+            <div>
+              <Label for="currentPassword">Current Password</Label>
+              <Input id="currentPassword" type="password" />
+            </div>
+            <div>
+              <Label for="newPassword">New Password</Label>
+              <Input id="newPassword" type="password" />
+            </div>
+            <div>
+              <Label for="confirmPassword">Confirm New Password</Label>
+              <Input id="confirmPassword" type="password" />
+            </div>
+            <Button>Update Password</Button>
+          </div>
+        </div>
+      </template>
+    </DynamicTabs>
+
+    <!-- Save Button -->
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
+      <Button @click="saveSettings" class="bg-blue-600 hover:bg-blue-700">
+        Save Changes
+      </Button>
+    </div>
+  </div>
     </div>
 </template>
 
@@ -187,6 +178,7 @@ import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import DynamicSelect from '~/components/shared/DynamicSelect.vue'
+import DynamicTabs from '~/components/shared/DynamicTabs.vue'
 import { Badge } from '~/components/ui/badge'
 import { Avatar, AvatarFallback } from '~/components/ui/avatar'
 import Icon from '~/components/Icon.vue'
@@ -202,10 +194,10 @@ const activeTab = ref('general')
 const showAddUser = ref(false)
 
 const tabs = [
-    { id: 'general', label: 'General', icon: 'settings' },
-    { id: 'users', label: 'Users', icon: 'users' },
-    { id: 'notifications', label: 'Notifications', icon: 'bell' },
-    { id: 'security', label: 'Security', icon: 'shield' }
+    { name: 'General', value: 'general', icon: 'settings' },
+    { name: 'Users', value: 'users', icon: 'users' },
+    { name: 'Notifications', value: 'notifications', icon: 'bell' },
+    { name: 'Security', value: 'security', icon: 'shield' }
 ]
 
 // Options for DynamicSelect components
