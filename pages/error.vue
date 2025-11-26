@@ -10,18 +10,18 @@
 </template>
 
 <script setup>
-import { definePageMeta, navigateTo, clearError } from '#imports'
+import { clearError } from '#imports'
 import { Button } from '~/components/ui/button'
 
-// This page will automatically use the default layout due to Nuxt's error handling
-// No explicit layout definition needed here.
+definePageMeta({
+  auth: false,
+})
 
 const props = defineProps({
-  error: Object // Nuxt provides an error object to this page
+  error: Object
 })
 
 const handleBack = () => {
-  // Clear the error and navigate to the home page
   clearError({ redirect: '/' })
 }
 </script>

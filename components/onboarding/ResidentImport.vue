@@ -1,19 +1,14 @@
 <template>
   <div class="space-y-6">
     <h2 class="text-2xl font-bold text-gray-900 mb-4">Import Residents</h2>
-    
+
     <div class="space-y-4">
       <!-- Template Download -->
       <div class="bg-gray-50 p-4 rounded-lg">
         <h3 class="font-medium mb-2">Download Template</h3>
         <div class="flex gap-2">
-          <Button 
-            v-for="format in ['CSV', 'XLSX', 'XLS']" 
-            :key="format"
-            variant="outline"
-            size="sm"
-            @click="downloadTemplate(format)"
-          >
+          <Button v-for="format in ['CSV', 'XLSX', 'XLS']" :key="format" variant="outline" size="sm"
+            @click="downloadTemplate(format)">
             {{ format }}
           </Button>
         </div>
@@ -21,14 +16,8 @@
 
       <!-- File Upload -->
       <div class="border-2 border-dashed border-gray-300 rounded-lg p-6">
-        <FileUpload
-          id="resident-import"
-          label="Upload Resident Data"
-          accept=".csv,.xlsx,.xls"
-          :maxSize="5242880"
-          @uploaded="handleFileUpload"
-          @error="handleUploadError"
-        />
+        <FileUpload id="resident-import" label="Upload Resident Data" accept=".csv,.xlsx,.xls" :maxSize="5242880"
+          @uploaded="handleFileUpload" @error="handleUploadError" />
       </div>
 
       <!-- Column Mapping (shown after file upload) -->
@@ -37,10 +26,7 @@
         <div class="grid gap-4">
           <div v-for="field in requiredFields" :key="field.key" class="flex items-center gap-2">
             <label class="w-1/3">{{ field.label }}</label>
-            <select
-              v-model="columnMapping[field.key]"
-              class="form-select w-2/3"
-            >
+            <select v-model="columnMapping[field.key]" class="form-select w-2/3">
               <option value="">Select column</option>
               <option v-for="col in availableColumns" :key="col" :value="col">
                 {{ col }}
@@ -62,31 +48,17 @@
         </div>
         <div class="flex items-center gap-4">
           <label>Default Dialing Code:</label>
-          <Input
-            v-model="importOptions.defaultDialingCode"
-            placeholder="+234"
-            class="w-24"
-          />
+          <Input v-model="importOptions.defaultDialingCode" placeholder="+234" class="w-24" />
         </div>
       </div>
     </div>
 
     <div class="flex justify-between gap-4">
-      <Button 
-        type="button" 
-        variant="outline" 
-        class="flex-1" 
-        @click="$emit('skip')"
-      >
+      <Button type="button" variant="outline" class="flex-1" @click="$emit('skip')">
         Skip for now
       </Button>
-      <Button 
-        type="submit"
-        class="flex-1"
-        :variant="canSubmit ? 'default' : 'secondary'"
-        :disabled="!canSubmit || isLoading"
-        @click="handleSubmit"
-      >
+      <Button type="submit" class="flex-1" :variant="canSubmit ? 'default' : 'secondary'"
+        :disabled="!canSubmit || isLoading" @click="handleSubmit">
         {{ isLoading ? 'Importing...' : 'Import Residents' }}
       </Button>
     </div>
@@ -95,16 +67,34 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import FileUpload from '~/components/shared/FileUpload'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Checkbox } from '~/components/ui/checkbox'
-import { useUserManagement } from '~/composables/useUserManagement'
+import { usersApi } from '~/services/api/users.api'
+import { queryKeys } from '~/constants/query-keys'
 import type { FormatEnum } from '~/types/auth'
 
 const emit = defineEmits(['next', 'skip'])
 
-const { importResidents, getImportTemplate, isLoading } = useUserManagement()
+const queryClient = useQueryClient()
+const toast = useToast()
+
+const importResidentsMutation = useMutation({
+  mutationFn: (importData: any) => usersApi.importResidents(importData),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+    toast.success('Residents imported successfully')
+  },
+  onError: (error: any) => {
+    toast.error(error.message || 'Failed to import residents')
+  }
+})
+
+const isLoading = computed(() => importResidentsMutation.isPending.value)
+const importResidents = (importData: any) => importResidentsMutation.mutateAsync(importData)
+const getImportTemplate = (format: 'CSV' | 'XLSX' | 'XLS' = 'CSV') => usersApi.getImportTemplate(format)
 
 const uploadedFile = ref<File | null>(null)
 const availableColumns = ref<string[]>([])
@@ -126,8 +116,8 @@ const requiredFields = [
 
 // Check if all required fields are mapped
 const canSubmit = computed(() => {
-  return uploadedFile.value && 
-         requiredFields.every(field => columnMapping.value[field.key])
+  return uploadedFile.value &&
+    requiredFields.every(field => columnMapping.value[field.key])
 })
 
 const downloadTemplate = async (format: keyof typeof FormatEnum) => {
@@ -148,7 +138,7 @@ const downloadTemplate = async (format: keyof typeof FormatEnum) => {
 
 const handleFileUpload = async (files: { name: string; url: string }[]) => {
   if (!files.length) return
-  
+
   uploadedFile.value = files[0]
   // Here you might want to parse the file to get column headers
   // This depends on the file format (CSV, XLSX, etc.)

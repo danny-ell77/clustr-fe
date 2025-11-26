@@ -1,5 +1,5 @@
-import { ref, computed } from "vue";
-import type { ValidationRule, ValidationState } from "~/types/validation";
+import { ref, computed, watch } from "vue";
+import type { ValidationRule } from "~/types/validation";
 import { validateField } from "~/utils/validators";
 
 export function useFieldValidation<T>(
@@ -11,34 +11,27 @@ export function useFieldValidation<T>(
   const isTouched = ref(false);
   const errors = ref<string[]>([]);
 
-  // Core validation state
-  const state = computed<ValidationState>(() => ({
-    isValid: errors.value.length === 0,
-    isDirty: isDirty.value,
-    isTouched: isTouched.value,
-    errors: errors.value,
-  }));
-
-  // Update and validate value
-  const setValue = (newValue: any) => {
-    value.value = newValue;
-    isDirty.value = true;
-    validate();
-  };
-
-  // Mark as touched (e.g. on blur)
-  const setTouched = () => {
-    isTouched.value = true;
-    validate();
-  };
-
-  // Run validation
   const validate = () => {
     errors.value = validateField(value.value, rules);
     return errors.value.length === 0;
   };
 
-  // Reset field state
+  const isValid = computed(() => errors.value.length === 0);
+
+  watch(value, () => {
+    isDirty.value = true;
+    validate();
+  }, { immediate: true });
+
+  const setValue = (newValue: any) => {
+    value.value = newValue;
+  };
+
+  const setTouched = () => {
+    isTouched.value = true;
+    validate();
+  };
+
   const reset = () => {
     value.value = initialValue;
     isDirty.value = false;
@@ -46,21 +39,17 @@ export function useFieldValidation<T>(
     errors.value = [];
   };
 
-  return {
-    // Core state
-    value: value.value as T,
-    state: state.value,
+  validate();
 
-    // Methods
+  return {
+    value,
+    errors,
+    isValid,
+    isDirty,
+    isTouched,
     setValue,
     setTouched,
     validate,
     reset,
-
-    // Individual state pieces if needed
-    errors: computed(() => errors.value).value,
-    isValid: computed(() => errors.value.length === 0).value,
-    isDirty: computed(() => isDirty.value).value,
-    isTouched: computed(() => isTouched.value).value,
   };
 }

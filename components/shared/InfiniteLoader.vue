@@ -1,41 +1,44 @@
 <template>
-  <div>
-    <!-- Content slot -->
-    <slot :items="items" :loading="loading" :error="error" :refresh="refresh" />
-    
-    <!-- Load more trigger (for infinite scroll) -->
-    <div 
-      v-if="hasNextPage" 
-      ref="loadMoreTrigger" 
-      class="load-more-trigger py-4"
-    >
-      <div v-if="loading" class="flex items-center justify-center">
+  <div class="infinite-loader">
+    <div v-for="(page, i) in query.data.value?.pages" :key="i">
+      <slot :items="page.results" :page-index="i" />
+    </div>
+
+    <div v-if="query.isLoading.value && !query.isFetchingNextPage.value" class="flex items-center justify-center py-8">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <span class="ml-3 text-gray-600">Loading...</span>
+    </div>
+
+    <div v-if="query.hasNextPage.value" ref="loadMoreTrigger" class="load-more-trigger py-4">
+      <div v-if="query.isFetchingNextPage.value" class="flex items-center justify-center">
         <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
         <span class="ml-2 text-sm text-gray-600">Loading more...</span>
       </div>
-      <div v-else class="text-center">
-        <button 
-          @click="loadMore" 
-          class="text-primary hover:text-primary-dark text-sm font-medium"
-        >
+      <div v-else-if="!autoLoad" class="text-center">
+        <button @click="query.fetchNextPage()"
+          class="px-4 py-2 text-primary hover:text-primary-dark text-sm font-medium border border-primary rounded hover:bg-primary/5 transition-colors">
           Load more
         </button>
       </div>
     </div>
-    
-    <!-- Error state -->
-    <div v-if="error" class="text-center py-4">
-      <p class="text-red-600 text-sm mb-2">{{ error }}</p>
-      <button 
-        @click="refresh" 
-        class="text-primary hover:text-primary-dark text-sm font-medium"
-      >
+
+    <div v-else-if="query.data.value?.pages?.length" class="text-center py-4 text-gray-500 text-sm">
+      <slot name="no-more">
+        No more items
+      </slot>
+    </div>
+
+    <div v-if="query.isError.value" class="text-center py-4">
+      <p class="text-red-600 text-sm mb-2">
+        {{ query.error.value?.message || 'Failed to load data' }}
+      </p>
+      <button @click="query.refetch()"
+        class="px-4 py-2 text-primary hover:text-primary-dark text-sm font-medium border border-primary rounded hover:bg-primary/5 transition-colors">
         Try again
       </button>
     </div>
-    
-    <!-- Empty state -->
-    <div v-if="isEmpty" class="text-center py-8">
+
+    <div v-if="!query.isLoading.value && !query.data.value?.pages?.[0]?.results?.length" class="text-center py-8">
       <slot name="empty">
         <p class="text-gray-500">No items found</p>
       </slot>
@@ -44,51 +47,45 @@
 </template>
 
 <script setup lang="ts">
+import type { UseInfiniteQueryReturnType } from '@tanstack/vue-query'
+
 interface Props {
-  fetchFn: Function
-  pageSize?: number
+  query: UseInfiniteQueryReturnType<any, any>
   autoLoad?: boolean
   threshold?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  pageSize: 20,
   autoLoad: true,
   threshold: 0.1
 })
 
-const { 
-  items, 
-  loading, 
-  error, 
-  hasNextPage, 
-  isEmpty,
-  loadMore, 
-  refresh 
-} = usePagination(props.fetchFn, { 
-  pageSize: props.pageSize,
-  infiniteScroll: true
-})
-
 const loadMoreTrigger = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
 
 onMounted(() => {
   if (props.autoLoad && loadMoreTrigger.value) {
-    // Set up intersection observer for auto-loading
-    const observer = new IntersectionObserver(
+    observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasNextPage.value && !loading.value) {
-          loadMore()
+        if (
+          entries[0].isIntersecting &&
+          props.query.hasNextPage.value &&
+          !props.query.isFetchingNextPage.value
+        ) {
+          props.query.fetchNextPage()
         }
-      }, 
+      },
       { threshold: props.threshold }
     )
-    
+
     observer.observe(loadMoreTrigger.value)
-    
-    onUnmounted(() => {
-      observer.disconnect()
-    })
+  }
+})
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect()
+    observer = null
   }
 })
 </script>

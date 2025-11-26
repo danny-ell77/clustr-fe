@@ -1,12 +1,9 @@
 <template>
   <div>
-    <NuxtLoadingIndicator color="#ADD8E6" /> <!-- Pale blue color -->
+    <NuxtLoadingIndicator color="#ADD8E6" />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-
-    <!-- Global Components -->
-    <ToastContainer />
     <GlobalSuccessModal />
   </div>
 </template>

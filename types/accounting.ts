@@ -3,18 +3,18 @@ export enum TypeEnum {
   water = "water",
   security = "security",
   maintenance = "maintenance",
-  serviceCharge = "service_charge",
-  wasteManagement = "waste_management",
-  electricityUtility = "electricity_utility",
-  waterUtility = "water_utility",
-  internetUtility = "internet_utility",
-  cableTvUtility = "cable_tv_utility",
+  serviceCharge = "serviceCharge",
+  wasteManagement = "wasteManagement",
+  electricityUtility = "electricityUtility",
+  waterUtility = "waterUtility",
+  internetUtility = "internetUtility",
+  cableTvUtility = "cableTvUtility",
   other = "other",
 }
 
 export enum CategoryEnum {
-  clusterManaged = "cluster_managed",
-  userManaged = "user_managed",
+  clusterManaged = "clusterManaged",
+  userManaged = "userManaged",
 }
 
 export enum ProviderTypeEnum {
@@ -22,19 +22,19 @@ export enum ProviderTypeEnum {
   water = "water",
   security = "security",
   maintenance = "maintenance",
-  serviceCharge = "service_charge",
-  wasteManagement = "waste_management",
-  electricityUtility = "electricity_utility",
-  waterUtility = "water_utility",
-  internetUtility = "internet_utility",
-  cableTvUtility = "cable_tv_utility",
+  serviceCharge = "serviceCharge",
+  wasteManagement = "wasteManagement",
+  electricityUtility = "electricityUtility",
+  waterUtility = "waterUtility",
+  internetUtility = "internetUtility",
+  cableTvUtility = "cableTvUtility",
   other = "other",
 }
 
 export enum ApiProviderEnum {
   paystack = "paystack",
   flutterwave = "flutterwave",
-  bankTransfer = "bank_transfer",
+  bankTransfer = "bankTransfer",
   cash = "cash",
 }
 

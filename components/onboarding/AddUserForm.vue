@@ -2,70 +2,39 @@
   <form @submit.prevent="handleSubmit" class="space-y-6">
     <h2 class="text-2xl font-bold text-gray-900 mb-4">Add Team Members</h2>
 
-    <!-- User List -->
     <div v-for="(user, index) in users" :key="index" class="space-y-6 p-4 border rounded-lg">
       <div class="flex justify-between items-center">
         <h3 class="text-lg font-semibold">Team Member {{ index + 1 }}</h3>
-        <Button 
-          v-if="users.length > 1" 
-          variant="ghost" 
-          size="sm" 
-          @click="removeUser(index)"
-        >
+        <Button v-if="users.length > 1" variant="ghost" size="sm" @click="removeUser(index)">
           <Icon name="x" class="w-4 h-4" />
         </Button>
       </div>
 
-      <!-- User Fields -->
       <div class="grid gap-4 md:grid-cols-2">
         <div class="relative">
-          <Input 
-            :id="'first-name-' + index"
-            v-model="user.firstName.value"
-            placeholder="First Name"
-            :error="user.firstName.errors[0]"
-            :touched="user.firstName.isTouched"
-            @blur="user.firstName.setTouched()"
-            class="pl-9"
-          />
+          <Input :id="'first-name-' + index" v-model="user.firstName.value" placeholder="First Name"
+            :error="user.firstName.errors[0]" :touched="user.firstName.isTouched" @blur="user.firstName.setTouched()"
+            class="pl-9" />
           <Icon name="user" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
         </div>
 
         <div class="relative">
-          <Input 
-            :id="'last-name-' + index"
-            v-model="user.lastName.value"
-            placeholder="Last Name"
-            :error="user.lastName.errors[0]"
-            :touched="user.lastName.isTouched"
-            @blur="user.lastName.setTouched()"
-            class="pl-9"
-          />
+          <Input :id="'last-name-' + index" v-model="user.lastName.value" placeholder="Last Name"
+            :error="user.lastName.errors[0]" :touched="user.lastName.isTouched" @blur="user.lastName.setTouched()"
+            class="pl-9" />
           <Icon name="user" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
         </div>
 
         <div class="relative md:col-span-2">
-          <Input 
-            :id="'email-' + index"
-            v-model="user.email.value"
-            type="email"
-            placeholder="Email"
-            :error="user.email.errors[0]"
-            :touched="user.email.isTouched"
-            @blur="user.email.setTouched()"
-            class="pl-9"
-          />
+          <Input :id="'email-' + index" v-model="user.email.value" type="email" placeholder="Email"
+            :error="user.email.errors[0]" :touched="user.email.isTouched" @blur="user.email.setTouched()"
+            class="pl-9" />
           <Icon name="mail" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
         </div>
 
-        <!-- Role Selection -->
         <div class="md:col-span-2">
           <Label :for="'role-' + index" class="block text-sm font-medium text-gray-700 mb-1">Role</Label>
-          <Select 
-            v-model="user.role.value"
-            @blur="user.role.setTouched()"
-            @update:modelValue="handleRoleChange(index)"
-          >
+          <Select v-model="user.role.value" @blur="user.role.setTouched()" @update:modelValue="handleRoleChange(index)">
             <SelectTrigger :class="{ 'border-red-500': user.role.errors.length > 0 && user.role.isTouched }">
               <SelectValue placeholder="Select a role" />
             </SelectTrigger>
@@ -79,58 +48,45 @@
           <FormError v-if="user.role.isTouched" :error="user.role.errors[0]" />
         </div>
 
-        <!-- Permissions Section -->
         <div v-if="user.role.value === 'custom'" class="md:col-span-2 space-y-4">
           <Label class="block text-sm font-medium text-gray-700">Permissions</Label>
-          
+
           <div v-for="(perms, group) in permissionGroups" :key="group" class="space-y-2">
             <h4 class="font-medium text-sm text-gray-600">{{ group }}</h4>
             <div class="grid grid-cols-2 gap-2">
               <div v-for="perm in perms" :key="perm.value" class="flex items-center">
-                <Checkbox 
-                  :id="'perm-' + index + '-' + perm.value"
-                  :value="perm.value"
-                  v-model="user.permissions.value"
-                  @blur="user.permissions.setTouched()"
-                />
+                <Checkbox :id="'perm-' + index + '-' + perm.value"
+                  :checked="user.permissions.value.includes(perm.value)" @update:checked="(checked: boolean) => {
+                    if (checked) {
+                      user.permissions.value = [...user.permissions.value, perm.value]
+                    } else {
+                      user.permissions.value = user.permissions.value.filter(p => p !== perm.value)
+                    }
+                  }" @blur="user.permissions.setTouched()" />
                 <Label :for="'perm-' + index + '-' + perm.value" class="ml-2 text-sm">
                   {{ perm.label }}
                 </Label>
               </div>
             </div>
           </div>
-          
+
           <FormError v-if="user.permissions.isTouched" :error="user.permissions.errors[0]" />
         </div>
       </div>
     </div>
 
     <!-- Add More Users Button -->
-    <Button 
-      type="button" 
-      variant="outline" 
-      class="w-full"
-      @click="addUser"
-    >
+    <Button type="button" variant="outline" class="w-full" @click="addUser">
       <Icon name="plus" class="w-4 h-4 mr-2" />
       Add Another Team Member
     </Button>
 
     <div class="flex justify-between gap-4">
-      <Button 
-        type="button" 
-        variant="outline" 
-        class="flex-1" 
-        @click="emit('next')"
-      >
+      <Button type="button" variant="outline" class="flex-1" @click="emit('next')">
         Skip for now
       </Button>
-      <Button 
-        type="submit" 
-        class="flex-1" 
-        :variant="isFormValid ? 'default' : 'secondary'"
-        :disabled="!isFormValid || isLoading"
-      >
+      <Button type="submit" class="flex-1" :variant="isFormValid ? 'default' : 'secondary'"
+        :disabled="!isFormValid || isLoading">
         {{ isLoading ? 'Adding...' : 'Continue' }}
       </Button>
     </div>
@@ -152,17 +108,34 @@ import {
   SelectValue,
 } from '~/components/ui/select'
 import Icon from '~/components/Icon.vue'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useFieldValidation } from '~/composables/useFieldValidation'
-import { useUserManagement } from '~/composables/useUserManagement'
 import { PERMISSIONS, ROLES } from '~/composables/usePermissions'
 import { rules } from '~/utils/validators'
+import { usersApi } from '~/services/api/users.api'
+import { queryKeys } from '~/constants/query-keys'
 
 const emit = defineEmits<{
   (e: 'next'): void
   (e: 'skip'): void
 }>()
 
-const { addUser: createUser, isLoading } = useUserManagement()
+const queryClient = useQueryClient()
+const toast = useToast()
+
+const addStaffMutation = useMutation({
+  mutationFn: (staffData: any) => usersApi.addStaff(staffData),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
+    toast.success('Staff added successfully')
+  },
+  onError: (error: any) => {
+    toast.error(error.message || 'Failed to add staff')
+  }
+})
+
+const isLoading = computed(() => addStaffMutation.isPending.value)
+const createUser = (userData: any) => addStaffMutation.mutateAsync(userData)
 
 interface UserForm {
   firstName: ReturnType<typeof useFieldValidation<string>>
@@ -261,21 +234,18 @@ const permissionGroups = {
 
 const users = ref<UserForm[]>([createUserForm()])
 
-// Add a new user form
 const addUser = () => {
   users.value.push(createUserForm())
 }
 
-// Remove a user form
 const removeUser = (index: number) => {
   users.value.splice(index, 1)
 }
 
-// Handle role change to set default permissions
 const handleRoleChange = (index: number) => {
   const user = users.value[index]
   const selectedRole = roleOptions.find(r => r.value === user.role.value)
-  
+
   if (selectedRole && selectedRole.value !== 'custom') {
     user.permissions.value = selectedRole.permissions as string[]
   } else {
@@ -283,9 +253,8 @@ const handleRoleChange = (index: number) => {
   }
 }
 
-// Check if all users' forms are valid
 const isFormValid = computed(() => {
-  return users.value.every(user => 
+  return users.value.every(user =>
     user.firstName.isValid &&
     user.lastName.isValid &&
     user.email.isValid &&
@@ -295,7 +264,6 @@ const isFormValid = computed(() => {
 })
 
 const handleSubmit = async () => {
-  // Mark all fields as touched
   users.value.forEach(user => {
     user.firstName.setTouched()
     user.lastName.setTouched()
@@ -307,7 +275,6 @@ const handleSubmit = async () => {
   if (!isFormValid.value) return
 
   try {
-    // Create all users
     await Promise.all(users.value.map(user => createUser({
       name: `${user.firstName.value} ${user.lastName.value}`,
       emailAddress: user.email.value,

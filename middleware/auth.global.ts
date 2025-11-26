@@ -1,27 +1,67 @@
-import { useAuth } from "~/modules/core/runtime/composables/useAuth";
-import { usePermissionModal } from "~/modules/core/runtime/composables/usePermissionModal";
+import { isPublicRoute, isGuestRoute, requiresAuth, isModuleRoute } from "~/config/routes";
+import { APP_MODULES } from "~/config/modules";
 
 export default defineNuxtRouteMiddleware((to) => {
-  const { user, hasPermission } = useAuth();
+  const { user, isAuthenticated, isAdmin, permissions } = useAuth();
   const { openPermissionModal } = usePermissionModal();
 
-  // Skip middleware if no user (will be handled by login page)
-  if (!user.value) {
+  if (to.meta.auth === false) {
     return;
   }
 
-  // Check if route requires specific permissions
-  //   const requiredPermission = to.meta.requiresPermission as string;
-  //   console.log("Route requires permission:", requiredPermission);
-  //   if (requiredPermission && !hasPermission(requiredPermission)) {
-  //     openPermissionModal();
-  //     return false; // Cancel navigation
-  //   }
+  if (isPublicRoute(to.path)) {
+    if (isGuestRoute(to.path) && isAuthenticated.value) {
+      return navigateTo('/');
+    }
+    return;
+  }
 
-  //   // Check if route requires admin role
-  //   const requiresAdmin = to.meta.requiresAdmin as boolean;
-  //   if (requiresAdmin && user.value && user.value.role !== "Admin") {
-  //     openPermissionModal();
-  //     return false; // Cancel navigation
-  //   }
+  if (!requiresAuth(to.path)) {
+    return;
+  }
+
+  if (!isAuthenticated.value) {
+    return navigateTo({
+      path: '/login',
+      query: { redirect: to.fullPath }
+    });
+  }
+
+  if (!user.value) {
+    return navigateTo('/login');
+  }
+
+  const requiresAdmin = to.meta.requiresAdmin as boolean;
+  if (requiresAdmin && !isAdmin.value) {
+    openPermissionModal();
+    return false;
+  }
+
+  const requiredPermission = to.meta.requiresPermission as string;
+  if (requiredPermission) {
+    const hasPermission = user.value.permissions?.includes(requiredPermission);
+    if (!hasPermission && !isAdmin.value) {
+      openPermissionModal();
+      return false;
+    }
+  }
+
+  if (isAdmin.value) {
+    return;
+  }
+
+  if (!isModuleRoute(to.path)) {
+    return;
+  }
+
+  for (const module of APP_MODULES) {
+    if (to.path.startsWith(module.route)) {
+      if (!permissions.includes(module.permission)) {
+        throw createError({
+          statusCode: 403,
+          statusMessage: `Access denied to ${module.label} module`,
+        });
+      }
+    }
+  }
 });

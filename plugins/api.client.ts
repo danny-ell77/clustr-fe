@@ -21,7 +21,6 @@ export default defineNuxtPlugin(() => {
   const api = $fetch.create({
     baseURL: "/api",
     onRequest({ options }) {
-      // Convert camelCase to snake_case for outgoing requests
       if (options.body && typeof options.body === "object") {
         options.body = transformKeys(options.body, snakeCase);
       }
@@ -30,13 +29,11 @@ export default defineNuxtPlugin(() => {
       }
     },
     onResponse({ response }) {
-      // Convert snake_case to camelCase for incoming responses
       if (response._data && typeof response._data === "object") {
         response._data = transformKeys(response._data, camelCase);
       }
     },
     onResponseError({ response }) {
-      // Also convert error responses
       if (response._data && typeof response._data === "object") {
         response._data = transformKeys(response._data, camelCase);
       }

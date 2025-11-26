@@ -111,7 +111,7 @@ export interface AnnouncementCreate extends BaseAnnouncement {
   attachmentIds?: string[];
 }
 
-export interface AnnouncementUpdate extends BaseAnnouncement {}
+export interface AnnouncementUpdate extends BaseAnnouncement { }
 
 export interface Event extends BaseModel, BaseEvent {
   accessCode?: string;
@@ -121,13 +121,13 @@ export interface Event extends BaseModel, BaseEvent {
   guestsCount?: string;
 }
 
-export interface EventCreate extends BaseEvent {}
+export interface EventCreate extends BaseEvent { }
 
 export interface EventGuest extends BaseModel {
   event: string;
   guest: string;
   guestName?: string;
-  status?: "pending" | "approved" | "denied" | "checked_in" | "checked_out";
+  status?: "pending" | "approved" | "denied" | "checkedIn" | "checkedOut";
   checkInTime?: string;
   checkOutTime?: string;
   notes?: string;
@@ -140,7 +140,7 @@ export interface EventGuestCreate {
 }
 
 export interface EventGuestUpdate {
-  status?: "pending" | "approved" | "denied" | "checked_in" | "checked_out";
+  status?: "pending" | "approved" | "denied" | "checkedIn" | "checkedOut";
   notes?: string;
 }
 
@@ -152,7 +152,7 @@ export interface EventGuestCheckOut {
   notes?: string;
 }
 
-export interface EventUpdate extends BaseEvent {}
+export interface EventUpdate extends BaseEvent { }
 
 export interface UserSummary {
   id?: string;

@@ -1,9 +1,9 @@
 export type Gender = "male" | "female";
-export type EmergencyContactType = "personal" | "estate_wide" | "official";
+export type EmergencyContactType = "personal" | "estateWide" | "official";
 export type EmergencyResponseType =
   | "acknowledged"
   | "dispatched"
-  | "on_scene"
+  | "onScene"
   | "resolved"
   | "cancelled";
 
@@ -133,7 +133,7 @@ export enum InvitationStatusEnum {
 export enum EmergencyTypeEnum {
   health = "health",
   theft = "theft",
-  domesticViolence = "domestic_violence",
+  domesticViolence = "domesticViolence",
   fire = "fire",
   security = "security",
   accident = "accident",
@@ -146,7 +146,7 @@ export enum AlertStatusEnum {
   responding = "responding",
   resolved = "resolved",
   cancelled = "cancelled",
-  falseAlarm = "false_alarm",
+  falseAlarm = "falseAlarm",
 }
 
 export enum AlertPriorityEnum {
@@ -163,7 +163,7 @@ export enum LogTypeEnum {
 
 export enum ExitRequestStatusEnum {
   scheduled = "scheduled",
-  inProgress = "in_progress",
+  inProgress = "inProgress",
   completed = "completed",
   overdue = "overdue",
 }
@@ -191,7 +191,7 @@ export interface Child extends BaseModel, BaseChild {
   age?: string;
 }
 
-export interface ChildCreate extends BaseChild {}
+export interface ChildCreate extends BaseChild { }
 
 export interface ChildUpdate extends BaseChild {
   isActive?: boolean;
@@ -210,7 +210,7 @@ export interface EmergencyContactCreate extends BaseEmergencyContact {
   user?: string;
 }
 
-export interface EmergencyContactUpdate extends BaseEmergencyContact {}
+export interface EmergencyContactUpdate extends BaseEmergencyContact { }
 
 export interface EmergencyResponse extends BaseModel {
   alert: string;
@@ -241,15 +241,15 @@ export interface GatePass extends BaseModel, BaseGatePass {
   generatedByName?: string;
 }
 
-export interface GatePassCreate extends BaseGatePass {}
+export interface GatePassCreate extends BaseGatePass { }
 
-export interface GatePassUpdate extends BaseGatePass {}
+export interface GatePassUpdate extends BaseGatePass { }
 
-export interface Guest extends BaseModel, BaseGuest {}
+export interface Guest extends BaseModel, BaseGuest { }
 
-export interface GuestCreate extends BaseGuest {}
+export interface GuestCreate extends BaseGuest { }
 
-export interface GuestUpdate extends BaseGuest {}
+export interface GuestUpdate extends BaseGuest { }
 
 export interface PanicAlert extends BaseModel, BasePanicAlert {
   status?: "active" | "acknowledged" | "resolved" | "cancelled";
@@ -257,7 +257,7 @@ export interface PanicAlert extends BaseModel, BasePanicAlert {
   triggeredByName?: string;
 }
 
-export interface PanicAlertCreate extends BasePanicAlert {}
+export interface PanicAlertCreate extends BasePanicAlert { }
 
 export interface PanicAlertUpdate {
   status?: "active" | "acknowledged" | "resolved" | "cancelled";
@@ -270,7 +270,7 @@ export interface Visitor extends BaseModel, BaseVisitor {
   status?: VisitorStatusEnum;
 }
 
-export interface VisitorCreate extends BaseVisitor {}
+export interface VisitorCreate extends BaseVisitor { }
 
 export interface VisitorUpdate extends BaseVisitor {
   status?: VisitorStatusEnum;
@@ -292,7 +292,7 @@ export interface Invitation extends BaseModel, BaseInvitation {
   revocationReason?: string;
 }
 
-export interface InvitationCreate extends BaseInvitation {}
+export interface InvitationCreate extends BaseInvitation { }
 
 export interface InvitationUpdate extends BaseInvitation {
   status?: InvitationStatusEnum;
@@ -329,7 +329,7 @@ export interface SOSAlert extends BaseModel, BaseSOSAlert {
   isActive?: string;
 }
 
-export interface SOSAlertCreate extends BaseSOSAlert {}
+export interface SOSAlertCreate extends BaseSOSAlert { }
 
 export interface SOSAlertUpdate extends BaseSOSAlert {
   resolutionNotes?: string;
@@ -385,9 +385,9 @@ export interface ExitRequest extends BaseModel, BaseExitRequest {
   isPending?: string;
 }
 
-export interface ExitRequestCreate extends BaseExitRequest {}
+export interface ExitRequestCreate extends BaseExitRequest { }
 
-export interface ExitRequestUpdate extends BaseExitRequest {}
+export interface ExitRequestUpdate extends BaseExitRequest { }
 
 export interface MemberProfile {
   id?: string;

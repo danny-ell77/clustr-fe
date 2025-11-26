@@ -10,34 +10,34 @@ import {
   formatDateShort,
   formatTime,
   formatTimeAgo,
-  
+
   // Currency & Numbers
   formatCurrency,
   formatNumber,
   formatPercentage,
-  
+
   // Files & Sizes
   formatFileSize,
-  
+
   // Text
   truncateText,
   capitalizeWords,
   capitalize,
   formatLabel,
-  
+
   // Status & Badges
   getTypeVariant,
   getStatusVariant,
-  
+
   // Contact & Personal
   formatPhone,
   getInitials,
   maskEmail,
-  
+
   // Utilities
   isEmpty,
-  formatWithFallback
-} from '~/utils/formatters'
+  formatWithFallback,
+} from "~/utils/formatters";
 
 /**
  * Composable that provides all formatting utilities
@@ -51,35 +51,35 @@ export const useFormatters = () => {
     formatDateShort,
     formatTime,
     formatTimeAgo,
-    
+
     // Currency & Number formatters
     formatCurrency,
     formatNumber,
     formatPercentage,
-    
+
     // File & Size formatters
     formatFileSize,
-    
+
     // Text formatters
     truncateText,
     capitalizeWords,
     capitalize,
     formatLabel,
-    
+
     // Status & Badge helpers
     getTypeVariant,
     getStatusVariant,
-    
+
     // Contact & Personal formatters
     formatPhone,
     getInitials,
     maskEmail,
-    
+
     // Utility functions
     isEmpty,
-    formatWithFallback
-  }
-}
+    formatWithFallback,
+  };
+};
 
 // Note: Individual formatters should be imported directly from ~/utils/formatters
 // This composable is for use within Vue components only

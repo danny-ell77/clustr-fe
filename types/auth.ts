@@ -1,5 +1,5 @@
 // Auth types based on API specification and camelCase convention
-// All types use camelCase naming - the case conversion plugin handles snake_case ↔ camelCase transformation
+// All types use camelCase naming - the case conversion plugin handles snakeCase ↔ camelCase transformation
 
 export enum VerifyModeEnum {
   OTP = "OTP",

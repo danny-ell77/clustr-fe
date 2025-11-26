@@ -1,26 +1,20 @@
 <template>
-    <BaseTable
-        :loading="loading"
-        :isEmpty="isEmpty"
-        :emptyMessage="emptyMessage"
-        :columnCount="columns.length + (showRowActions ? 1 : 0)"
-    >
+    <div v-if="hasError" class="error-container">
+        <QueryError :error="errorMessage" :onRetry="refresh" />
+    </div>
+    <BaseTable v-else :loading="loading" :isEmpty="isEmpty" :emptyMessage="emptyMessage"
+        :columnCount="columns.length + (showRowActions ? 1 : 0)">
         <!-- Header -->
         <template #header>
             <div class="flex items-center space-x-4">
                 <div class="relative" v-if="enableSearch">
-                    <Input
-                        v-model="searchQuery"
-                        :placeholder="searchPlaceholder"
-                        class="pl-10 w-64"
-                        @input="onSearchChange"
-                    />
-                    <Icon
-                        name="search"
-                        class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"
-                    />
+                    <Input v-model="searchQuery" :placeholder="searchPlaceholder" class="pl-10 w-64"
+                        @input="onSearchChange" />
+                    <Icon name="search"
+                        class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 </div>
-                <Select v-if="enablePageSizeSelector" v-model="selectedPageSize" class="w-32" @update:model-value="onPageSizeChange">
+                <Select v-if="enablePageSizeSelector" v-model="selectedPageSize" class="w-32"
+                    @update:model-value="onPageSizeChange">
                     <SelectTrigger>
                         <SelectValue :placeholder="selectedPageSize + ' per page'" />
                     </SelectTrigger>
@@ -47,24 +41,14 @@
 
         <!-- Column Headers -->
         <template #column-headers>
-            <TableHead 
-                v-for="column in columns" 
-                :key="column.key"
-                :class="{'text-right': column.align === 'right', 'cursor-pointer hover:bg-gray-50': column.sortable}"
-                @click="column.sortable ? onSort(column.key) : null"
-            >
+            <TableHead v-for="column in columns" :key="column.key"
+                :class="{ 'text-right': column.align === 'right', 'cursor-pointer hover:bg-gray-50': column.sortable }"
+                @click="column.sortable ? onSort(column.key) : null">
                 <div class="flex items-center space-x-1">
                     <span>{{ column.label }}</span>
-                    <Icon 
-                        v-if="column.sortable && sortKey === column.key" 
-                        :name="sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'" 
-                        class="w-4 h-4" 
-                    />
-                    <Icon 
-                        v-else-if="column.sortable" 
-                        name="chevrons-up-down" 
-                        class="w-4 h-4 opacity-30" 
-                    />
+                    <Icon v-if="column.sortable && sortKey === column.key"
+                        :name="sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'" class="w-4 h-4" />
+                    <Icon v-else-if="column.sortable" name="chevrons-up-down" class="w-4 h-4 opacity-30" />
                 </div>
             </TableHead>
             <TableHead class="w-[100px]" v-if="showRowActions">Actions</TableHead>
@@ -72,16 +56,10 @@
 
         <!-- Table Body -->
         <template #table-body>
-            <TableRow 
-                v-for="row in displayData" 
-                :key="row[idKey]"
-                class="hover:bg-gray-50"
-            >
-                <TableCell 
-                    v-for="column in columns" 
-                    :key="column.key"
-                    :class="{'text-right': column.align === 'right'}"
-                >
+            <TableRow v-for="row in displayData" :key="row[idKey]" class="hover:bg-gray-50"
+                @mouseenter="onRowHover(row)">
+                <TableCell v-for="column in columns" :key="column.key"
+                    :class="{ 'text-right': column.align === 'right' }">
                     <div v-if="column.format">
                         {{ column.format(row[column.key], row) }}
                     </div>
@@ -100,13 +78,9 @@
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuItem 
-                                v-for="action in rowActions" 
-                                :key="action.key"
-                                @click="$emit(action.key, row)"
-                                :class="action.destructive ? 'text-red-600' : ''"
-                                :disabled="action.disabled?.(row)"
-                            >
+                            <DropdownMenuItem v-for="action in rowActions" :key="action.key"
+                                @click="$emit(action.key, row)" :class="action.destructive ? 'text-red-600' : ''"
+                                :disabled="action.disabled?.(row)">
                                 <Icon :name="action.icon" class="w-4 h-4 mr-2" />
                                 {{ action.label }}
                             </DropdownMenuItem>
@@ -114,7 +88,7 @@
                     </DropdownMenu>
                 </TableCell>
             </TableRow>
-            
+
             <!-- Loading state for additional rows -->
             <TableRow v-if="loading && displayData.length > 0">
                 <TableCell :colspan="columns.length + (showRowActions ? 1 : 0)" class="h-12 text-center">
@@ -137,43 +111,27 @@
                         <span v-else>No entries found</span>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <Button 
-                            variant="outline" 
-                            size="sm"
-                            :disabled="currentPage === 1 || loading"
-                            @click="goToPage(currentPage - 1)"
-                        >
+                        <Button variant="outline" size="sm" :disabled="currentPage === 1 || loading"
+                            @click="goToPage(currentPage - 1)">
                             Previous
                         </Button>
-                        <Button 
-                            v-for="page in pageNumbers" 
-                            :key="page"
-                            variant="outline"
-                            size="sm"
-                            :class="{'bg-blue-50 text-blue-600': currentPage === page}"
-                            @click="goToPage(page)"
-                            :disabled="loading"
-                        >
+                        <Button v-for="page in pageNumbers" :key="page" variant="outline" size="sm"
+                            :class="{ 'bg-blue-50 text-blue-600': currentPage === page }" @click="goToPage(page)"
+                            :disabled="loading">
                             {{ page }}
                         </Button>
-                        <Button 
-                            variant="outline" 
-                            size="sm"
+                        <Button variant="outline" size="sm"
                             :disabled="currentPage === totalPages || loading || !hasNextPage"
-                            @click="goToPage(currentPage + 1)"
-                        >
+                            @click="goToPage(currentPage + 1)">
                             Next
                         </Button>
                     </div>
                 </div>
             </template>
-            
+
             <!-- Infinite scroll trigger -->
             <template v-if="mode === 'infinite' && hasNextPage && !loading">
-                <div 
-                    ref="infiniteScrollTrigger"
-                    class="flex items-center justify-center"
-                >
+                <div ref="infiniteScrollTrigger" class="flex items-center justify-center">
                     <Button variant="outline" @click="loadMore" :disabled="loading">
                         <Icon name="refresh-cw" class="w-4 h-4 mr-2" />
                         Load More
@@ -186,23 +144,22 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import type { UseQueryReturnType, UseInfiniteQueryReturnType } from '@tanstack/vue-query'
 import BaseTable from './BaseTable.vue'
+import QueryError from '~/components/ui/QueryError/QueryError.vue'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
-import { 
-    Table, 
-    TableBody, 
-    TableCell, 
-    TableHead, 
-    TableHeader, 
-    TableRow 
+import {
+    TableCell,
+    TableHead,
+    TableRow
 } from '~/components/ui/table'
-import { 
-    Select, 
-    SelectContent, 
-    SelectItem, 
-    SelectTrigger, 
-    SelectValue 
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
 } from '~/components/ui/select'
 import {
     DropdownMenu,
@@ -211,7 +168,7 @@ import {
     DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import Icon from '~/components/Icon.vue'
-import {  type PaginatedResponse } from '~/composables/usePagination'
+import type { PaginatedResponse } from '~/types/api'
 
 
 interface Column {
@@ -235,32 +192,36 @@ interface GenericTableProps {
     // Data source
     data?: any[]
     fetchFn?: (params: any) => Promise<PaginatedResponse<any>>
-    
+
+    // TanStack Query integration
+    query?: UseQueryReturnType<any, any>
+    infiniteQuery?: UseInfiniteQueryReturnType<any, any>
+
     // Table configuration
     columns: Column[]
     idKey?: string
-    
+
     // Pagination mode
     mode?: 'client' | 'server' | 'pagination' | 'infinite'
     pageSize?: number
     pageSizeOptions?: number[]
     enablePageSizeSelector?: boolean
-    
+
     // Search and filtering
     enableSearch?: boolean
     searchPlaceholder?: string
     searchDebounceMs?: number
-    
+
     // UI configuration
     emptyMessage?: string
     showActions?: boolean
     showRowActions?: boolean
     rowActions?: RowAction[]
-    
+
     // Loading and error states
     loading?: boolean
     error?: string | null
-    
+
     // Initial filters
     initialFilters?: Record<string, any>
 }
@@ -298,40 +259,75 @@ const sortKey = ref<string | null>(null)
 const sortOrder = ref<'asc' | 'desc'>('asc')
 const infiniteScrollTrigger = ref<HTMLElement | null>(null)
 
-// Server-side pagination integration
-let paginationComposable: any = null
-
-if (props.mode === 'server' || props.mode === 'infinite') {
-    if (!props.fetchFn) {
-        throw new Error('fetchFn is required for server-side pagination')
-    }
-    
-    const { usePagination } = await import('~/composables/usePagination')
-    paginationComposable = usePagination(props.fetchFn, {
-        pageSize: selectedPageSize.value,
-        initialFilters: props.initialFilters,
-        infiniteScroll: props.mode === 'infinite'
-    })
+const onRowHover = (row: any) => {
+    emit('row-hover', row)
 }
 
-// Computed properties for server-side mode
-const serverData = computed(() => paginationComposable?.items.value || [])
-const serverLoading = computed(() => paginationComposable?.loading.value || false)
-const serverError = computed(() => paginationComposable?.error.value || null)
-const serverCurrentPage = computed(() => paginationComposable?.currentPage.value || 1)
-const serverTotalCount = computed(() => paginationComposable?.totalCount.value || 0)
-const serverTotalPages = computed(() => paginationComposable?.totalPages.value || 1)
-const serverHasNextPage = computed(() => paginationComposable?.hasNextPage.value || false)
-const serverIsEmpty = computed(() => paginationComposable?.isEmpty.value || false)
+// TanStack Query data extraction
+const queryData = computed(() => {
+    if (props.query) {
+        const data = props.query.data.value
+        if (data && typeof data === 'object' && 'results' in data) {
+            return data.results
+        }
+        return Array.isArray(data) ? data : []
+    }
+    if (props.infiniteQuery) {
+        const pages = props.infiniteQuery.data.value?.pages || []
+        return pages.flatMap((page: any) => {
+            if (page && typeof page === 'object' && 'results' in page) {
+                return page.results
+            }
+            return Array.isArray(page) ? page : []
+        })
+    }
+    return null
+})
+
+const queryLoading = computed(() => {
+    if (props.query) return props.query.isLoading.value
+    if (props.infiniteQuery) return props.infiniteQuery.isLoading.value
+    return false
+})
+
+const queryError = computed(() => {
+    if (props.query) return props.query.error.value
+    if (props.infiniteQuery) return props.infiniteQuery.error.value
+    return null
+})
+
+const queryHasNextPage = computed(() => {
+    if (props.infiniteQuery) return props.infiniteQuery.hasNextPage.value
+    return false
+})
+
+const queryIsFetchingNextPage = computed(() => {
+    if (props.infiniteQuery) return props.infiniteQuery.isFetchingNextPage.value
+    return false
+})
+
+// Legacy server-side pagination is deprecated - use TanStack Query instead
+const serverData = computed(() => [])
+const serverLoading = computed(() => false)
+const serverError = computed(() => null)
+const serverCurrentPage = computed(() => 1)
+const serverTotalCount = computed(() => 0)
+const serverTotalPages = computed(() => 1)
+const serverHasNextPage = computed(() => false)
+const serverIsEmpty = computed(() => true)
 
 // Client-side filtering and sorting
 const filteredAndSortedData = computed(() => {
+    if (queryData.value !== null) {
+        return queryData.value
+    }
+
     if (props.mode === 'server' || props.mode === 'infinite') {
         return serverData.value
     }
-    
+
     let result = [...props.data]
-    
+
     // Apply search filter
     if (searchQuery.value) {
         const searchLower = searchQuery.value.toLowerCase()
@@ -342,19 +338,19 @@ const filteredAndSortedData = computed(() => {
             })
         })
     }
-    
+
     // Apply sorting
     if (sortKey.value) {
         result.sort((a, b) => {
             const aVal = a[sortKey.value!]
             const bVal = b[sortKey.value!]
-            
+
             if (aVal < bVal) return sortOrder.value === 'asc' ? -1 : 1
             if (aVal > bVal) return sortOrder.value === 'asc' ? 1 : -1
             return 0
         })
     }
-    
+
     return result
 })
 
@@ -388,6 +384,10 @@ const clientPaginatedData = computed(() => {
 
 // Unified computed properties
 const displayData = computed(() => {
+    if (queryData.value !== null) {
+        return queryData.value
+    }
+
     if (props.mode === 'server' || props.mode === 'infinite') {
         return serverData.value
     }
@@ -395,6 +395,10 @@ const displayData = computed(() => {
 })
 
 const loading = computed(() => {
+    if (props.query || props.infiniteQuery) {
+        return queryLoading.value || queryIsFetchingNextPage.value
+    }
+
     if (props.mode === 'server' || props.mode === 'infinite') {
         return serverLoading.value
     }
@@ -402,6 +406,13 @@ const loading = computed(() => {
 })
 
 const totalCount = computed(() => {
+    if (props.query && props.query.data.value) {
+        const data = props.query.data.value
+        if (data && typeof data === 'object' && 'count' in data) {
+            return data.count
+        }
+    }
+
     if (props.mode === 'server' || props.mode === 'infinite') {
         return serverTotalCount.value
     }
@@ -409,6 +420,13 @@ const totalCount = computed(() => {
 })
 
 const totalPages = computed(() => {
+    if (props.query && props.query.data.value) {
+        const data = props.query.data.value
+        if (data && typeof data === 'object' && 'count' in data) {
+            return Math.ceil(data.count / selectedPageSize.value)
+        }
+    }
+
     if (props.mode === 'server' || props.mode === 'infinite') {
         return serverTotalPages.value
     }
@@ -416,6 +434,10 @@ const totalPages = computed(() => {
 })
 
 const hasNextPage = computed(() => {
+    if (props.infiniteQuery) {
+        return queryHasNextPage.value
+    }
+
     if (props.mode === 'server' || props.mode === 'infinite') {
         return serverHasNextPage.value
     }
@@ -427,6 +449,17 @@ const isEmpty = computed(() => {
         return serverIsEmpty.value
     }
     return !loading.value && displayData.value.length === 0
+})
+
+const hasError = computed(() => {
+    return !!(queryError.value || serverError.value || props.error)
+})
+
+const errorMessage = computed(() => {
+    const error = queryError.value || serverError.value || props.error
+    if (!error) return null
+    if (typeof error === 'string') return error
+    return error?.data?.message || error?.message || 'An error occurred'
 })
 
 const startIndex = computed(() => {
@@ -447,11 +480,11 @@ const pageNumbers = computed(() => {
     const pages = []
     const total = totalPages.value
     const current = props.mode === 'server' || props.mode === 'infinite' ? serverCurrentPage.value : currentPage.value
-    
+
     for (let i = 1; i <= total; i++) {
         if (
-            i === 1 || 
-            i === total || 
+            i === 1 ||
+            i === total ||
             (i >= current - 2 && i <= current + 2)
         ) {
             pages.push(i)
@@ -468,11 +501,11 @@ const onSort = (key: string) => {
         sortKey.value = key
         sortOrder.value = 'asc'
     }
-    
+
     if (props.mode === 'server') {
         applyFilters({ ordering: `${sortOrder.value === 'desc' ? '-' : ''}${key}` })
     }
-    
+
     emit('sort', { key, order: sortOrder.value })
 }
 
@@ -492,46 +525,38 @@ const onSearchChange = (() => {
 })()
 
 const onPageSizeChange = () => {
-    if (props.mode === 'server') {
-        paginationComposable?.loadPage(1, true)
-    } else {
-        currentPage.value = 1
-    }
+    currentPage.value = 1
 }
 
 const goToPage = (page: number) => {
-    if (props.mode === 'server') {
-        paginationComposable?.goToPage(page)
-    } else {
-        currentPage.value = page
-    }
+    currentPage.value = page
     emit('page-change', page)
 }
 
 const loadMore = () => {
-    if (paginationComposable) {
-        paginationComposable.loadMore()
+    if (props.infiniteQuery) {
+        props.infiniteQuery.fetchNextPage()
     }
 }
 
 const applyFilters = (filters: Record<string, any>) => {
-    if (paginationComposable) {
-        paginationComposable.applyFilters(filters)
-    }
+    // Legacy server mode deprecated - use TanStack Query
 }
 
 const clearFilters = () => {
-    if (paginationComposable) {
-        paginationComposable.clearFilters()
-    }
     searchQuery.value = ''
     sortKey.value = null
     sortOrder.value = 'asc'
 }
 
 const refresh = () => {
-    if (paginationComposable) {
-        paginationComposable.refresh()
+    if (props.query) {
+        props.query.refetch()
+        return
+    }
+
+    if (props.infiniteQuery) {
+        props.infiniteQuery.refetch()
     }
 }
 
@@ -545,7 +570,7 @@ onMounted(() => {
                 loadMore()
             }
         }, { threshold: 0.1 })
-        
+
         nextTick(() => {
             if (infiniteScrollTrigger.value) {
                 observer?.observe(infiniteScrollTrigger.value)
@@ -576,3 +601,10 @@ defineExpose({
     loadMore
 })
 </script>
+
+
+<style scoped>
+.error-container {
+    padding: 1rem;
+}
+</style>

@@ -1,45 +1,36 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="space-y-6">
-    <h2 class="text-2xl font-bold text-gray-900 mb-4">Configure Your Domain</h2>
-    
+  <form @submit.prevent="handleSubmit" class="mt-8 space-y-6">
     <div class="space-y-4">
-      <div class="flex items-center">
-        <Input 
-          id="subdomain" 
-          v-model="subdomain.value"
-          :error="subdomain.errors[0]"
-          :touched="subdomain.isTouched"
-          @blur="subdomain.setTouched()"
-          class="rounded-r-none border-r-0"
-          placeholder="your-estate"
-        />
-        <span class="px-3 py-2 bg-gray-50 border border-l-0 border-input rounded-r-md text-gray-500">
-          .clustr.com
-        </span>
-      </div>
-      <p class="text-sm text-gray-500">
+      <h3 class="text-xl font-semibold text-gray-900">Configure Your Domain</h3>
+      <p class="text-sm text-gray-600">
         This will be your unique ClustR URL. You can use letters, numbers, and hyphens.
       </p>
+
+      <div>
+        <Label class="text-sm font-medium text-gray-700">Subdomain</Label>
+        <div class="flex items-center gap-0">
+          <Input id="subdomain" v-model="subdomain.value.value" :error="subdomain.errors.value[0]"
+            :touched="subdomain.isTouched.value" @blur="subdomain.setTouched()" class="rounded-r-none border-r-0"
+            placeholder="your-estate" />
+          <span
+            class="px-3 py-2 bg-gray-50 border border-l-0 border-gray-300 rounded-r-md text-gray-500 text-sm h-9 flex items-center">
+            .clustr.com
+          </span>
+        </div>
+      </div>
     </div>
 
-    <div class="flex justify-between gap-4">
-      <Button 
-        type="button" 
-        variant="outline" 
-        class="flex-1" 
-        @click="$emit('next')"
-      >
-        Skip for now
+    <div class="flex gap-4">
+      <Button type="button" variant="outline" @click="$emit('prev')" class="flex-1">
+        Back
       </Button>
-      <Button 
-        type="submit" 
-        class="flex-1" 
-        :variant="isValid ? 'default' : 'secondary'"
-        :disabled="!isValid"
-        @click="handleSubmit"
-      >
+      <Button type="submit" @click="handleSubmit" :disabled="!isValid"
+        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
         Continue
       </Button>
+    </div>
+    <div class="text-center">
+      <p class="text-xs">Skip for Now</p>
     </div>
   </form>
 </template>
@@ -47,12 +38,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
 import { Button } from '~/components/ui/button'
 import { useFieldValidation } from '~/composables/useFieldValidation'
 import { rules } from '~/utils/validators'
 import { useClusterSignup } from '~/composables/useClusterSignup'
 
-const emit = defineEmits(['next', 'skip'])
+const emit = defineEmits(['next', 'skip', 'prev'])
 
 const props = defineProps<{
   defaultSubdomain?: string
@@ -60,13 +52,11 @@ const props = defineProps<{
 
 const { saveDomainConfig, submitClusterSignup } = useClusterSignup()
 
-// Custom validator for subdomain format
 const isValidSubdomain = (value: string) => {
   const pattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
   return pattern.test(value)
 }
 
-// Field validation
 const subdomain = useFieldValidation(props.defaultSubdomain || '', [
   rules.required('Subdomain is required'),
   rules.minLength(3, 'Subdomain must be at least 3 characters'),
@@ -74,25 +64,21 @@ const subdomain = useFieldValidation(props.defaultSubdomain || '', [
   rules.custom(isValidSubdomain, 'Only use lowercase letters, numbers, and hyphens')
 ])
 
-const isValid = computed(() => subdomain.isValid)
+const isValid = computed(() => subdomain.isValid.value)
 
 const handleSubmit = async () => {
   subdomain.setTouched()
-  
+
   if (!isValid.value) return
 
   try {
-    // Save domain configuration
-    saveDomainConfig({ subdomain: subdomain.value })
-    
-    // Submit cluster signup
+    saveDomainConfig({ subdomain: subdomain.value.value })
+
     await submitClusterSignup()
-    
-    // Move to next step
+
     emit('next')
   } catch (error) {
     console.error('Cluster signup failed:', error)
-    // You might want to show an error message to the user here
   }
 }
 </script>

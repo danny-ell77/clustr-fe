@@ -2,7 +2,7 @@
     <Transition enter-active-class="transition ease-out duration-300" enter-from-class="opacity-0 translate-y-2"
         enter-to-class="opacity-100 translate-y-0" leave-active-class="transition ease-in duration-200"
         leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-2">
-        <div v-if="show" class="fixed top-4 right-4 z-50 max-w-sm w-full">
+        <div v-if="show" class="fixed z-[9999] max-w-sm w-full pointer-events-auto" :style="position">
             <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4 flex items-start gap-3">
                 <div class="flex-shrink-0">
                     <Icon :name="iconName" class="w-5 h-5" :class="iconColor" />
@@ -22,6 +22,7 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import Icon from '~/components/Icon.vue'
+import { calculateToastPosition } from '~/composables/useToast'
 
 const props = defineProps({
     show: {
@@ -44,10 +45,16 @@ const props = defineProps({
     duration: {
         type: Number,
         default: 5000
+    },
+    anchorEl: {
+        type: Object,
+        default: null
     }
 })
 
 const emit = defineEmits(['close'])
+
+const position = computed(() => calculateToastPosition(props.anchorEl))
 
 const iconName = computed(() => {
     switch (props.type) {

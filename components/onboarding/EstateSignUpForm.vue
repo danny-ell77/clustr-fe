@@ -1,123 +1,46 @@
 <template>
-  <div class="grid place-items-center min-h-screen">
-    <div class="max-w-md w-full p-8 bg-white rounded-lg shadow">
-      <form @submit.prevent="handleSubmit">
+    <form @submit.prevent="handleSubmit" class="mt-8 space-y-6">
         <div class="space-y-4">
-          <h3 class="text-lg font-medium mb-2">Tell us about your Facility</h3>
-
-          <div>
-            <Label>What kind of Facility do you manage?</Label>
-            <Select 
-              v-model="estateType.value"
-              @blur="estateType.setTouched"
-            >
-              <SelectTrigger :class="{ 'border-red-500': estateType.hasError && estateType.touched }">
-                <SelectValue placeholder="Select facility type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ESTATE">Estate</SelectItem>
-                <SelectItem value="FACILITY">Facility</SelectItem>
-                <SelectItem value="COMMERCIAL">Commercial</SelectItem>
-                <SelectItem value="MIXED_USE">Mixed Use</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormError :error="estateType.errorMessage" />
-          </div>
-          
-          <div>
-            <Label>Facility Name</Label>
-            <Input
-              type="text"
-              v-model="estateName.value"
-              :class="{ 'border-red-500': estateName.hasError && estateName.touched }"
-              placeholder="Enter your facility name"
-              @blur="estateName.setTouched"
-            />
-            <FormError :error="estateName.errorMessage" />
-          </div>
-
-          <hr class="my-6 border-t" />
-          <h3 class="text-lg font-medium mb-2">Setup your profile</h3>
-
-          <div>
-            <Label>Email</Label>
-            <Input
-              type="email"
-              v-model="email.value"
-              :class="{ 'border-red-500': email.hasError && email.touched }"
-              placeholder="Enter your email"
-              @blur="email.setTouched"
-            />
-            <FormError :error="email.errorMessage" />
-          </div>
-
-          <div>
-            <Label>Password</Label>
-            <div class="relative">
-              <Input
-                :type="showPassword ? 'text' : 'password'"
-                v-model="password.value"
-                :class="{ 'border-red-500': password.hasError && password.touched }"
-                placeholder="Enter your password"
-                @blur="password.setTouched"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                @click="showPassword = !showPassword"
-                class="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
-              >
-                <Icon 
-                  :name="showPassword ? 'eye-off' : 'eye'" 
-                  class="h-4 w-4"
-                />
-              </Button>
+            <div>
+                <h3 class="text-xl font-semibold text-gray-900">Tell us about your Facility</h3>
+                <p class="text-sm text-gray-600 mt-1">Let's start by setting up your property details</p>
             </div>
-            <FormError :error="password.errorMessage" />
-          </div>
 
-          <div>
-            <Label>Confirm Password</Label>
-            <div class="relative">
-              <Input
-                :type="showConfirmPassword ? 'text' : 'password'"
-                v-model="confirmPassword.value"
-                :class="{ 'border-red-500': confirmPassword.hasError && confirmPassword.touched }"
-                placeholder="Confirm your password"
-                @blur="confirmPassword.setTouched"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                @click="showConfirmPassword = !showConfirmPassword"
-                class="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
-              >
-                <Icon 
-                  :name="showConfirmPassword ? 'eye-off' : 'eye'" 
-                  class="h-4 w-4"
-                />
-              </Button>
+            <div>
+                <Label for="estate-type" class="text-sm font-medium text-gray-700">What kind of Facility do you
+                    manage?</Label>
+                <Select v-model="estateType" @update:modelValue="handleEstateTypeChange">
+                    <SelectTrigger id="estate-type" :class="{ 'border-red-500': estateTypeError && estateTypeTouched }"
+                        @blur="estateTypeTouched = true">
+                        <SelectValue placeholder="Select facility type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="ESTATE">Estate</SelectItem>
+                        <SelectItem value="FACILITY">Facility</SelectItem>
+                        <SelectItem value="COMMERCIAL">Commercial</SelectItem>
+                        <SelectItem value="MIXED_USE">Mixed Use</SelectItem>
+                    </SelectContent>
+                </Select>
+                <p v-if="estateTypeError && estateTypeTouched" class="text-sm text-red-600 mt-1">
+                    {{ estateTypeError }}
+                </p>
             </div>
-            <FormError :error="confirmPassword.errorMessage" />
-          </div>
+
+            <div>
+                <Label for="estate-name" class="text-sm font-medium text-gray-700">Facility Name</Label>
+                <Input id="estate-name" type="text" v-model="estateName" :error="estateNameError"
+                    :touched="estateNameTouched" placeholder="Enter your facility name" @blur="estateNameTouched = true"
+                    @input="validateEstateName" />
+            </div>
         </div>
 
-        <div class="mt-6">
-          <Button
-            type="submit"
-            class="w-full"
-            :variant="isFormValid ? 'default' : 'secondary'"
-            :disabled="!isFormValid"
-            @click="handleSubmit"
-          >
-            Continue
-          </Button>
+        <div>
+            <Button @click="handleSubmit" :disabled="!isFormValid"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                Continue
+            </Button>
         </div>
-      </form>
-    </div>
-  </div>
+    </form>
 </template>
 
 <script setup>
@@ -125,92 +48,116 @@ import { ref, computed } from 'vue'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Button } from '~/components/ui/button'
-import { FormError } from '~/components/ui/form'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '~/components/ui/select'
-import Icon from '~/components/Icon.vue'
-import { useFieldValidation } from '~/composables/useFieldValidation'
-import { rules } from '~/utils/validators'
 import { useClusterSignup } from '~/composables/useClusterSignup'
 
 const emit = defineEmits(['next'])
 
-const showPassword = ref(false)
-const showConfirmPassword = ref(false)
+const estateName = ref('')
+const estateNameTouched = ref(false)
+const estateNameError = ref('')
 
-// Field validations
-const estateName = useFieldValidation('', [
-  rules.required('Estate name is required'),
-  rules.minLength(3, 'Estate name must be at least 3 characters'),
-  rules.maxLength(255, 'Estate name cannot exceed 255 characters'),
-  rules.genericName('Please enter a valid estate name')
-])
+const estateType = ref('')
+const estateTypeTouched = ref(false)
+const estateTypeError = ref('')
 
-const estateType = useFieldValidation('ESTATE', [
-  rules.required('Estate type is required'),
-  rules.custom(
-    (value) => ['ESTATE', 'FACILITY', 'COMMERCIAL', 'MIXED_USE'].includes(value),
-    'Invalid estate type'
-  )
-])
+const isEstateNameValid = computed(() => {
+    const value = estateName.value.trim()
+    if (!value) return false
+    if (value.length < 3) return false
+    if (value.length > 255) return false
+    const genericNamePattern = /^[a-zA-Z0-9\s\-_'.]+$/
+    return genericNamePattern.test(value)
+})
 
-const email = useFieldValidation('', [
-  rules.required('Email is required'),
-  rules.email('Please enter a valid email address')
-])
+const isEstateTypeValid = computed(() => {
+    const validTypes = ['ESTATE', 'FACILITY', 'COMMERCIAL', 'MIXED_USE']
+    return validTypes.includes(estateType.value)
+})
 
-const password = useFieldValidation('', [
-  rules.required('Password is required'),
-  rules.password('Password must meet security requirements')
-])
+const validateEstateName = () => {
+    const value = estateName.value.trim()
 
-const confirmPassword = useFieldValidation('', [
-  rules.required('Please confirm your password'),
-  rules.custom(
-    (value) => value === password.value,
-    'Passwords must match'
-  )
-])
+    if (!value) {
+        estateNameError.value = 'Estate name is required'
+        return false
+    }
 
-// Form-level validation
-const isFormValid = computed(() =>
-  estateName.isValid &&
-  estateType.isValid &&
-  email.isValid &&
-  password.isValid &&
-  confirmPassword.isValid
-)
+    if (value.length < 3) {
+        estateNameError.value = 'Estate name must be at least 3 characters'
+        return false
+    }
+
+    if (value.length > 255) {
+        estateNameError.value = 'Estate name cannot exceed 255 characters'
+        return false
+    }
+
+    const genericNamePattern = /^[a-zA-Z0-9\s\-_'.]+$/
+    if (!genericNamePattern.test(value)) {
+        estateNameError.value = 'Please enter a valid estate name'
+        return false
+    }
+
+    estateNameError.value = ''
+    return true
+}
+
+const validateEstateType = () => {
+    const validTypes = ['ESTATE', 'FACILITY', 'COMMERCIAL', 'MIXED_USE']
+
+    if (!estateType.value) {
+        estateTypeError.value = 'Estate type is required'
+        return false
+    }
+
+    if (!validTypes.includes(estateType.value)) {
+        estateTypeError.value = 'Invalid estate type'
+        return false
+    }
+
+    estateTypeError.value = ''
+    return true
+}
+
+const handleEstateTypeChange = (value) => {
+    estateType.value = value
+    validateEstateType()
+}
+
+const isFormValid = computed(() => {
+    return isEstateNameValid.value && isEstateTypeValid.value
+})
 
 const { saveEstateInfo, slugifyDomain } = useClusterSignup()
 
 const handleSubmit = () => {
-  // Mark all fields as touched to show validation errors
-  const fields = [estateName, estateType, email, password, confirmPassword]
-  fields.forEach(field => field.setTouched())
+    estateNameTouched.value = true
+    estateTypeTouched.value = true
 
-  if (!isFormValid.value) return
+    const nameValid = validateEstateName()
+    const typeValid = validateEstateType()
 
-  // Prepare data according to ClusterAdminAccount structure
-  const clusterData = {
-    name: estateName.value,
-    type: estateType.value,
-    admin: {
-      email_address: email.value,
-      password: password.value,
-      name: '', // We'll add admin name field
-      phone_number: '', // We'll add phone number field
+    if (!nameValid || !typeValid) return
+
+    const clusterData = {
+        name: estateName.value,
+        type: estateType.value,
+        admin: {
+            email_address: '',
+            password: '',
+            name: '',
+            phone_number: '',
+        }
     }
-  }
 
-  // Save estate info in the composable state
-  saveEstateInfo(clusterData)
-
-  // Pass the slugified domain as initial value for the domain config step
-  emit('next', { defaultSubdomain: slugifyDomain(estateName.value) })
+    saveEstateInfo(clusterData)
+    emit('next', { defaultSubdomain: slugifyDomain(estateName.value) })
 }
 </script>

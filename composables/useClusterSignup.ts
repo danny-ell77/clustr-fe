@@ -16,11 +16,12 @@ export interface ClusterSignupState {
   } | null;
 }
 
+const signupState = ref<ClusterSignupState>({
+  estateInfo: null,
+  domainConfig: null,
+});
+
 export const useClusterSignup = () => {
-  const signupState = ref<ClusterSignupState>({
-    estateInfo: null,
-    domainConfig: null,
-  });
 
   // Convert estate name to valid subdomain
   const slugifyDomain = (estateName: string): string => {

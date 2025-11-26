@@ -14,18 +14,23 @@ ClustR is a property management platform. **This frontend project is specificall
 ### 1. API Integration Strategy
 - **Use Nuxt's built-in `$fetch`** (no Axios needed)
 - **Simple request forwarding** to Django backend
-- **Server-side initial data loading** with client-side hydration
+- **TanStack Vue Query** for data fetching, caching, and state management
+- **Service Layer Pattern** - Plain functions/objects for API calls, separate from query logic
 - **Automatic case conversion** (camelCase ↔ snake_case) using lodash
 
 ### 2. Authentication & Authorization
 - **JWT tokens** with httpOnly cookies
 - **Access token**: 15 minutes expiry
 - **Refresh token**: 7 days expiry
+- **Automatic token refresh** in server routes on 401 errors
 - **Role-based permissions** for management features
 
 ### 3. Data Loading Strategy
+- **TanStack Query manages**: Caching, refetching, loading states, error handling
+- **Service layer handles**: Actual HTTP requests using $api plugin
 - **Server-side (SSR)**: Initial page data, user profile, critical state
 - **Client-side**: Pagination, filtering, real-time updates, user interactions
+- **Hierarchical query keys** for smart cache invalidation
 
 ### 4. Multi-Tenant Vanity URLs
 - **Subdomain routing**: `{cluster-slug}.clustr.com` for branded admin dashboards
@@ -36,32 +41,32 @@ ClustR is a property management platform. **This frontend project is specificall
 
 ```
 clustr-fe/
+├── services/
+│   └── api/                     # API Service Layer (Plain Functions)
+│       ├── index.ts             # Export all services
+│       ├── payments.service.ts  # Bills, transactions, wallet
+│       ├── announcements.service.ts
+│       ├── maintenance.service.ts
+│       ├── helpdesk.service.ts
+│       ├── shifts.service.ts
+│       ├── emergency.service.ts
+│       ├── users.service.ts
+│       └── auth.service.ts
+├── constants/
+│   └── query-keys.ts            # Centralized query key factory
 ├── composables/
-│   ├── useApi.ts                 # Core API client
 │   ├── useAuth.ts               # Authentication management
-│   ├── usePagination.ts         # Universal pagination/infinite scroll
-│   ├── management/              # Management module composables
-│   │   ├── usePayments.ts       # Bills, transactions, recurring payments
-│   │   ├── useAnnouncements.ts  # Announcements CRUD
-│   │   ├── useShifts.ts         # Staff shift management
-│   │   ├── useMainenance.ts     # Maintenance logs & schedules
-│   │   ├── useHelpdesk.ts       # Issue tickets & comments
-│   │   ├── useUsers.ts          # User & role management
-│   │   ├── useEvents.ts         # Event & guest management
-│   │   └── useEmergency.ts      # SOS alerts & emergency contacts
-│   └── core/
-│       ├── useUtilities.ts      # Utility payments
-│       └── useFiles.ts          # File uploads
+│   └── useCluster.ts            # Cluster/tenant context
 ├── plugins/
-│   ├── api.client.ts            # API client with interceptors
-│   └── auth.client.ts           # Auth initialization
+│   ├── api.client.ts            # $api plugin with case conversion
+│   └── vue-query.client.ts      # TanStack Query setup
 ├── middleware/
 │   ├── auth.ts                  # Route protection
 │   ├── permissions.ts           # Permission checks
-│   └── cluster.ts               # Cluster context from subdomain
+│   └── cluster.global.ts        # Cluster context from subdomain
 ├── server/api/                  # Request forwarding routes
 │   ├── auth/[...].ts           # Auth endpoint forwarding
-│   ├── management/[...].ts     # Management endpoint forwarding
+│   ├── management/[...].ts     # Management endpoint forwarding (with auto-refresh)
 │   ├── core/[...].ts           # Core utilities forwarding
 │   └── public/[...].ts         # Public sharing endpoints
 ├── types/
@@ -71,8 +76,8 @@ clustr-fe/
 │   └── cluster.ts               # Cluster/tenant types
 └── components/
     ├── shared/
-    │   ├── GenericTable.vue        # Universal data table
-    │   ├── InfiniteLoader.vue   # Infinite scroll component
+    │   ├── GenericTable.vue     # Universal data table
+    │   ├── InfiniteLoader.vue   # Infinite scroll with TanStack Query
     │   └── FileUpload.vue       # File upload component
     └── ui/                      # shadcn/ui components
 ```
@@ -584,31 +589,7 @@ export const usePayments = () => {
 - **Django doesn't know the difference**
 - **Tokens stay secure in httpOnly cookies**
 - **Case conversion happens in one place**
-## � Core API & Case Conversion
-
-### Core API Composable (Optional - for token refresh)
-```typescript
-// composables/useApi.ts
-export const useApi = () => {
-  const { refreshAuthToken } = useAuth()
-
-  const apiCall = async (url: string, options: any = {}) => {
-    try {
-      return await $fetch(url, options)
-    } catch (error) {
-      if (error.statusCode === 401) {
-        await refreshAuthToken()
-        return await $fetch(url, options)
-      }
-      throw error
-    }
-  }
-
-  return { apiCall }
-}
-```
-
-### 🔄 Case Conversion Plugin (CRITICAL FEATURE)
+## 🔄 Case Conversion Plugin (CRITICAL FEATURE)
 
 This is the **most important part** of our architecture. It allows the frontend to use consistent camelCase everywhere while Django uses snake_case.
 
@@ -731,431 +712,629 @@ const billData = {
   paidAmount: "150.00"
 }
 ```
-## 📊 Pagination & Data Loading
+## 🔑 Query Key Management (CRITICAL PATTERN)
 
-### Universal Pagination Composable
+### Hierarchical Query Key Factory
+
+Query keys are organized hierarchically like a file system for smart cache invalidation:
+
 ```typescript
-// composables/usePagination.ts
-interface PaginationOptions {
-  pageSize?: number
-  initialFilters?: Record<string, any>
-}
+// constants/query-keys.ts
 
-interface PaginatedResponse<T> {
-  results: T[]
-  count: number
-  next: string | null
-  previous: string | null
-}
+export const queryKeys = {
+  // Bills domain
+  bills: {
+    all: ['bills'] as const,
+    lists: () => [...queryKeys.bills.all, 'list'] as const,
+    list: (filters: Record<string, any>) => 
+      [...queryKeys.bills.lists(), filters] as const,
+    details: () => [...queryKeys.bills.all, 'detail'] as const,
+    detail: (id: string) => 
+      [...queryKeys.bills.details(), id] as const,
+    infinite: (filters: Record<string, any>) => 
+      [...queryKeys.bills.all, 'infinite', filters] as const,
+    dashboard: () => [...queryKeys.bills.all, 'dashboard'] as const,
+  },
 
-export const usePagination = <T>(
-  fetchFn: (params: any) => Promise<PaginatedResponse<T>>,
-  options: PaginationOptions = {}
-) => {
-  const items = ref<T[]>([])
-  const loading = ref(false)
-  const hasNextPage = ref(true)
-  const currentPage = ref(1)
-  const filters = ref(options.initialFilters || {})
+  // Payments domain
+  payments: {
+    all: ['payments'] as const,
+    transactions: {
+      all: () => [...queryKeys.payments.all, 'transactions'] as const,
+      list: (filters: any) => 
+        [...queryKeys.payments.transactions.all(), filters] as const,
+      detail: (id: string) => 
+        [...queryKeys.payments.transactions.all(), id] as const,
+    },
+    wallet: () => [...queryKeys.payments.all, 'wallet'] as const,
+  },
 
-  const loadPage = async (page: number = 1, reset: boolean = false) => {
-    if (loading.value) return
-    
-    loading.value = true
-    try {
-      const response = await fetchFn({
-        page, pageSize: options.pageSize || 20, ...filters.value
-      })
-      
-      if (reset || page === 1) {
-        items.value = response.results
-      } else {
-        items.value.push(...response.results)
-      }
-      
-      hasNextPage.value = !!response.next
-      currentPage.value = page
-    } finally {
-      loading.value = false
-    }
-  }
+  // Announcements domain
+  announcements: {
+    all: ['announcements'] as const,
+    lists: () => [...queryKeys.announcements.all, 'list'] as const,
+    list: (filters: any) => 
+      [...queryKeys.announcements.lists(), filters] as const,
+    detail: (id: string) => 
+      [...queryKeys.announcements.all, 'detail', id] as const,
+    published: () => 
+      [...queryKeys.announcements.all, 'published'] as const,
+  },
 
-  const loadMore = () => {
-    if (hasNextPage.value && !loading.value) {
-      loadPage(currentPage.value + 1)
-    }
-  }
+  // Maintenance domain
+  maintenance: {
+    all: ['maintenance'] as const,
+    logs: {
+      all: () => [...queryKeys.maintenance.all, 'logs'] as const,
+      list: (filters: any) => 
+        [...queryKeys.maintenance.logs.all(), filters] as const,
+      detail: (id: string) => 
+        [...queryKeys.maintenance.logs.all(), id] as const,
+    },
+    schedules: {
+      all: () => [...queryKeys.maintenance.all, 'schedules'] as const,
+      list: (filters: any) => 
+        [...queryKeys.maintenance.schedules.all(), filters] as const,
+      upcoming: () => 
+        [...queryKeys.maintenance.schedules.all(), 'upcoming'] as const,
+    },
+    analytics: () => [...queryKeys.maintenance.all, 'analytics'] as const,
+  },
 
-  const refresh = () => loadPage(1, true)
-  
-  const applyFilters = (newFilters: any) => {
-    filters.value = { ...filters.value, ...newFilters }
-    refresh()
-  }
+  // Helpdesk domain
+  helpdesk: {
+    all: ['helpdesk'] as const,
+    issues: {
+      all: () => [...queryKeys.helpdesk.all, 'issues'] as const,
+      list: (filters: any) => 
+        [...queryKeys.helpdesk.issues.all(), filters] as const,
+      detail: (id: string) => 
+        [...queryKeys.helpdesk.issues.all(), id] as const,
+      statistics: () => 
+        [...queryKeys.helpdesk.issues.all(), 'statistics'] as const,
+    },
+    comments: (issueId: string) => 
+      [...queryKeys.helpdesk.all, 'comments', issueId] as const,
+  },
 
-  return { 
-    items: readonly(items), 
-    loading, 
-    hasNextPage, 
-    loadMore, 
-    refresh, 
-    applyFilters 
-  }
-}
+  // Shifts domain
+  shifts: {
+    all: ['shifts'] as const,
+    list: (filters: any) => [...queryKeys.shifts.all, 'list', filters] as const,
+    detail: (id: string) => [...queryKeys.shifts.all, 'detail', id] as const,
+    statistics: () => [...queryKeys.shifts.all, 'statistics'] as const,
+    upcoming: () => [...queryKeys.shifts.all, 'upcoming'] as const,
+  },
+
+  // Emergency domain
+  emergency: {
+    all: ['emergency'] as const,
+    alerts: {
+      all: () => [...queryKeys.emergency.all, 'alerts'] as const,
+      list: (filters: any) => 
+        [...queryKeys.emergency.alerts.all(), filters] as const,
+      detail: (id: string) => 
+        [...queryKeys.emergency.alerts.all(), id] as const,
+      active: () => 
+        [...queryKeys.emergency.alerts.all(), 'active'] as const,
+    },
+    contacts: () => [...queryKeys.emergency.all, 'contacts'] as const,
+    responses: (alertId: string) => 
+      [...queryKeys.emergency.all, 'responses', alertId] as const,
+  },
+
+  // Users domain
+  users: {
+    all: ['users'] as const,
+    list: (filters: any) => [...queryKeys.users.all, 'list', filters] as const,
+    detail: (id: string) => [...queryKeys.users.all, 'detail', id] as const,
+    roles: () => [...queryKeys.users.all, 'roles'] as const,
+    permissions: (userId: string) => 
+      [...queryKeys.users.all, 'permissions', userId] as const,
+  },
+
+  // Auth domain
+  auth: {
+    all: ['auth'] as const,
+    user: () => [...queryKeys.auth.all, 'user'] as const,
+    profile: () => [...queryKeys.auth.all, 'profile'] as const,
+  },
+} as const
 ```
 
+### Benefits of Hierarchical Keys
+
+```typescript
+// Invalidate ALL bills (lists, details, dashboard, everything)
+queryClient.invalidateQueries({ queryKey: queryKeys.bills.all })
+
+// Invalidate only bill lists (all filter combinations)
+queryClient.invalidateQueries({ queryKey: queryKeys.bills.lists() })
+
+// Invalidate specific bill
+queryClient.invalidateQueries({ queryKey: queryKeys.bills.detail('bill-123') })
+```
+
+## 🔌 TanStack Vue Query Setup
+
+### Plugin Configuration
+
+```typescript
+// plugins/vue-query.client.ts
+import { VueQueryPlugin, QueryClient, type VueQueryPluginOptions } from '@tanstack/vue-query'
+
+export default defineNuxtPlugin((nuxtApp) => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
+        retry: 1,
+        refetchOnWindowFocus: false,
+      },
+      mutations: {
+        retry: 0,
+      },
+    },
+  })
+
+  const options: VueQueryPluginOptions = {
+    queryClient,
+    enableDevtoolsV6Plugin: true, // Enable devtools
+  }
+
+  nuxtApp.vueApp.use(VueQueryPlugin, options)
+
+  return {
+    provide: {
+      queryClient,
+    },
+  }
+})
+```
+
+## 📦 Service Layer Pattern
+
+### API Services (Plain Functions)
+
+Services are plain functions that use the `$api` plugin. They have no knowledge of TanStack Query.
+
+```typescript
+// services/api/payments.service.ts
+import type { Bill, PaginatedResponse, CreateBillDto } from '~/types/management'
+
+export const paymentsApi = {
+  getBills: (params?: Record<string, any>) => {
+    const { $api } = useNuxtApp()
+    return $api<PaginatedResponse<Bill>>('/management/payments/bills/', {
+      method: 'GET',
+      query: params
+    })
+  },
+  
+  getBillById: (id: string) => {
+    const { $api } = useNuxtApp()
+    return $api<Bill>(`/management/payments/bills/${id}/`, {
+      method: 'GET'
+    })
+  },
+  
+  createBill: (data: CreateBillDto) => {
+    const { $api } = useNuxtApp()
+    return $api<Bill>('/management/payments/create_bill/', {
+      method: 'POST',
+      body: data
+    })
+  },
+  
+  updateBill: (id: string, data: Partial<Bill>) => {
+    const { $api } = useNuxtApp()
+    return $api<Bill>(`/management/payments/bills/${id}/`, {
+      method: 'PATCH',
+      body: data
+    })
+  },
+  
+  deleteBill: (id: string) => {
+    const { $api } = useNuxtApp()
+    return $api(`/management/payments/bills/${id}/`, {
+      method: 'DELETE'
+    })
+  },
+  
+  getPaymentDashboard: () => {
+    const { $api } = useNuxtApp()
+    return $api('/management/payments/dashboard/')
+  },
+  
+  getClusterWallet: () => {
+    const { $api } = useNuxtApp()
+    return $api('/management/payments/cluster_wallet/')
+  },
+}
+
+// services/api/announcements.service.ts
+export const announcementsApi = {
+  getAnnouncements: (params?: any) => {
+    const { $api } = useNuxtApp()
+    return $api('/management/announcements/', { method: 'GET', query: params })
+  },
+  
+  getAnnouncementById: (id: string) => {
+    const { $api } = useNuxtApp()
+    return $api(`/management/announcements/${id}/`, { method: 'GET' })
+  },
+  
+  createAnnouncement: (data: any) => {
+    const { $api } = useNuxtApp()
+    return $api('/management/announcements/', { method: 'POST', body: data })
+  },
+  
+  publishAnnouncement: (id: string) => {
+    const { $api } = useNuxtApp()
+    return $api(`/management/announcements/${id}/publish/`, { method: 'POST' })
+  },
+}
+
+// services/api/maintenance.service.ts
+export const maintenanceApi = {
+  getLogs: (params?: any) => {
+    const { $api } = useNuxtApp()
+    return $api('/management/maintenance-logs/', { method: 'GET', query: params })
+  },
+  
+  createLog: (data: any) => {
+    const { $api } = useNuxtApp()
+    return $api('/management/maintenance-logs/', { method: 'POST', body: data })
+  },
+  
+  updateStatus: (id: string, status: string) => {
+    const { $api } = useNuxtApp()
+    return $api(`/management/maintenance-logs/${id}/`, { 
+      method: 'PATCH', 
+      body: { status } 
+    })
+  },
+}
+
+// services/api/index.ts - Export all services
+export * from './payments.service'
+export * from './announcements.service'
+export * from './maintenance.service'
+export * from './helpdesk.service'
+export * from './shifts.service'
+export * from './emergency.service'
+export * from './users.service'
+export * from './auth.service'
+```
+
+## 📊 Data Loading with TanStack Query
+
 ### Infinite Loading Component
+
 ```vue
 <!-- components/shared/InfiniteLoader.vue -->
 <template>
   <div>
-    <slot :items="items" :loading="loading" />
-    <div v-if="hasNextPage" ref="loadMoreTrigger" class="load-more-trigger">
-      <div v-if="loading" class="flex items-center justify-center p-4">
-        <Spinner class="w-6 h-6" />
-        <span class="ml-2">Loading more...</span>
+    <!-- Render all pages -->
+    <div v-for="(page, i) in query.data.value?.pages" :key="i">
+      <slot :items="page.results" />
+    </div>
+    
+    <!-- Loading more indicator -->
+    <div 
+      v-if="query.hasNextPage.value" 
+      ref="loadMoreTrigger" 
+      class="load-more-trigger"
+    >
+      <div v-if="query.isFetchingNextPage.value" class="loading">
+        <Spinner /> Loading more...
       </div>
+    </div>
+    
+    <!-- No more data -->
+    <div v-else-if="query.data.value" class="text-center p-4 text-gray-500">
+      No more items
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { UseInfiniteQueryReturnType } from '@tanstack/vue-query'
+
 interface Props {
-  fetchFn: Function
-  pageSize?: number
+  query: UseInfiniteQueryReturnType<any, any>
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  pageSize: 20
-})
-
-const { items, loading, hasNextPage, loadMore } = usePagination(
-  props.fetchFn, { pageSize: props.pageSize }
-)
-
-const loadMoreTrigger = ref(null)
+const props = defineProps<Props>()
+const loadMoreTrigger = ref<HTMLElement | null>(null)
 
 onMounted(() => {
   const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && hasNextPage.value && !loading.value) {
-      loadMore()
+    if (
+      entries[0].isIntersecting && 
+      props.query.hasNextPage.value && 
+      !props.query.isFetchingNextPage.value
+    ) {
+      props.query.fetchNextPage()
     }
   }, { threshold: 0.1 })
   
-  if (loadMoreTrigger.value) observer.observe(loadMoreTrigger.value)
+  if (loadMoreTrigger.value) {
+    observer.observe(loadMoreTrigger.value)
+  }
+  
   onUnmounted(() => observer.disconnect())
 })
 </script>
 ```
 
-## 🏢 Management Module Composables
+## 🎯 Component Usage Patterns
 
-### Payments
-```typescript
-// composables/management/usePayments.ts
-export const usePayments = () => {
-  const fetchBills = async (params = {}) => {
-    return await $fetch('/api/management/payments/bills/', {
-      method: 'GET', query: params
-    })
+### Basic Query Pattern
+
+```vue
+<script setup lang="ts">
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { queryKeys } from '~/constants/query-keys'
+import { paymentsApi } from '~/services/api'
+
+const queryClient = useQueryClient()
+const filters = ref({ type: 'electricity', status: 'pending' })
+
+// ✅ Query with service function
+const billsQuery = useQuery({
+  queryKey: queryKeys.bills.list(filters.value),
+  queryFn: () => paymentsApi.getBills(filters.value)
+})
+
+// ✅ Mutation with cache invalidation
+const createMutation = useMutation({
+  mutationFn: paymentsApi.createBill,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.bills.lists() })
   }
-  
-  const createBill = async (billData) => {
-    return await $fetch('/api/management/payments/create_bill/', {
-      method: 'POST', body: billData
-    })
-  }
-  
-  const createBulkBills = async (billsData) => {
-    return await $fetch('/api/management/payments/create_bulk_bills/', {
-      method: 'POST', body: billsData
-    })
-  }
-  
-  const getPaymentDashboard = async () => {
-    return await $fetch('/api/management/payments/dashboard/')
-  }
-  
-  const getClusterWallet = async () => {
-    return await $fetch('/api/management/payments/cluster_wallet/')
-  }
-  
-  return { 
-    fetchBills, 
-    createBill, 
-    createBulkBills, 
-    getPaymentDashboard, 
-    getClusterWallet 
-  }
-}
+})
+</script>
+
+<template>
+  <div v-if="billsQuery.isLoading.value">Loading...</div>
+  <div v-else-if="billsQuery.isError.value">Error: {{ billsQuery.error.value?.message }}</div>
+  <div v-else>
+    <div v-for="bill in billsQuery.data.value?.results" :key="bill.id">
+      {{ bill.title }}
+    </div>
+  </div>
+</template>
 ```
 
-### Announcements
-```typescript
-// composables/management/useAnnouncements.ts
-export const useAnnouncements = () => {
-  const fetchAnnouncements = async (params = {}) => {
-    return await $fetch('/api/management/announcements/', {
-      method: 'GET', query: params
-    })
-  }
-  
-  const createAnnouncement = async (data) => {
-    return await $fetch('/api/management/announcements/', {
-      method: 'POST', body: data
-    })
-  }
-  
-  const publishAnnouncement = async (id) => {
-    return await $fetch(`/api/management/announcements/${id}/publish/`, {
-      method: 'POST'
-    })
-  }
-  
-  return { fetchAnnouncements, createAnnouncement, publishAnnouncement }
-}
-```
+### Infinite Query Pattern
 
-### Maintenance
-```typescript
-// composables/management/useMaintenance.ts
-export const useMaintenance = () => {
-  const fetchMaintenanceLogs = async (params = {}) => {
-    return await $fetch('/api/management/maintenance-logs/', {
-      method: 'GET', query: params
-    })
-  }
-  
-  const createMaintenanceLog = async (data) => {
-    return await $fetch('/api/management/maintenance-logs/', {
-      method: 'POST', body: data
-    })
-  }
-  
-  const updateMaintenanceStatus = async (id, status) => {
-    return await $fetch(`/api/management/maintenance-logs/${id}/`, {
-      method: 'PATCH', body: { status }
-    })
-  }
-  
-  const fetchMaintenanceSchedules = async (params = {}) => {
-    return await $fetch('/api/management/maintenance-schedules/', {
-      method: 'GET', query: params
-    })
-  }
-  
-  return { 
-    fetchMaintenanceLogs, 
-    createMaintenanceLog, 
-    updateMaintenanceStatus,
-    fetchMaintenanceSchedules 
-  }
-}
-```
+```vue
+<script setup lang="ts">
+import { useInfiniteQuery } from '@tanstack/vue-query'
+import { queryKeys } from '~/constants/query-keys'
+import { paymentsApi } from '~/services/api'
 
-### Helpdesk
-```typescript
-// composables/management/useHelpdesk.ts
-export const useHelpdesk = () => {
-  const fetchIssues = async (params = {}) => {
-    return await $fetch('/api/management/helpdesk/issues/', {
-      method: 'GET', query: params
-    })
-  }
-  
-  const createIssue = async (issueData) => {
-    return await $fetch('/api/management/helpdesk/issues/', {
-      method: 'POST', body: issueData
-    })
-  }
-  
-  const assignIssue = async (issueId, assigneeId) => {
-    return await $fetch(`/api/management/helpdesk/issues/${issueId}/assign/`, {
-      method: 'POST', body: { assignedTo: assigneeId }
-    })
-  }
-  
-  const getIssueStatistics = async () => {
-    return await $fetch('/api/management/helpdesk/issues/statistics/')
-  }
-  
-  const addIssueComment = async (issueId, comment) => {
-    return await $fetch(`/api/management/helpdesk/issues/${issueId}/comments/`, {
-      method: 'POST', body: { content: comment }
-    })
-  }
-  
-  return { 
-    fetchIssues, 
-    createIssue, 
-    assignIssue, 
-    getIssueStatistics,
-    addIssueComment 
-  }
-}
-```
+const filters = ref({ billType: '' })
 
-### Shifts Management
-```typescript
-// composables/management/useShifts.ts
-export const useShifts = () => {
-  const fetchShifts = async (params = {}) => {
-    return await $fetch('/api/management/shifts/', {
-      method: 'GET', query: params
-    })
-  }
-  
-  const createShift = async (shiftData) => {
-    return await $fetch('/api/management/shifts/', {
-      method: 'POST', body: shiftData
-    })
-  }
-  
-  const cancelShift = async (shiftId) => {
-    return await $fetch(`/api/management/shifts/${shiftId}/cancel/`, {
-      method: 'POST'
-    })
-  }
-  
-  const getShiftStatistics = async () => {
-    return await $fetch('/api/management/shifts/statistics/')
-  }
-  
-  const clockIn = async (shiftId) => {
-    return await $fetch(`/api/management/shifts/${shiftId}/clock-in/`, {
-      method: 'POST'
-    })
-  }
-  
-  const clockOut = async (shiftId) => {
-    return await $fetch(`/api/management/shifts/${shiftId}/clock-out/`, {
-      method: 'POST'
-    })
-  }
-  
-  return { 
-    fetchShifts, 
-    createShift, 
-    cancelShift, 
-    getShiftStatistics,
-    clockIn,
-    clockOut 
-  }
-}
-```
+const billsQuery = useInfiniteQuery({
+  queryKey: queryKeys.bills.infinite(filters.value),
+  queryFn: ({ pageParam = 1 }) => 
+    paymentsApi.getBills({ ...filters.value, page: pageParam }),
+  getNextPageParam: (lastPage) => lastPage.next ? lastPage.next : undefined,
+  initialPageParam: 1,
+})
+</script>
 
-### Emergency Management
-```typescript
-// composables/management/useEmergency.ts
-export const useEmergency = () => {
-  const fetchSOSAlerts = async (params = {}) => {
-    return await $fetch('/api/management/sos-alerts/', {
-      method: 'GET', query: params
-    })
-  }
-  
-  const acknowledgeAlert = async (alertId) => {
-    return await $fetch(`/api/management/sos-alerts/${alertId}/acknowledge/`, {
-      method: 'POST'
-    })
-  }
-  
-  const resolveAlert = async (alertId, responseData) => {
-    return await $fetch(`/api/management/sos-alerts/${alertId}/resolve/`, {
-      method: 'POST', body: responseData
-    })
-  }
-  
-  const fetchEmergencyContacts = async () => {
-    return await $fetch('/api/management/emergency-contacts/')
-  }
-  
-  const fetchEmergencyResponses = async (params = {}) => {
-    return await $fetch('/api/management/emergency-responses/', {
-      method: 'GET', query: params
-    })
-  }
-  
-  return { 
-    fetchSOSAlerts, 
-    acknowledgeAlert, 
-    resolveAlert, 
-    fetchEmergencyContacts,
-    fetchEmergencyResponses 
-  }
-}
+<template>
+  <InfiniteLoader :query="billsQuery">
+    <template #default="{ items }">
+      <div v-for="bill in items" :key="bill.id">
+        {{ bill.title }}
+      </div>
+    </template>
+  </InfiniteLoader>
+</template>
 ```
+<!-- 
+### Mutation with Optimistic Updates
+
+```typescript
+const updateMutation = useMutation({
+  mutationFn: ({ id, data }: { id: string, data: any }) => 
+    paymentsApi.updateBill(id, data),
+  onMutate: async (variables) => {
+    // Cancel outgoing refetches
+    await queryClient.cancelQueries({ 
+      queryKey: queryKeys.bills.detail(variables.id) 
+    })
+    
+    // Snapshot previous value
+    const previousBill = queryClient.getQueryData(
+      queryKeys.bills.detail(variables.id)
+    )
+    
+    // Optimistically update
+    queryClient.setQueryData(
+      queryKeys.bills.detail(variables.id),
+      (old: any) => ({ ...old, ...variables.data })
+    )
+    
+    return { previousBill }
+  },
+  onError: (err, variables, context) => {
+    // Rollback on error
+    queryClient.setQueryData(
+      queryKeys.bills.detail(variables.id),
+      context?.previousBill
+    )
+  },
+  onSettled: (data, error, variables) => {
+    // Refetch to ensure consistency
+    queryClient.invalidateQueries({ 
+      queryKey: queryKeys.bills.detail(variables.id) 
+    })
+  },
+})
+``` -->
 
 ## 🎨 Page Implementation Examples
 
-### Management Bills Page
+### Management Bills Page (with TanStack Query)
+
 ```vue
 <!-- pages/management/payments/bills.vue -->
 <template>
   <div class="bills-management">
     <div class="header">
       <h1>Bills Management</h1>
-      <Button @click="showCreateBillModal = true">Create Bill</Button>
+      <Button 
+        @click="showCreateModal = true" 
+        :disabled="createMutation.isPending.value"
+      >
+        {{ createMutation.isPending.value ? 'Creating...' : 'Create Bill' }}
+      </Button>
     </div>
     
     <div class="filters">
-      <Input v-model="searchQuery" placeholder="Search bills..." />
+      <Input v-model="filters.search" placeholder="Search bills..." />
       <Select v-model="filters.billType">
         <option value="">All Types</option>
         <option value="electricity">Electricity</option>
         <option value="water">Water</option>
-        <option value="security">Security</option>
       </Select>
     </div>
     
-    <InfiniteLoader :fetch-fn="fetchBills" :page-size="20">
-      <template #default="{ items, loading }">
-        <GenericTable 
-          :data="items" 
-          :columns="columns" 
-          :actions="tableActions"
-          :loading="loading"
-        />
+    <!-- Loading State -->
+    <div v-if="billsQuery.isLoading.value" class="loading">
+      <Spinner /> Loading bills...
+    </div>
+    
+    <!-- Error State -->
+    <div v-else-if="billsQuery.isError.value" class="error">
+      Error: {{ billsQuery.error.value?.message }}
+      <Button @click="billsQuery.refetch()">Retry</Button>
+    </div>
+    
+    <!-- Data Table -->
+    <GenericTable 
+      v-else
+      :data="billsQuery.data.value?.results || []" 
+      :columns="columns" 
+      :actions="tableActions"
+    />
+    
+    <!-- Create Bill Modal -->
+    <BillFormModal 
+      v-model:open="showCreateModal"
+      @submit="handleCreateBill"
+      :loading="createMutation.isPending.value"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { queryKeys } from '~/constants/query-keys'
+import { paymentsApi } from '~/services/api'
+
+definePageMeta({
+  title: 'Bills Management',
+  middleware: ['auth', 'permissions']
+})
+
+const queryClient = useQueryClient()
+const filters = ref({ search: '', billType: '' })
+const showCreateModal = ref(false)
+
+// ✅ Query with reactive filters
+const billsQuery = useQuery({
+  queryKey: queryKeys.bills.list(filters.value),
+  queryFn: () => paymentsApi.getBills(filters.value)
+})
+
+// ✅ Create mutation
+const createMutation = useMutation({
+  mutationFn: paymentsApi.createBill,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.bills.lists() })
+    showCreateModal.value = false
+  }
+})
+
+// ✅ Delete mutation
+const deleteMutation = useMutation({
+  mutationFn: paymentsApi.deleteBill,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.bills.lists() })
+  }
+})
+
+const handleCreateBill = (data: any) => {
+  createMutation.mutate(data)
+}
+
+const handleDeleteBill = (billId: string) => {
+  if (confirm('Are you sure?')) {
+    deleteMutation.mutate(billId)
+  }
+}
+
+const columns = [
+  { key: 'billNumber', label: 'Bill #' },
+  { key: 'title', label: 'Title' },
+  { key: 'amount', label: 'Amount' },
+  { key: 'dueDate', label: 'Due Date' },
+]
+
+const tableActions = [
+  { label: 'View', action: (bill) => navigateTo(`/management/payments/bills/${bill.id}`) },
+  { label: 'Delete', action: (bill) => handleDeleteBill(bill.id) }
+]
+</script>
+```
+
+### Infinite Scroll Bills Page
+
+```vue
+<!-- pages/management/payments/bills-infinite.vue -->
+<template>
+  <div class="bills-infinite">
+    <h1>Bills (Infinite Scroll)</h1>
+    
+    <div v-if="billsQuery.isLoading.value">Loading...</div>
+    
+    <InfiniteLoader v-else :query="billsQuery">
+      <template #default="{ items }">
+        <div v-for="bill in items" :key="bill.id" class="bill-card">
+          <h3>{{ bill.title }}</h3>
+          <p>{{ bill.amount }}</p>
+        </div>
       </template>
     </InfiniteLoader>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  title: 'Bills Management',
-  middleware: ['auth', 'permissions']
+import { useInfiniteQuery } from '@tanstack/vue-query'
+import { queryKeys } from '~/constants/query-keys'
+import { paymentsApi } from '~/services/api'
+
+const filters = ref({ billType: 'electricity' })
+
+const billsQuery = useInfiniteQuery({
+  queryKey: queryKeys.bills.infinite(filters.value),
+  queryFn: ({ pageParam = 1 }) => 
+    paymentsApi.getBills({ ...filters.value, page: pageParam }),
+  getNextPageParam: (lastPage) => lastPage.next ? lastPage.next : undefined,
+  initialPageParam: 1,
 })
-
-const { fetchBills, createBill } = usePayments()
-const searchQuery = ref('')
-const filters = ref({ billType: '', status: '' })
-const showCreateBillModal = ref(false)
-
-// Server-side initial load
-const { data: initialData } = await useLazyAsyncData('bills-list', () =>
-  fetchBills({ page: 1, pageSize: 20 }),
-  { server: true, default: () => ({ results: [], count: 0 }) }
-)
-
-const columns = [
-  { key: 'billNumber', label: 'Bill #' },
-  { key: 'title', label: 'Title' },
-  { key: 'type', label: 'Type' },
-  { key: 'amount', label: 'Amount' },
-  { key: 'dueDate', label: 'Due Date' },
-  { key: 'status', label: 'Status' }
-]
-
-const tableActions = [
-  { label: 'View', action: (bill) => navigateTo(`/management/payments/bills/${bill.id}`) },
-  { label: 'Edit', action: (bill) => editBill(bill) },
-  { label: 'Delete', action: (bill) => deleteBill(bill) }
-]
 </script>
 ```
 
-### Members Dashboard
+### Management Dashboard
+
 ```vue
 <!-- pages/dashboard.vue -->
 <template>
@@ -1165,36 +1344,42 @@ const tableActions = [
       <p>Welcome back, {{ user?.name }}</p>
     </div>
     
-    <div class="quick-stats">
-      <StatsCard title="Total Bills" :value="dashboardStats?.totalBills" />
-      <StatsCard title="Pending Payments" :value="dashboardStats?.pendingPayments" />
-      <StatsCard title="Active Users" :value="dashboardStats?.activeUsers" />
-    </div>
+    <div v-if="dashboardQuery.isLoading.value">Loading stats...</div>
     
-    <div class="recent-activity">
-      <h2>Recent Activity</h2>
-      <ActivityList :activities="recentActivity" />
+    <div v-else-if="dashboardQuery.data.value" class="quick-stats">
+      <StatsCard 
+        title="Total Bills" 
+        :value="dashboardQuery.data.value.totalBills" 
+      />
+      <StatsCard 
+        title="Pending Payments" 
+        :value="dashboardQuery.data.value.pendingPayments" 
+      />
+      <StatsCard 
+        title="Active Users" 
+        :value="dashboardQuery.data.value.activeUsers" 
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useQuery } from '@tanstack/vue-query'
+import { queryKeys } from '~/constants/query-keys'
+import { paymentsApi } from '~/services/api'
+
 definePageMeta({
   title: 'Management Dashboard',
   middleware: 'auth'
 })
 
 const { user } = useAuth()
-const { getPaymentDashboard } = usePayments()
 
-// Server-side data loading
-const { data: dashboardStats } = await useLazyAsyncData('dashboard-stats', () =>
-  getPaymentDashboard()
-)
-
-const { data: recentActivity } = await useLazyAsyncData('recent-activity', () =>
-  $fetch('/api/management/activity/', { query: { limit: 10 } })
-)
+const dashboardQuery = useQuery({
+  queryKey: queryKeys.bills.dashboard(),
+  queryFn: paymentsApi.getPaymentDashboard,
+  staleTime: 1000 * 60 * 2, // 2 minutes
+})
 </script>
 ```
 
@@ -1540,66 +1725,104 @@ interface Bill {
 
 This architecture provides a **management-focused** foundation for the ClustR frontend application with proper authentication, consistent camelCase usage, and modular organization based on the Django API specification.
 
-## 🚧 PENDING TASKS - Implementation Session September 13, 2025
+## 🚧 PENDING TASKS - Implementation Session November 13, 2025
 
 ### Immediate Next Steps
-- [ ] **Complete GenericTable Integration**
-  - [ ] Refactor existing `components/shared/GenericTable.vue` to integrate with `usePagination` composable
-  - [ ] Support both server-side and client-side pagination modes
-  - [ ] Add infinite scroll mode support
-  - [ ] Maintain existing component API for backwards compatibility
-  <!-- - [ ] Test with InfiniteLoader component integration -->
+- [ ] **Install TanStack Vue Query**
+  - [ ] Run: `npm install @tanstack/vue-query` or `bun add @tanstack/vue-query`
+  - [ ] Create `plugins/vue-query.client.ts` plugin
+  - [ ] Verify devtools are working
 
-- [ ] **Install Required Dependencies**
-  - [x] Install `lodash-es` package needed for case conversion plugin
-  - [x] Update package.json with proper lodash-es version
-  - [x] Verify case conversion plugin works correctly
+- [ ] **Create Query Keys Factory**
+  - [ ] Create `constants/query-keys.ts` with hierarchical structure
+  - [ ] Define keys for all domains (bills, payments, announcements, etc.)
+  - [ ] Export typed query key factory
+
+- [ ] **Create Service Layer**
+  - [ ] Create `services/api/` directory
+  - [ ] Implement `payments.service.ts` (start here)
+  - [ ] Implement other service files (announcements, maintenance, etc.)
+  - [ ] Create `services/api/index.ts` barrel export
+
+- [ ] **Refactor Existing Composables**
+  - [ ] Check if `composables/useClusterSignup.ts` needs refactoring
+  - [ ] Remove any old composables that duplicate service layer
+  - [ ] Keep only `useAuth.ts` and `useCluster.ts` as utility composables
 
 ### Core Management Module Implementation
 - [ ] **Payment Management Module** 
-  - [ ] Create bills CRUD operations in `composables/management/usePayments.ts`
-  - [ ] Implement bulk bill creation functionality
-  - [ ] Build payment dashboard with statistics
-  - [ ] Add cluster wallet management features
-  - [ ] Create payment-related pages and components
+  - [ ] Create `services/api/payments.service.ts` with all API methods
+  - [ ] Build bills listing page with TanStack Query
+  - [ ] Implement bill creation with mutations
+  - [ ] Add payment dashboard with statistics
+  - [ ] Implement cluster wallet management
 
 - [ ] **User Management System**
-  - [ ] Implement user listing and filtering
+  - [ ] Create `services/api/users.service.ts`
+  - [ ] Implement user listing with filtering
   - [ ] Add role assignment functionality  
   - [ ] Create staff management interface
   - [ ] Build permission control system
-  - [ ] Add user management pages and forms
+
+### Component Updates
+- [ ] **Update InfiniteLoader Component**
+  - [ ] Refactor to accept `UseInfiniteQueryReturnType` prop
+  - [ ] Remove old pagination logic
+  - [ ] Test with bills infinite scroll
+
+- [ ] **Update GenericTable Component**
+  - [ ] Make it work with TanStack Query loading states
+  - [ ] Support both regular and infinite query data
+  - [ ] Maintain backwards compatibility if needed
 
 ### Additional Features Queue
 - [ ] **Content Management**
-  - [ ] Announcements system with file attachments
-  - [ ] Maintenance logging and scheduling
-  - [ ] File upload and management system
+  - [ ] Create `services/api/announcements.service.ts`
+  - [ ] Create `services/api/maintenance.service.ts`
+  - [ ] Implement file upload service
 
 - [ ] **Operations Management**
-  - [ ] Helpdesk ticketing system
-  - [ ] Emergency alerts and SOS handling
-  - [ ] Staff shift management with clock-in/out
-  - [ ] Reporting and analytics dashboard
+  - [ ] Create `services/api/helpdesk.service.ts`
+  - [ ] Create `services/api/emergency.service.ts`
+  - [ ] Create `services/api/shifts.service.ts`
 
 ### Technical Debt & Polish
 - [ ] **Error Handling**
-  - [ ] Implement comprehensive error boundaries
-  - [ ] Add user-friendly error messages
+  - [ ] Add global error handler for TanStack Query
+  - [ ] Implement toast notifications for errors
   - [ ] Create error logging system
 
 - [ ] **Performance Optimization**
-  - [ ] Optimize infinite scroll performance
-  - [ ] Add proper loading states everywhere
-  - [ ] Implement caching strategies
+  - [ ] Configure appropriate staleTime for different queries
+  - [ ] Implement prefetching for common navigation paths
+  - [ ] Add optimistic updates for mutations
 
 - [ ] **Testing & Quality**
-  - [ ] Add unit tests for composables
-  - [ ] Create integration tests for API routes
+  - [ ] Add unit tests for service functions
+  - [ ] Test query key invalidation patterns
   - [ ] Validate TypeScript types against API
 
-### Session Notes
-**Date**: September 13, 2025  
-**Status**: Core infrastructure successfully implemented  
-**Next Priority**: Complete pagination system and move to management modules  
-**Technical Context**: JWT auth working, case conversion ready, server forwarding complete, middleware protection active
+### Architecture Notes
+**Date**: November 13, 2025  
+**Status**: Architecture revised with TanStack Query + Service Layer pattern  
+**Key Decisions**:
+- ✅ No custom abstraction over useQuery/useMutation
+- ✅ Service layer with plain functions (not classes)
+- ✅ Hierarchical query keys for smart invalidation
+- ✅ TanStack Query as cache manager, not data fetcher
+- ✅ Keep $api plugin for case conversion and auth
+
+**Existing Code to Refactor**:
+- `composables/useClusterSignup.ts` - ✅ Keep as-is (utility composable for multi-step form state)
+- `composables/usePagination.ts` - ❌ Remove (replaced by TanStack Query's useInfiniteQuery)
+- `composables/useUserManagement.ts` - ❌ Refactor to `services/api/users.service.ts`
+- `composables/useWallet.ts` - ❌ Refactor to `services/api/wallet.service.ts` + TanStack Query
+- `composables/useDataManager.ts` - Need to review
+- `composables/usePermissions.ts` - ✅ Keep as-is (utility composable)
+- `composables/useToast.js` - ✅ Keep as-is (UI utility)
+- `composables/useSuccessModal.js` - ✅ Keep as-is (UI utility)
+- `composables/useFormatters.js` - ✅ Keep as-is (utility functions)
+- `composables/useFieldValidation.ts` - ✅ Keep as-is (form utility)
+- `composables/useDataFilters.ts` - Need to review
+
+**Next Priority**: Install TanStack Query, create query keys, build first service (payments), refactor useUserManagement and useWallet

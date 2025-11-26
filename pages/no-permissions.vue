@@ -6,6 +6,7 @@
 
 <script setup>
 definePageMeta({
+  auth: false,
   layout: false,
 })
 </script>

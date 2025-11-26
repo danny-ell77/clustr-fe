@@ -4,15 +4,19 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev --port 3003",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "migrate:design-system": "tsx scripts/migrate-design-system.ts",
+    "migrate:shadcn": "tsx scripts/migrate-to-shadcn.ts"
   },
   "dependencies": {
     "@nuxt/icon": "1.14.0",
     "@nuxtjs/tailwindcss": "7.0.0-beta.0",
+    "@tanstack/vue-query": "^5.91.0",
     "@vueuse/core": "^13.9.0",
+    "apexcharts": "^5.3.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lodash": "^4.17.21",
@@ -22,10 +26,13 @@
     "shadcn-nuxt": "^2.2.0",
     "tailwind-merge": "^3.3.1",
     "vue": "^3.5.17",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "vue3-apexcharts": "^1.10.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",
+    "glob": "^11.0.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.9.2"
   }
 }

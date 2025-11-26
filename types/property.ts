@@ -4,10 +4,10 @@ import { UserSummary } from "./portal";
 export type MaintenancePriority = "low" | "medium" | "high";
 export type MaintenanceStatus =
   | "scheduled"
-  | "in_progress"
+  | "inProgress"
   | "completed"
   | "overdue";
-export type MaintenanceRecurrence = "one_time" | "recurring";
+export type MaintenanceRecurrence = "oneTime" | "recurring";
 
 // BASE INTERFACES
 interface BaseModel {
@@ -25,7 +25,7 @@ interface BaseMaintenanceRequest {
 interface BaseProperty {
   name: string;
   address: string;
-  propertyType?: "residential" | "commercial" | "mixed_use";
+  propertyType?: "residential" | "commercial" | "mixedUse";
 }
 
 interface BaseWorkOrder {
@@ -113,7 +113,7 @@ export interface ResidentImportedData {
 }
 
 export interface MaintenanceRequest extends BaseModel, BaseMaintenanceRequest {
-  status?: "pending" | "in_progress" | "completed" | "cancelled";
+  status?: "pending" | "inProgress" | "completed" | "cancelled";
   requestedBy: string;
   requestedByName?: string;
   propertyUnit: string;
@@ -124,16 +124,16 @@ export interface MaintenanceRequestCreate extends BaseMaintenanceRequest {
 }
 
 export interface MaintenanceRequestUpdate extends BaseMaintenanceRequest {
-  status?: "pending" | "in_progress" | "completed" | "cancelled";
+  status?: "pending" | "inProgress" | "completed" | "cancelled";
 }
 
 export interface Property extends BaseModel, BaseProperty {
   units?: PropertyUnit[];
 }
 
-export interface PropertyCreate extends BaseProperty {}
+export interface PropertyCreate extends BaseProperty { }
 
-export interface PropertyUpdate extends BaseProperty {}
+export interface PropertyUpdate extends BaseProperty { }
 
 export interface PropertyUnit extends BaseModel {
   unitNumber: string;
@@ -164,14 +164,14 @@ export interface Resident extends BaseModel {
 }
 
 export interface WorkOrder extends BaseModel, BaseWorkOrder {
-  status?: "pending" | "in_progress" | "completed" | "cancelled";
+  status?: "pending" | "inProgress" | "completed" | "cancelled";
   assignedToName?: string;
 }
 
-export interface WorkOrderCreate extends BaseWorkOrder {}
+export interface WorkOrderCreate extends BaseWorkOrder { }
 
 export interface WorkOrderUpdate extends BaseWorkOrder {
-  status?: "pending" | "in_progress" | "completed" | "cancelled";
+  status?: "pending" | "inProgress" | "completed" | "cancelled";
 }
 
 export enum IssueTypeEnum {
@@ -356,7 +356,7 @@ export interface IssueCommentCreate {
   parent?: string;
 }
 
-export interface IssueTicketCreate extends BaseIssueTicket {}
+export interface IssueTicketCreate extends BaseIssueTicket { }
 
 export interface MaintenanceLog extends BaseModel, BaseMaintenanceLog {
   maintenanceNumber?: string;
@@ -382,7 +382,7 @@ export interface MaintenanceLog extends BaseModel, BaseMaintenanceLog {
   totalCost?: string;
 }
 
-export interface MaintenanceLogCreate extends BaseMaintenanceLog {}
+export interface MaintenanceLogCreate extends BaseMaintenanceLog { }
 
 export interface MaintenanceLogUpdate extends BaseMaintenanceLog {
   status?: MaintenanceStatusEnum;
@@ -397,7 +397,7 @@ export interface MaintenanceSchedule extends BaseModel, BaseMaintenanceSchedule 
   isActive?: boolean;
 }
 
-export interface MaintenanceScheduleCreate extends BaseMaintenanceSchedule {}
+export interface MaintenanceScheduleCreate extends BaseMaintenanceSchedule { }
 
 export interface TaskComment extends BaseModel {
   content: string;
@@ -435,7 +435,7 @@ export interface TaskList extends BaseModel {
   durationWorked?: string;
 }
 
-export interface TaskCreate extends BaseTask {}
+export interface TaskCreate extends BaseTask { }
 
 export interface TaskAttachment extends BaseModel {
   fileName: string;

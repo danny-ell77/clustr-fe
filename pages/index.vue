@@ -4,7 +4,7 @@
       <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
       <p class="text-gray-600 mt-2">Welcome to your property management system</p>
     </div>
-    
+
     <!-- Quick Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div class="bg-white rounded-lg shadow p-6">
@@ -18,7 +18,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
           <div class="p-2 bg-green-100 rounded-lg">
@@ -30,7 +30,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
           <div class="p-2 bg-purple-100 rounded-lg">
@@ -43,7 +43,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Available Modules -->
     <div class="bg-white rounded-lg shadow">
       <div class="px-6 py-4 border-b border-gray-200">
@@ -51,12 +51,8 @@
       </div>
       <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <NuxtLink
-            v-for="module in availableModules"
-            :key="module.id"
-            :to="`/${module.id}`"
-            class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all"
-          >
+          <NuxtLink v-for="module in availableModules" :key="module.id" :to="`/${module.id}`"
+            class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all">
             <div class="flex items-center">
               <div class="p-2 bg-blue-100 rounded-lg">
                 <Icon :name="module.icon" class="w-6 h-6 text-blue-600" />
@@ -74,7 +70,7 @@
 </template>
 
 <script setup>
-import { useAuth } from '~/modules/core/runtime/composables/useAuth'
+import { useAuth } from '~/composables/auth/useAuth'
 import { definePageMeta } from '#imports'
 import Icon from '~/components/Icon.vue'
 
@@ -82,6 +78,7 @@ const { user, permissions, availableModules } = useAuth()
 
 // Set page meta
 definePageMeta({
+  auth: false,
   title: 'Dashboard',
   description: 'Main dashboard overview'
 })
