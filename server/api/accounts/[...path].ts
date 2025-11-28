@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
       ...(clusterSlug && { "X-Cluster-Slug": clusterSlug }),
     };
 
-    return await $fetch(`${config.backendUrl}/accounts/${path}`, {
+    const response = await $fetch.raw(`${config.public.apiBase}/accounts/${path}`, {
       method,
       headers,
       body,
@@ -40,6 +40,18 @@ export default defineEventHandler(async (event) => {
         ...(clusterSlug && { cluster_slug: clusterSlug }),
       },
     });
+
+    const setCookieHeaders = (response.headers as any).getSetCookie 
+      ? (response.headers as any).getSetCookie() 
+      : response.headers.get("set-cookie");
+    
+    console.log(setCookieHeaders)
+      
+    if (setCookieHeaders) {
+      setResponseHeader(event, "set-cookie", setCookieHeaders);
+    }
+
+    return response._data;
   };
 
   try {

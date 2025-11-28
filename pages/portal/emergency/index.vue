@@ -2,7 +2,7 @@
     <div class="emergency-management">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h1 class="text-2xl font-bold text-foreground">Emergency Alerts</h1>
+                <h1 class="text-2xl text-foreground">Emergency Alerts</h1>
                 <p class="text-muted-foreground">Manage and respond to emergency alerts</p>
             </div>
 
@@ -55,7 +55,7 @@
                                 <SelectValue placeholder="All Statuses" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">All Statuses</SelectItem>
+                                <SelectItem value="All">All Statuses</SelectItem>
                                 <SelectItem value="active">Active</SelectItem>
                                 <SelectItem value="acknowledged">Acknowledged</SelectItem>
                                 <SelectItem value="responding">Responding</SelectItem>
@@ -72,7 +72,7 @@
                                 <SelectValue placeholder="All Types" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">All Types</SelectItem>
+                                <SelectItem value="All">All Types</SelectItem>
                                 <SelectItem value="health">Health Emergency</SelectItem>
                                 <SelectItem value="theft">Theft/Robbery</SelectItem>
                                 <SelectItem value="domestic_violence">Domestic Violence</SelectItem>
@@ -91,7 +91,7 @@
                                 <SelectValue placeholder="All Priorities" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">All Priorities</SelectItem>
+                                <SelectItem value="All">All Priorities</SelectItem>
                                 <SelectItem value="low">Low</SelectItem>
                                 <SelectItem value="medium">Medium</SelectItem>
                                 <SelectItem value="high">High</SelectItem>
@@ -444,7 +444,7 @@ const handleResolve = () => {
 const getPriorityClass = (priority: string) => {
     const classes = {
         low: 'bg-gray-100 text-gray-800',
-        medium: 'bg-blue-100 text-blue-800',
+        medium: 'bg-primary/15 text-primary',
         high: 'bg-orange-100 text-orange-800',
         critical: 'bg-red-100 text-red-800'
     }
@@ -455,7 +455,7 @@ const getStatusClass = (status: string) => {
     const classes = {
         active: 'bg-red-100 text-red-800',
         acknowledged: 'bg-yellow-100 text-yellow-800',
-        responding: 'bg-blue-100 text-blue-800',
+        responding: 'bg-primary/15 text-primary',
         resolved: 'bg-green-100 text-green-800',
         cancelled: 'bg-gray-100 text-gray-800',
         false_alarm: 'bg-purple-100 text-purple-800'

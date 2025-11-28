@@ -7,14 +7,14 @@
         <div v-else-if="userQuery.isError.value" class="text-center py-8">
             <p class="text-red-600">Error loading user: {{ userQuery.error.value?.message }}</p>
             <button @click="userQuery.refetch()"
-                class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
                 Retry
             </button>
         </div>
 
         <div v-else-if="userQuery.data.value">
             <div class="mb-6">
-                <button @click="$router.back()" class="text-blue-600 hover:text-blue-800 flex items-center gap-2">
+                <button @click="$router.back()" class="text-primary hover:text-primary flex items-center gap-2">
                     <Icon name="arrow-left" class="w-4 h-4" />
                     Back to Users
                 </button>
@@ -24,12 +24,12 @@
                 <div class="lg:col-span-1">
                     <div class="card">
                         <div class="flex flex-col items-center">
-                            <div class="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mb-4">
+                            <div class="w-24 h-24 bg-primary rounded-full flex items-center justify-center mb-4">
                                 <span class="text-3xl font-medium text-white">
                                     {{ userQuery.data.value.name.charAt(0) }}
                                 </span>
                             </div>
-                            <h2 class="text-xl font-bold text-foreground">{{ userQuery.data.value.name }}</h2>
+                            <h2 class="text-xl text-foreground">{{ userQuery.data.value.name }}</h2>
                             <p class="text-muted-foreground">{{ userQuery.data.value.emailAddress }}</p>
                             <p class="text-muted-foreground">{{ userQuery.data.value.phoneNumber }}</p>
 
@@ -42,7 +42,7 @@
 
                             <div class="mt-6 w-full space-y-2">
                                 <button @click="showEditDialog = true"
-                                    class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                    class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
                                     Edit Profile
                                 </button>
                                 <button @click="handleDelete" :disabled="deleteMutation.isPending.value"
@@ -72,7 +72,7 @@
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold">Permissions</h3>
                             <button @click="permissionsQuery.refetch()"
-                                class="text-blue-600 hover:text-blue-800 text-sm">
+                                class="text-primary hover:text-primary text-sm">
                                 Refresh
                             </button>
                         </div>
@@ -107,7 +107,7 @@
             <div v-if="showEditDialog"
                 class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div class="bg-white p-6 rounded-lg max-w-md w-full">
-                    <h2 class="text-xl font-bold mb-4">Edit User</h2>
+                    <h2 class="text-xl mb-4">Edit User</h2>
 
                     <div class="space-y-4">
                         <div>
@@ -130,7 +130,7 @@
 
                     <div class="mt-6 flex gap-2">
                         <button @click="handleUpdate" :disabled="updateMutation.isPending.value"
-                            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                            class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50">
                             {{ updateMutation.isPending.value ? 'Saving...' : 'Save Changes' }}
                         </button>
                         <button @click="showEditDialog = false"

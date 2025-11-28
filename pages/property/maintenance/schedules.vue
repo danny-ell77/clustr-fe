@@ -2,10 +2,10 @@
     <div class="p-6 space-y-6">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-bold">Maintenance Schedules</h1>
+                <h1 class="text-2xl">Maintenance Schedules</h1>
                 <p class="text-muted-foreground">Manage recurring maintenance schedules</p>
             </div>
-            <Button @click="showCreateDialog = true" class="bg-blue-600 text-white">
+            <Button @click="showCreateDialog = true" class="bg-primary text-white">
                 Create Schedule
             </Button>
         </div>
@@ -18,7 +18,7 @@
                         <SelectValue placeholder="Frequency" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="">All Frequencies</SelectItem>
+                        <SelectItem value="All">All Frequencies</SelectItem>
                         <SelectItem value="DAILY">Daily</SelectItem>
                         <SelectItem value="WEEKLY">Weekly</SelectItem>
                         <SelectItem value="MONTHLY">Monthly</SelectItem>
@@ -53,12 +53,12 @@
                     </TableHeader>
                     <TableBody>
                         <TableRow v-for="schedule in schedulesQuery.data.value?.results" :key="schedule.id">
-                            <TableCell class="font-medium">{{ schedule.title }}</TableCell>
-                            <TableCell>{{ schedule.frequency }}</TableCell>
+                            <TableCell class="font-medium">{{ schedule.name }}</TableCell>
+                            <TableCell>{{ schedule.frequencyTypeDisplay }}</TableCell>
                             <TableCell>{{ formatDate(schedule.nextDueDate) }}</TableCell>
                             <TableCell>{{ schedule.propertyLocation }}</TableCell>
                             <TableCell>
-                                <Badge :variant="schedule.isActive ? 'success' : 'secondary'">
+                                <Badge :variant="schedule.isActive ? 'default' : 'secondary'">
                                     {{ schedule.isActive ? 'Active' : 'Inactive' }}
                                 </Badge>
                             </TableCell>
@@ -99,6 +99,11 @@
                 </div>
             </div>
         </div>
+
+        <ScheduleDialog v-model:open="showCreateDialog" @success="onScheduleCreated" />
+
+        <ScheduleDialog v-if="selectedSchedule" v-model:open="showEditDialog" :schedule="selectedSchedule"
+            @success="onScheduleUpdated" />
     </div>
 </template>
 
@@ -111,8 +116,10 @@ import { Input } from '~/components/ui/input'
 import { Badge } from '~/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+import ScheduleDialog from '~/components/property/maintenance/ScheduleDialog.vue'
 import { maintenanceApi } from '~/services/api/maintenance.api'
 import { queryKeys } from '~/constants/query-keys'
+import type { MaintenanceSchedule } from '~/types/maintenance'
 
 definePageMeta({
     title: 'Maintenance Schedules',
@@ -130,6 +137,8 @@ const filters = reactive({
 })
 
 const showCreateDialog = ref(false)
+const showEditDialog = ref(false)
+const selectedSchedule = ref<MaintenanceSchedule | null>(null)
 
 const schedulesQuery = useQuery({
     queryKey: computed(() => queryKeys.maintenance.schedules.list(filters)),
@@ -140,8 +149,18 @@ const viewSchedule = (id: string) => {
     router.push(`/property/maintenance/schedules/${id}`)
 }
 
-const editSchedule = (schedule: any) => {
-    console.log('Edit schedule:', schedule)
+const editSchedule = (schedule: MaintenanceSchedule) => {
+    selectedSchedule.value = schedule
+    showEditDialog.value = true
+}
+
+const onScheduleCreated = () => {
+    showCreateDialog.value = false
+}
+
+const onScheduleUpdated = () => {
+    showEditDialog.value = false
+    selectedSchedule.value = null
 }
 
 const nextPage = () => {

@@ -2,7 +2,7 @@
     <div class="space-y-6">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-bold">Emergency Contacts</h1>
+                <h1 class="text-3xl">Emergency Contacts</h1>
                 <p class="text-muted-foreground">Manage estate-wide and personal emergency contacts</p>
             </div>
 
@@ -22,7 +22,7 @@
                                 <SelectValue placeholder="All Types" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">All</SelectItem>
+                                <SelectItem value="All">All</SelectItem>
                                 <SelectItem :value="EmergencyContactType.ESTATE_WIDE">Estate-Wide</SelectItem>
                                 <SelectItem :value="EmergencyContactType.PERSONAL">Personal</SelectItem>
                             </SelectContent>
@@ -36,7 +36,7 @@
                                 <SelectValue placeholder="All Types" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">All</SelectItem>
+                                <SelectItem value="All">All</SelectItem>
                                 <SelectItem :value="EmergencyType.FIRE">Fire</SelectItem>
                                 <SelectItem :value="EmergencyType.MEDICAL">Medical</SelectItem>
                                 <SelectItem :value="EmergencyType.SECURITY">Security</SelectItem>
@@ -55,7 +55,7 @@
                                 <SelectValue placeholder="All" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">All</SelectItem>
+                                <SelectItem value="All">All</SelectItem>
                                 <SelectItem value="true">Active</SelectItem>
                                 <SelectItem value="false">Inactive</SelectItem>
                             </SelectContent>

@@ -7,7 +7,7 @@
       <div v-for="cell in cells" :key="cell.key" class="bg-white min-h-[90px] p-2">
         <div class="text-xs text-gray-500">{{ cell.day }}</div>
         <div class="mt-1 space-y-1">
-          <div v-for="e in cell.events" :key="e.id" class="text-[10px] rounded px-1 py-0.5 bg-blue-100 text-blue-700 truncate">{{ e.title }}</div>
+          <div v-for="e in cell.events" :key="e.id" class="text-[10px] rounded px-1 py-0.5 bg-primary/15 text-primary truncate">{{ e.title }}</div>
         </div>
       </div>
     </div>

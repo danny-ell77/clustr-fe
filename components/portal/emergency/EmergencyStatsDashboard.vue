@@ -9,17 +9,7 @@
         </div>
 
         <div v-else-if="statistics" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard title="Total Alerts" :value="statistics.totalAlerts" icon="alert-triangle" color="blue" />
-
-                <StatCard title="Active Alerts" :value="statistics.activeAlerts" icon="alert-circle" color="red"
-                    :class="statistics.activeAlerts > 0 ? 'ring-2 ring-red-500' : ''" />
-
-                <StatCard title="Resolved Today" :value="statistics.resolvedAlerts" icon="check-circle" color="green" />
-
-                <StatCard title="Avg Response Time" :value="formatResponseTime(statistics.averageResponseTime)"
-                    suffix="mins" icon="clock" color="purple" />
-            </div>
+            <StatPane :stats="emergencyStats" />
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
@@ -129,7 +119,7 @@ import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
 import { Skeleton } from '~/components/ui/skeleton'
 import Icon from '~/components/Icon.vue'
-import StatCard from '~/components/common/StatCard.vue'
+import StatPane from '~/components/common/StatPane.vue'
 import StatusBadge from '~/components/common/StatusBadge.vue'
 import PriorityBadge from '~/components/common/PriorityBadge.vue'
 import EmptyState from '~/components/common/EmptyState.vue'
@@ -147,6 +137,13 @@ const props = withDefaults(defineProps<Props>(), {
     isLoading: false,
     showActiveAlerts: true
 })
+
+const emergencyStats = computed(() => [
+    { title: 'Total Alerts', value: props.statistics?.totalAlerts, color: '#0ea5e9' },
+    { title: 'Active Alerts', value: props.statistics?.activeAlerts, color: '#ef4444' },
+    { title: 'Resolved Today', value: props.statistics?.resolvedAlerts, color: '#10b981' },
+    { title: 'Avg Response Time', value: formatResponseTime(props.statistics?.averageResponseTime), color: '#a855f7' }
+])
 
 defineEmits<{
     'view-alert': [id: string]
@@ -189,7 +186,7 @@ const getEmergencyTypeBadgeClass = (type: string) => {
         SECURITY: 'bg-purple-100 text-purple-800',
         ACCIDENT: 'bg-orange-100 text-orange-800',
         NATURAL_DISASTER: 'bg-yellow-100 text-yellow-800',
-        UTILITY_FAILURE: 'bg-blue-100 text-blue-800',
+        UTILITY_FAILURE: 'bg-primary/15 text-primary',
         OTHER: 'bg-gray-100 text-gray-800'
     }
     return colors[type] || 'bg-gray-100 text-gray-800'
@@ -197,7 +194,7 @@ const getEmergencyTypeBadgeClass = (type: string) => {
 
 const getStatusBarColor = (status: string) => {
     const colors: Record<string, string> = {
-        PENDING: 'bg-blue-500',
+        PENDING: 'bg-primary/100',
         ACKNOWLEDGED: 'bg-yellow-500',
         RESPONDING: 'bg-orange-500',
         RESOLVED: 'bg-green-500',

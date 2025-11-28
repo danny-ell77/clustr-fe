@@ -26,6 +26,10 @@ export interface User {
 export interface LoginCredentials {
   emailAddress: string;
   password: string;
+  rememberMe?: boolean;
+  clusterId?: string;
+  deviceName?: string;
+  deviceId?: string;
 }
 
 export interface TokenPair {

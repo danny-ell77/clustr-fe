@@ -65,7 +65,7 @@ export interface UserFilters {
     pageSize?: number
 }
 
-export const managementUsersApi = {
+export const usersApi = {
     getAll: (params?: UserFilters) => {
         const { $api } = useNuxtApp()
         return $api<PaginatedResponse<AccountUser>>('/accounts/users/', {

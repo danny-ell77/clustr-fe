@@ -2,7 +2,7 @@
   <div class="p-6 space-y-4">
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold">Virtual meeting</h2>
-      <Button class="bg-blue-600 text-white" @click="openForm = true">New virtual meeting</Button>
+      <Button class="bg-primary text-white" @click="openForm = true">New virtual meeting</Button>
     </div>
     <div class="grid grid-cols-3 gap-4">
       <div class="col-span-2">

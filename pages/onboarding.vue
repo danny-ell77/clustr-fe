@@ -4,7 +4,7 @@
     <div class="w-full lg:w-1/2 flex flex-col p-8 bg-white overflow-y-auto">
       <div class="max-w-md w-full mx-auto">
         <div class="mb-8 flex-shrink-0">
-          <h1 class="text-3xl font-bold text-gray-900">Welcome to ClustR!</h1>
+          <h1 class="text-3xl text-gray-900">Welcome to ClustR!</h1>
           <p class="text-gray-600 mt-2">Let's get you set up.</p>
         </div>
 
@@ -26,11 +26,11 @@
                   width: '120px'
                 }">
                 <div :class="[
-                  'rounded-full flex items-center justify-center font-bold transition-all duration-500',
+                  'rounded-full flex items-center justify-center transition-all duration-500',
                   step.isCenter
-                    ? 'bg-blue-600 text-white w-17 h-17 text-2xl ring-4 ring-blue-200'
+                    ? 'bg-primary text-white w-17 h-17 text-2xl ring-4 ring-blue-200'
                     : step.index < currentStep - 1
-                      ? 'bg-blue-500 text-white w-16 h-16 text-xl'
+                      ? 'bg-primary/100 text-white w-16 h-16 text-xl'
                       : 'bg-gray-300 text-gray-600 w-16 h-16 text-xl'
                 ]">
                   <Icon v-if="step.index < currentStep - 1" name="check" class="w-6 h-6" />

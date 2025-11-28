@@ -7,7 +7,7 @@
       </div>
       
       <!-- Title -->
-      <CardTitle class="text-2xl mx-auto font-bold text-gray-900">{{ title }}</CardTitle>
+      <CardTitle class="text-2xl mx-auto text-gray-900">{{ title }}</CardTitle>
       
       <!-- Description -->
       <p class="text-gray-600 max-w-2xl mx-auto">{{ description }}</p>
@@ -30,11 +30,11 @@
       <!-- Progress Indicator -->
       <div class="space-y-2">
         <div class="flex items-center justify-center space-x-2">
-          <Icon name="clock" class="w-4 h-4 text-blue-600" />
-          <span class="text-sm font-medium text-blue-600">Development in Progress</span>
+          <Icon name="clock" class="w-4 h-4 text-primary" />
+          <span class="text-sm font-medium text-primary">Development in Progress</span>
         </div>
         <div class="w-64 mx-auto bg-gray-200 rounded-full h-2">
-          <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="{ width: `${progress}%` }"></div>
+          <div class="bg-primary h-2 rounded-full transition-all duration-300" :style="{ width: `${progress}%` }"></div>
         </div>
         <p class="text-xs text-gray-500">{{ progress }}% Complete</p>
       </div>
@@ -42,7 +42,7 @@
       <!-- Contact Info -->
       <div class="text-sm text-gray-500 space-y-2">
         <p>Need immediate assistance? Contact our support team.</p>
-        <Button variant="link" class="text-blue-600 hover:text-blue-800 font-medium">
+        <Button variant="link" class="text-primary hover:text-primary font-medium">
           Get Support
         </Button>
       </div>

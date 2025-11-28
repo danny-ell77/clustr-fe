@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-6">
-    <h2 class="text-2xl font-bold text-gray-900 mb-4">Add Team Members</h2>
+    <h2 class="text-2xl text-gray-900 mb-4">Add Team Members</h2>
 
     <div v-for="(user, index) in users" :key="index" class="space-y-6 p-4 border rounded-lg">
       <div class="flex justify-between items-center">
@@ -60,7 +60,7 @@
                     if (checked) {
                       user.permissions.value = [...user.permissions.value, perm.value]
                     } else {
-                      user.permissions.value = user.permissions.value.filter(p => p !== perm.value)
+                      user.permissions.value = user.permissions.value.filter((p: string) => p !== perm.value)
                     }
                   }" @blur="user.permissions.setTouched()" />
                 <Label :for="'perm-' + index + '-' + perm.value" class="ml-2 text-sm">
@@ -75,7 +75,6 @@
       </div>
     </div>
 
-    <!-- Add More Users Button -->
     <Button type="button" variant="outline" class="w-full" @click="addUser">
       <Icon name="plus" class="w-4 h-4 mr-2" />
       Add Another Team Member
@@ -94,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, unref } from 'vue'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Button } from '~/components/ui/button'
@@ -110,7 +109,7 @@ import {
 import Icon from '~/components/Icon.vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useFieldValidation } from '~/composables/useFieldValidation'
-import { PERMISSIONS, ROLES } from '~/composables/usePermissions'
+import { PERMISSIONS, ROLES } from '~/composables/auth/usePermissions'
 import { rules } from '~/utils/validators'
 import { usersApi } from '~/services/api/users.api'
 import { queryKeys } from '~/constants/query-keys'
@@ -135,18 +134,8 @@ const addStaffMutation = useMutation({
 })
 
 const isLoading = computed(() => addStaffMutation.isPending.value)
-const createUser = (userData: any) => addStaffMutation.mutateAsync(userData)
 
-interface UserForm {
-  firstName: ReturnType<typeof useFieldValidation<string>>
-  lastName: ReturnType<typeof useFieldValidation<string>>
-  email: ReturnType<typeof useFieldValidation<string>>
-  role: ReturnType<typeof useFieldValidation<string>>
-  permissions: ReturnType<typeof useFieldValidation<string[]>>
-}
-
-// Create a new user form state
-const createUserForm = (): UserForm => ({
+const createUserForm = () => ({
   firstName: useFieldValidation<string>('', [
     rules.required('First name is required'),
     rules.name('Please enter a valid name'),
@@ -172,15 +161,13 @@ const createUserForm = (): UserForm => ({
   ])
 })
 
-// Roles based on Django's DEFAULT_ROLES
 const roleOptions = [
-  { label: 'Security', value: 'Security', permissions: ROLES.SECURITY.permissions },
-  { label: 'Facility Manager', value: 'Facility_Manager', permissions: ROLES.FACILITY_MANAGER.permissions },
-  { label: 'Communications Officer', value: 'Communications_Officer', permissions: ROLES.COMMUNICATIONS_OFFICER.permissions },
-  { label: 'Finance Officer', value: 'Finance_Officer', permissions: ROLES.FINANCE_OFFICER.permissions }
+  { label: 'Security', value: 'Security', permissions: [...ROLES.SECURITY.permissions] },
+  { label: 'Facility Manager', value: 'Facility_Manager', permissions: [...ROLES.FACILITY_MANAGER.permissions] },
+  { label: 'Communications Officer', value: 'Communications_Officer', permissions: [...ROLES.COMMUNICATIONS_OFFICER.permissions] },
+  { label: 'Finance Officer', value: 'Finance_Officer', permissions: [...ROLES.FINANCE_OFFICER.permissions] }
 ]
 
-// Permissions grouped by category
 const permissionGroups = {
   'Access Control': Object.entries(PERMISSIONS.ACCESS_CONTROL).map(([key, value]) => ({
     label: key.split('_').map(word => word.charAt(0) + word.slice(1).toLowerCase()).join(' '),
@@ -232,6 +219,8 @@ const permissionGroups = {
   }))
 }
 
+type UserForm = ReturnType<typeof createUserForm>
+
 const users = ref<UserForm[]>([createUserForm()])
 
 const addUser = () => {
@@ -244,22 +233,22 @@ const removeUser = (index: number) => {
 
 const handleRoleChange = (index: number) => {
   const user = users.value[index]
-  const selectedRole = roleOptions.find(r => r.value === user.role.value)
+  const selectedRole = roleOptions.find(r => r.value === unref(user.role.value))
 
   if (selectedRole && selectedRole.value !== 'custom') {
-    user.permissions.value = selectedRole.permissions as string[]
+    user.permissions.setValue(selectedRole.permissions)
   } else {
-    user.permissions.value = []
+    user.permissions.setValue([])
   }
 }
 
 const isFormValid = computed(() => {
   return users.value.every(user =>
-    user.firstName.isValid &&
-    user.lastName.isValid &&
-    user.email.isValid &&
-    user.role.isValid &&
-    user.permissions.isValid
+    unref(user.firstName.isValid) &&
+    unref(user.lastName.isValid) &&
+    unref(user.email.isValid) &&
+    unref(user.role.isValid) &&
+    unref(user.permissions.isValid)
   )
 })
 
@@ -275,12 +264,11 @@ const handleSubmit = async () => {
   if (!isFormValid.value) return
 
   try {
-    await Promise.all(users.value.map(user => createUser({
-      name: `${user.firstName.value} ${user.lastName.value}`,
-      emailAddress: user.email.value,
-      // role: user.role.value, See line 245
-      phoneNumber: '', // Optional, can be added later
-      permissions: user.permissions.value
+    await Promise.all(users.value.map(user => addStaffMutation.mutateAsync({
+      name: `${unref(user.firstName.value)} ${unref(user.lastName.value)}`,
+      emailAddress: unref(user.email.value),
+      phoneNumber: '',
+      permissions: unref(user.permissions.value)
     })))
 
     emit('next')

@@ -5,7 +5,7 @@
         <Icon name="paperclip" class="w-4 h-4" />
       </Button>
       <Textarea v-model="text" placeholder="Type a message" class="flex-1 min-h-[44px]" />
-      <Button class="bg-blue-600 text-white" :disabled="!text.trim() && !attachments.length" @click="send">Send</Button>
+      <Button class="bg-primary text-white" :disabled="!text.trim() && !attachments.length" @click="send">Send</Button>
     </div>
     <div v-if="showUpload" class="max-w-3xl mx-auto mt-2">
       <!-- <FileUpload id="chat-upload" label="Attachments" accept="image/*,.pdf,.doc,.docx" :max-size="5 * 1024 * 1024"

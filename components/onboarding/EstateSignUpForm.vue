@@ -36,7 +36,7 @@
 
         <div>
             <Button @click="handleSubmit" :disabled="!isFormValid"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                class="w-full bg-primary hover:bg-primary/90 text-white">
                 Continue
             </Button>
         </div>

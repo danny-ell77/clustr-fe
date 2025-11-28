@@ -13,7 +13,7 @@
       </div>
       
       <div class="flex items-center space-x-2 mb-6">
-        <span class="text-3xl font-bold">{{ formattedBalance }}</span>
+        <span class="text-3xl">{{ formattedBalance }}</span>
         <Button 
           v-if="showRefresh" 
           variant="ghost" 

@@ -1,9 +1,9 @@
 <template>
   <div class="text-center space-y-6">
-    <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center">
-      <Icon name="rotate-ccw" class="w-8 h-8 text-blue-600" />
+    <div class="w-16 h-16 mx-auto bg-primary/15 rounded-full flex items-center justify-center">
+      <Icon name="rotate-ccw" class="w-8 h-8 text-primary" />
     </div>
-    <h2 class="text-2xl font-bold text-gray-900">Reset Password</h2>
+    <h2 class="text-2xl text-gray-900">Reset Password</h2>
     <p class="text-gray-600 text-sm">Enter your new password below.</p>
 
     <form @submit.prevent="handleResetPassword" class="space-y-4">
@@ -28,7 +28,7 @@
           <Icon :name="showConfirmNewPassword ? 'eye-off' : 'eye'" class="w-4 h-4" />
         </button>
       </div>
-      <Button type="submit" :disabled="isLoading" class="w-full bg-blue-600 text-white hover:bg-blue-700">
+      <Button type="submit" :disabled="isLoading" class="w-full bg-primary text-white hover:bg-primary/90">
         <span v-if="isLoading">Resetting...</span>
         <span v-else>Reset Password</span>
       </Button>

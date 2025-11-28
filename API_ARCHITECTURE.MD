@@ -1200,7 +1200,7 @@ const updateMutation = useMutation({
     <div class="filters">
       <Input v-model="filters.search" placeholder="Search bills..." />
       <Select v-model="filters.billType">
-        <option value="">All Types</option>
+        <option value="All">All Types</option>
         <option value="electricity">Electricity</option>
         <option value="water">Water</option>
       </Select>

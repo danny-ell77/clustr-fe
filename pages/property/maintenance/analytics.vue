@@ -2,7 +2,7 @@
     <div class="p-6 space-y-6">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-bold">Maintenance Analytics</h1>
+                <h1 class="text-2xl">Maintenance Analytics</h1>
                 <p class="text-muted-foreground">View maintenance statistics and insights</p>
             </div>
         </div>
@@ -10,25 +10,25 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white border rounded-lg p-4">
                 <div class="text-sm text-muted-foreground">Total Logs</div>
-                <div class="text-2xl font-bold mt-2">
+                <div class="text-2xl mt-2">
                     {{ analyticsQuery.data.value?.totalLogs || 0 }}
                 </div>
             </div>
             <div class="bg-white border rounded-lg p-4">
                 <div class="text-sm text-muted-foreground">Pending</div>
-                <div class="text-2xl font-bold mt-2 text-yellow-600">
+                <div class="text-2xl mt-2 text-yellow-600">
                     {{ analyticsQuery.data.value?.pendingLogs || 0 }}
                 </div>
             </div>
             <div class="bg-white border rounded-lg p-4">
                 <div class="text-sm text-muted-foreground">In Progress</div>
-                <div class="text-2xl font-bold mt-2 text-blue-600">
+                <div class="text-2xl mt-2 text-primary">
                     {{ analyticsQuery.data.value?.inProgressLogs || 0 }}
                 </div>
             </div>
             <div class="bg-white border rounded-lg p-4">
                 <div class="text-sm text-muted-foreground">Completed</div>
-                <div class="text-2xl font-bold mt-2 text-green-600">
+                <div class="text-2xl mt-2 text-green-600">
                     {{ analyticsQuery.data.value?.completedLogs || 0 }}
                 </div>
             </div>
@@ -70,7 +70,7 @@
 
             <div class="bg-white border rounded-lg p-4">
                 <h3 class="font-semibold mb-4">Average Resolution Time</h3>
-                <div class="text-3xl font-bold text-blue-600">
+                <div class="text-3xl text-primary">
                     {{ analyticsQuery.data.value?.avgResolutionTime || 'N/A' }}
                 </div>
                 <p class="text-sm text-muted-foreground mt-2">days</p>
@@ -78,7 +78,7 @@
 
             <div class="bg-white border rounded-lg p-4">
                 <h3 class="font-semibold mb-4">Total Cost</h3>
-                <div class="text-3xl font-bold text-green-600">
+                <div class="text-3xl text-green-600">
                     {{ formatCurrency(analyticsQuery.data.value?.totalCost || 0) }}
                 </div>
                 <p class="text-sm text-muted-foreground mt-2">this period</p>

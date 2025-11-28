@@ -2,11 +2,11 @@
     <div>
         <div class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-2xl font-bold text-foreground">Users</h1>
+                <h1 class="text-2xl text-foreground">Users</h1>
                 <p class="text-muted-foreground">Manage system users and their access</p>
             </div>
             <button @click="showAddUserDialog = true"
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
                 <Icon name="user-plus" class="w-4 h-4 mr-2 inline" />
                 Add User
             </button>
@@ -16,7 +16,7 @@
             <input v-model="filters.search" type="text" placeholder="Search users..."
                 class="px-4 py-2 border rounded-lg" />
             <select v-model="filters.role" class="px-4 py-2 border rounded-lg">
-                <option value="">All Roles</option>
+                <option value="All">All Roles</option>
                 <option value="admin">Admin</option>
                 <option value="manager">Property Manager</option>
                 <option value="accountant">Accountant</option>
@@ -30,7 +30,7 @@
         <div v-else-if="usersQuery.isError.value" class="text-center py-8">
             <p class="text-red-600">Error loading users: {{ usersQuery.error.value?.message }}</p>
             <button @click="usersQuery.refetch()"
-                class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
                 Retry
             </button>
         </div>
@@ -66,7 +66,7 @@
                         @mouseenter="prefetchUserDetails(user.id)">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                                <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                                     <span class="text-sm font-medium text-white">{{ user.name.charAt(0) }}</span>
                                 </div>
                                 <div class="ml-4">
@@ -93,10 +93,10 @@
                             {{ user.phoneNumber }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <NuxtLink :to="`/security/users/${user.id}`" class="text-blue-600 hover:text-blue-900 mr-3">
+                            <NuxtLink :to="`/security/users/${user.id}`" class="text-primary hover:text-primary mr-3">
                                 View
                             </NuxtLink>
-                            <button @click="handleEdit(user)" class="text-blue-600 hover:text-blue-900 mr-3">
+                            <button @click="handleEdit(user)" class="text-primary hover:text-primary mr-3">
                                 Edit
                             </button>
                             <button @click="handleDelete(user.id)" :disabled="deleteMutation.isPending.value"
@@ -127,7 +127,7 @@
 
         <div v-if="showAddUserDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div class="bg-white p-6 rounded-lg max-w-md w-full">
-                <h2 class="text-xl font-bold mb-4">Add User</h2>
+                <h2 class="text-xl mb-4">Add User</h2>
                 <p class="text-muted-foreground mb-4">User creation form would go here</p>
                 <button @click="showAddUserDialog = false" class="px-4 py-2 bg-gray-200 rounded-lg">
                     Close

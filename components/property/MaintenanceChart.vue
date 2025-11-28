@@ -3,7 +3,7 @@
         <div class="flex justify-center mb-4">
             <div class="flex gap-6 text-sm">
                 <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 bg-blue-500 rounded"></div>
+                    <div class="w-3 h-3 bg-primary/100 rounded"></div>
                     <span>Completed</span>
                 </div>
                 <div class="flex items-center gap-2">
@@ -32,7 +32,7 @@
                 <div v-for="(item, index) in data" :key="index" class="flex flex-col items-center gap-2 flex-1">
                     <!-- Bars -->
                     <div class="relative flex flex-col items-center w-full max-w-12">
-                        <div class="w-8 bg-blue-500 rounded-t transition-all duration-300 hover:opacity-80 cursor-pointer"
+                        <div class="w-8 bg-primary/100 rounded-t transition-all duration-300 hover:opacity-80 cursor-pointer"
                             :style="{ height: `${(item.completed / maxValue) * 200}px` }"
                             :title="`${item.month}: ${item.completed} completed`"></div>
                         <div class="w-8 bg-yellow-500 transition-all duration-300 hover:opacity-80 cursor-pointer"

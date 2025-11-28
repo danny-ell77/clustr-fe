@@ -18,7 +18,7 @@
         </div>
       </div>
     </div>
-    <Button type="submit" class="bg-blue-600 text-white">Save</Button>
+    <Button type="submit" class="bg-primary text-white">Save</Button>
   </form>
 </template>
 <script setup lang="ts">

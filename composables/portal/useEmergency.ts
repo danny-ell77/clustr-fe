@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { computed, type Ref } from 'vue'
-import { managementEmergencyApi, type SOSAlertFilters, type EmergencyContactFilters, type AcknowledgeAlertDto, type ResolveAlertDto } from '~/services/api/emergency.api'
+import { emergencyApi, type SOSAlertFilters, type EmergencyContactFilters, type AcknowledgeAlertDto, type ResolveAlertDto } from '~/services/api/emergency.api'
 import { queryKeys } from '~/constants/query-keys'
 import type {
     CreateEmergencyContactDto,
@@ -15,7 +15,7 @@ export const useEmergency = () => {
     const useSOSAlerts = (filters: Ref<SOSAlertFilters>) => {
         return useQuery({
             queryKey: computed(() => queryKeys.emergency.alerts.list(filters.value)),
-            queryFn: () => managementEmergencyApi.sosAlerts.getAll(filters.value),
+            queryFn: () => emergencyApi.sosAlerts.getAll(filters.value),
             refetchInterval: 30000
         })
     }
@@ -23,7 +23,7 @@ export const useEmergency = () => {
     const useSOSAlert = (id: Ref<string | undefined>) => {
         return useQuery({
             queryKey: computed(() => queryKeys.emergency.alerts.detail(id.value!)),
-            queryFn: () => managementEmergencyApi.sosAlerts.getById(id.value!),
+            queryFn: () => emergencyApi.sosAlerts.getById(id.value!),
             enabled: computed(() => !!id.value),
             refetchInterval: 15000
         })
@@ -32,7 +32,7 @@ export const useEmergency = () => {
     const useActiveAlerts = () => {
         return useQuery({
             queryKey: queryKeys.emergency.alerts.active(),
-            queryFn: () => managementEmergencyApi.sosAlerts.getActive(),
+            queryFn: () => emergencyApi.sosAlerts.getActive(),
             refetchInterval: 15000
         })
     }
@@ -42,14 +42,14 @@ export const useEmergency = () => {
             queryKey: computed(() =>
                 filters ? queryKeys.emergency.contacts() : queryKeys.emergency.contacts()
             ),
-            queryFn: () => managementEmergencyApi.contacts.getAll(filters?.value)
+            queryFn: () => emergencyApi.contacts.getAll(filters?.value)
         })
     }
 
     const useEmergencyStats = () => {
         return useQuery({
             queryKey: [...queryKeys.emergency.all, 'statistics'] as const,
-            queryFn: () => managementEmergencyApi.sosAlerts.getStatistics(),
+            queryFn: () => emergencyApi.sosAlerts.getStatistics(),
             refetchInterval: 60000
         })
     }
@@ -57,14 +57,14 @@ export const useEmergency = () => {
     const useAlertResponses = (alertId: Ref<string | undefined>) => {
         return useQuery({
             queryKey: computed(() => queryKeys.emergency.responses(alertId.value!)),
-            queryFn: () => managementEmergencyApi.sosAlerts.getResponses(alertId.value!),
+            queryFn: () => emergencyApi.sosAlerts.getResponses(alertId.value!),
             enabled: computed(() => !!alertId.value)
         })
     }
 
     const acknowledgeAlertMutation = useMutation({
         mutationFn: ({ id, data }: { id: string; data?: AcknowledgeAlertDto }) =>
-            managementEmergencyApi.sosAlerts.acknowledge(id, data),
+            emergencyApi.sosAlerts.acknowledge(id, data),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.alerts.detail(variables.id) })
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.alerts.all() })
@@ -78,7 +78,7 @@ export const useEmergency = () => {
 
     const respondToAlertMutation = useMutation({
         mutationFn: (id: string) =>
-            managementEmergencyApi.sosAlerts.startResponse(id),
+            emergencyApi.sosAlerts.startResponse(id),
         onSuccess: (_, id) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.alerts.detail(id) })
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.alerts.all() })
@@ -92,7 +92,7 @@ export const useEmergency = () => {
 
     const resolveAlertMutation = useMutation({
         mutationFn: ({ id, data }: { id: string; data: ResolveAlertDto }) =>
-            managementEmergencyApi.sosAlerts.resolve(id, data),
+            emergencyApi.sosAlerts.resolve(id, data),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.alerts.detail(variables.id) })
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.alerts.all() })
@@ -106,7 +106,7 @@ export const useEmergency = () => {
 
     const cancelAlertMutation = useMutation({
         mutationFn: ({ id, reason }: { id: string; reason: string }) =>
-            managementEmergencyApi.sosAlerts.cancel(id, { reason }),
+            emergencyApi.sosAlerts.cancel(id, { reason }),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.alerts.detail(variables.id) })
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.alerts.all() })
@@ -120,7 +120,7 @@ export const useEmergency = () => {
 
     const createContactMutation = useMutation({
         mutationFn: (data: CreateEmergencyContactDto) =>
-            managementEmergencyApi.contacts.create(data),
+            emergencyApi.contacts.create(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.contacts() })
             toast.success('Emergency contact created successfully')
@@ -132,7 +132,7 @@ export const useEmergency = () => {
 
     const updateContactMutation = useMutation({
         mutationFn: ({ id, data }: { id: string; data: UpdateEmergencyContactDto }) =>
-            managementEmergencyApi.contacts.update(id, data),
+            emergencyApi.contacts.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.contacts() })
             toast.success('Emergency contact updated successfully')
@@ -144,7 +144,7 @@ export const useEmergency = () => {
 
     const deleteContactMutation = useMutation({
         mutationFn: (id: string) =>
-            managementEmergencyApi.contacts.delete(id),
+            emergencyApi.contacts.delete(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.contacts() })
             toast.success('Emergency contact deleted successfully')
@@ -156,7 +156,7 @@ export const useEmergency = () => {
 
     const addResponseMutation = useMutation({
         mutationFn: (data: CreateEmergencyResponseDto) =>
-            managementEmergencyApi.responses.create(data),
+            emergencyApi.responses.create(data),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.responses(variables.alert) })
             queryClient.invalidateQueries({ queryKey: queryKeys.emergency.alerts.detail(variables.alert) })

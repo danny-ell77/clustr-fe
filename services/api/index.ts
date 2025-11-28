@@ -1,4 +1,4 @@
-export * from './accounting.api'
+export * from '..api'
 export * from './announcements.api'
 export * from './dashboard.api'
 export * from './emergency.api'

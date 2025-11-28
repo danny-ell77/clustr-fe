@@ -8,7 +8,7 @@
         v-for="c in filtered"
         :key="c.id"
         class="w-full text-left px-3 py-2 hover:bg-gray-100 flex items-center justify-between"
-        :class="c.id === modelValue ? 'bg-blue-50' : ''"
+        :class="c.id === modelValue ? 'bg-primary/10' : ''"
         @click="$emit('update:modelValue', c.id)"
       >
         <div>

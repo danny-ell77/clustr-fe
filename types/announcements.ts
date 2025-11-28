@@ -37,6 +37,8 @@ export interface Announcement {
     title: string
     content: string
     category: AnnouncementCategory
+    priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
+    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
     authorId: string
     authorName: string
     viewsCount: number
@@ -57,6 +59,8 @@ export interface CreateAnnouncementDto {
     title: string
     content: string
     category: AnnouncementCategory
+    priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
+    status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
     publishedAt?: string
     expiresAt?: string
     isPublished?: boolean
@@ -67,6 +71,8 @@ export interface UpdateAnnouncementDto {
     title?: string
     content?: string
     category?: AnnouncementCategory
+    priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
+    status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
     publishedAt?: string
     expiresAt?: string
     isPublished?: boolean

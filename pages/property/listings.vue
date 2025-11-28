@@ -2,10 +2,10 @@
     <div>
         <div class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-2xl font-bold text-foreground">Property Listings</h1>
+                <h1 class="text-2xl text-foreground">Property Listings</h1>
                 <p class="text-muted-foreground">Manage your property portfolio</p>
             </div>
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
                 <Icon name="plus" class="w-4 h-4 mr-2 inline" />
                 Add Property
             </button>
@@ -16,7 +16,7 @@
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-1">Status</label>
                     <select v-model="filters.status" class="w-full border border-border rounded-md px-3 py-2">
-                        <option value="">All Status</option>
+                        <option value="All">All Status</option>
                         <option value="available">Available</option>
                         <option value="occupied">Occupied</option>
                         <option value="maintenance">Under Maintenance</option>
@@ -25,7 +25,7 @@
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-1">Type</label>
                     <select v-model="filters.type" class="w-full border border-border rounded-md px-3 py-2">
-                        <option value="">All Types</option>
+                        <option value="All">All Types</option>
                         <option value="apartment">Apartment</option>
                         <option value="house">House</option>
                         <option value="condo">Condo</option>
@@ -59,9 +59,9 @@
                     </div>
                     <p class="text-muted-foreground text-sm mb-2">{{ property.address }}</p>
                     <div class="flex justify-between items-center">
-                        <span class="text-lg font-bold text-green-600">${{ property.rent }}/month</span>
+                        <span class="text-lg text-green-600">${{ property.rent }}/month</span>
                         <div class="flex space-x-2">
-                            <button class="p-2 text-gray-400 hover:text-blue-600 transition-colors">
+                            <button class="p-2 text-gray-400 hover:text-primary transition-colors">
                                 <Icon name="edit" class="w-4 h-4" />
                             </button>
                             <button class="p-2 text-gray-400 hover:text-red-600 transition-colors">
@@ -135,7 +135,7 @@ const filteredProperties = computed(() => {
 function getStatusClass(status) {
     const classes = {
         available: 'bg-green-100 text-green-800',
-        occupied: 'bg-blue-100 text-blue-800',
+        occupied: 'bg-primary/15 text-primary',
         maintenance: 'bg-yellow-100 text-yellow-800'
     }
     return classes[status] || 'bg-gray-100 text-gray-800'

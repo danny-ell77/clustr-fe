@@ -26,7 +26,7 @@
 
                         <!-- OK Button -->
                         <Button @click="handleOk"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-md font-medium">
+                            class="bg-primary hover:bg-primary/90 text-white px-8 py-2 rounded-md font-medium">
                             {{ okText }}
                         </Button>
                     </div>

@@ -46,7 +46,7 @@
     </div>
     <div class="flex justify-end gap-2">
       <Button type="button" variant="outline" @click="$emit('cancel')">Cancel</Button>
-      <Button type="submit" class="bg-blue-600 text-white" :disabled="!isValid">Save</Button>
+      <Button type="submit" class="bg-primary text-white" :disabled="!isValid">Save</Button>
     </div>
   </form>
 </template>

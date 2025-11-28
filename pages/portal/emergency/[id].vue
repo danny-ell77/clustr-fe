@@ -8,7 +8,7 @@
 
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-foreground">Emergency Alert Details</h1>
+                    <h1 class="text-2xl text-foreground">Emergency Alert Details</h1>
                     <p class="text-muted-foreground">Alert ID: {{ alertData?.alertId }}</p>
                 </div>
 
@@ -19,7 +19,7 @@
                     </Button>
                     <Button v-if="alertData?.status === 'acknowledged' || alertData?.status === 'responding'"
                         @click="handleStartResponse" :disabled="startResponseMutation.isPending.value"
-                        class="bg-blue-600 hover:bg-blue-700">
+                        class="bg-primary hover:bg-primary/90">
                         {{ startResponseMutation.isPending.value ? 'Starting...' : 'Start Response' }}
                     </Button>
                     <Button v-if="alertData?.status !== 'resolved' && alertData?.status !== 'cancelled'"
@@ -146,7 +146,7 @@
                             </div>
 
                             <div v-if="alertData.respondedAt" class="flex items-start space-x-3">
-                                <div class="w-2 h-2 mt-2 rounded-full bg-blue-500"></div>
+                                <div class="w-2 h-2 mt-2 rounded-full bg-primary/100"></div>
                                 <div class="flex-1">
                                     <p class="font-medium text-sm">Response Started</p>
                                     <p class="text-xs text-muted-foreground">{{ formatDate(alertData.respondedAt) }}</p>
@@ -339,7 +339,7 @@ const formatDate = (date: string) => {
 const getPriorityClass = (priority: string) => {
     const classes = {
         low: 'bg-gray-100 text-gray-800',
-        medium: 'bg-blue-100 text-blue-800',
+        medium: 'bg-primary/15 text-primary',
         high: 'bg-orange-100 text-orange-800',
         critical: 'bg-red-100 text-red-800'
     }
@@ -350,7 +350,7 @@ const getStatusClass = (status: string) => {
     const classes = {
         active: 'bg-red-100 text-red-800',
         acknowledged: 'bg-yellow-100 text-yellow-800',
-        responding: 'bg-blue-100 text-blue-800',
+        responding: 'bg-primary/15 text-primary',
         resolved: 'bg-green-100 text-green-800',
         cancelled: 'bg-gray-100 text-gray-800',
         false_alarm: 'bg-purple-100 text-purple-800'

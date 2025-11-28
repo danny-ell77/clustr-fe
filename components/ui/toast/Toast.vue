@@ -71,7 +71,7 @@ const iconColor = computed(() => {
         case 'success': return 'text-green-500'
         case 'error': return 'text-red-500'
         case 'warning': return 'text-yellow-500'
-        case 'info': return 'text-blue-500'
+        case 'info': return 'text-primary'
         default: return 'text-green-500'
     }
 })

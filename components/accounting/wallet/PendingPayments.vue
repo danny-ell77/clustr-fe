@@ -3,7 +3,7 @@
     <CardHeader class="pb-3">
       <div class="flex items-center justify-between">
         <CardTitle class="text-sm">Pending Payment</CardTitle>
-        <Button variant="ghost" size="sm" class="text-xs text-blue-600" @click="$emit('seeAll')">
+        <Button variant="ghost" size="sm" class="text-xs text-primary" @click="$emit('seeAll')">
           See all
         </Button>
       </div>

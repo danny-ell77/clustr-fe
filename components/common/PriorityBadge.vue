@@ -38,7 +38,7 @@ const badgeClass = computed(() => {
   
   const classMap: Record<string, string> = {
     gray: 'bg-gray-100 text-gray-800 hover:bg-gray-100',
-    blue: 'bg-blue-100 text-blue-800 hover:bg-blue-100',
+    blue: 'bg-primary/15 text-primary hover:bg-primary/90/15',
     orange: 'bg-orange-100 text-orange-800 hover:bg-orange-100',
     red: 'bg-red-100 text-red-800 hover:bg-red-100'
   }

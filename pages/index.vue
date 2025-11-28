@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+      <Typography variant="h1" as="h1">Dashboard</Typography>
       <p class="text-gray-600 mt-2">Welcome to your property management system</p>
     </div>
 
@@ -9,12 +9,12 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
-          <div class="p-2 bg-blue-100 rounded-lg">
-            <Icon name="building" class="w-6 h-6 text-blue-600" />
+          <div class="p-2 bg-primary/15 rounded-lg">
+            <Icon name="building" class="w-6 h-6 text-primary" />
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium text-gray-600">Available Modules</p>
-            <p class="text-2xl font-bold text-gray-900">{{ availableModules.length }}</p>
+            <p class="text-2xl text-gray-900">{{ availableModules.length }}</p>
           </div>
         </div>
       </div>
@@ -26,7 +26,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium text-gray-600">Active Permissions</p>
-            <p class="text-2xl font-bold text-gray-900">{{ permissions.length }}</p>
+            <p class="text-2xl text-gray-900">{{ permissions.length }}</p>
           </div>
         </div>
       </div>
@@ -38,7 +38,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium text-gray-600">Current Role</p>
-            <p class="text-lg font-bold text-gray-900">{{ user?.role || 'Guest' }}</p>
+            <p class="text-lg text-gray-900">{{ user?.role || 'Guest' }}</p>
           </div>
         </div>
       </div>
@@ -47,18 +47,18 @@
     <!-- Available Modules -->
     <div class="bg-white rounded-lg shadow">
       <div class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-lg font-semibold text-gray-900">Available Modules</h2>
+        <Typography variant="h2" as="h2">Available Modules</Typography>
       </div>
       <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <NuxtLink v-for="module in availableModules" :key="module.id" :to="`/${module.id}`"
             class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all">
             <div class="flex items-center">
-              <div class="p-2 bg-blue-100 rounded-lg">
-                <Icon :name="module.icon" class="w-6 h-6 text-blue-600" />
+              <div class="p-2 bg-primary/15 rounded-lg">
+                <Icon :name="module.icon" class="w-6 h-6 text-primary" />
               </div>
               <div class="ml-4">
-                <h3 class="text-lg font-semibold text-gray-900">{{ module.label }}</h3>
+                <Typography variant="h3" as="h3">{{ module.label }}</Typography>
                 <p class="text-sm text-gray-600">Access {{ module.label.toLowerCase() }} features</p>
               </div>
             </div>

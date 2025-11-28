@@ -1,19 +1,19 @@
 <template>
     <div>
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Property Dashboard</h1>
+            <h1 class="text-3xl text-gray-900">Property Dashboard</h1>
             <p class="text-gray-600 mt-2">Overview of your property portfolio</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
-                    <div class="p-2 bg-blue-100 rounded-lg">
-                        <Icon name="building" class="w-6 h-6 text-blue-600" />
+                    <div class="p-2 bg-primary/15 rounded-lg">
+                        <Icon name="building" class="w-6 h-6 text-primary" />
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Total Properties</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ stats.totalProperties }}</p>
+                        <p class="text-2xl text-gray-900">{{ stats.totalProperties }}</p>
                     </div>
                 </div>
             </div>
@@ -25,7 +25,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Active Tenants</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ stats.activeTenants }}</p>
+                        <p class="text-2xl text-gray-900">{{ stats.activeTenants }}</p>
                     </div>
                 </div>
             </div>
@@ -37,7 +37,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Pending Maintenance</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ stats.pendingMaintenance }}</p>
+                        <p class="text-2xl text-gray-900">{{ stats.pendingMaintenance }}</p>
                     </div>
                 </div>
             </div>
@@ -49,7 +49,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Monthly Revenue</p>
-                        <p class="text-2xl font-bold text-gray-900">${{ stats.monthlyRevenue.toLocaleString() }}</p>
+                        <p class="text-2xl text-gray-900">${{ stats.monthlyRevenue.toLocaleString() }}</p>
                     </div>
                 </div>
             </div>
@@ -63,8 +63,8 @@
                 <div class="space-y-4">
                     <div v-for="activity in recentActivity" :key="activity.id" class="flex items-start">
                         <div class="flex-shrink-0">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                <Icon :name="activity.icon" class="w-4 h-4 text-blue-600" />
+                            <div class="w-8 h-8 bg-primary/15 rounded-full flex items-center justify-center">
+                                <Icon :name="activity.icon" class="w-4 h-4 text-primary" />
                             </div>
                         </div>
                         <div class="ml-4">

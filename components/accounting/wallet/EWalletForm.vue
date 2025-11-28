@@ -30,7 +30,7 @@
           <!-- Paystack -->
           <div
             class="border rounded-lg p-4 cursor-pointer transition-colors"
-            :class="selectedMethod === 'paystack' ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-400'"
+            :class="selectedMethod === 'paystack' ? ' border-primary bg-primary/10' : 'hover:border-gray-400'"
             @click="selectMethod('paystack')"
           >
             <div class="flex items-center justify-between">
@@ -41,7 +41,7 @@
               <Icon
                 name="check-circle"
                 class="w-5 h-5"
-                :class="selectedMethod === 'paystack' ? 'text-blue-500' : 'text-gray-300'"
+                :class="selectedMethod === 'paystack' ? 'text-primary' : 'text-gray-300'"
               />
             </div>
           </div>
@@ -49,7 +49,7 @@
           <!-- Flutterwave -->
           <div
             class="border rounded-lg p-4 cursor-pointer transition-colors"
-            :class="selectedMethod === 'flutterwave' ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-400'"
+            :class="selectedMethod === 'flutterwave' ? ' border-primary bg-primary/10' : 'hover:border-gray-400'"
             @click="selectMethod('flutterwave')"
           >
             <div class="flex items-center justify-between">
@@ -60,7 +60,7 @@
               <Icon
                 name="check-circle"
                 class="w-5 h-5"
-                :class="selectedMethod === 'flutterwave' ? 'text-blue-500' : 'text-gray-300'"
+                :class="selectedMethod === 'flutterwave' ? 'text-primary' : 'text-gray-300'"
               />
             </div>
           </div>
@@ -68,7 +68,7 @@
           <!-- Credit Card -->
           <div
             class="border rounded-lg p-4 cursor-pointer transition-colors"
-            :class="selectedMethod === 'card' ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-400'"
+            :class="selectedMethod === 'card' ? ' border-primary bg-primary/10' : 'hover:border-gray-400'"
             @click="selectMethod('card')"
           >
             <div class="flex items-center justify-between">
@@ -82,7 +82,7 @@
               <Icon
                 name="check-circle"
                 class="w-5 h-5"
-                :class="selectedMethod === 'card' ? 'text-blue-500' : 'text-gray-300'"
+                :class="selectedMethod === 'card' ? 'text-primary' : 'text-gray-300'"
               />
             </div>
           </div>
@@ -95,7 +95,7 @@
       <Button
         @click="proceed"
         :disabled="!canProceed"
-        class="bg-blue-600 hover:bg-blue-700"
+        class="bg-primary hover:bg-primary/90"
       >
         Proceed
         <Icon name="arrow-right" class="w-4 h-4 ml-2" />
@@ -168,7 +168,7 @@
             </Button>
             <Button
               type="submit"
-              class="bg-blue-600 hover:bg-blue-700"
+              class="bg-primary hover:bg-primary/90"
               :disabled="isProcessing"
             >
               {{ isProcessing ? 'Processing...' : 'Proceed' }}

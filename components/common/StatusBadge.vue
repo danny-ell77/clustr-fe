@@ -42,7 +42,7 @@ const badgeClass = computed(() => {
   const color = STATUS_COLORS[props.status as keyof typeof STATUS_COLORS]
   
   const classMap: Record<string, string> = {
-    blue: 'bg-blue-100 text-blue-800 hover:bg-blue-100',
+    blue: 'bg-primary/15 text-primary hover:bg-primary/90/15',
     green: 'bg-green-100 text-green-800 hover:bg-green-100',
     yellow: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100',
     red: 'bg-red-100 text-red-800 hover:bg-red-100',

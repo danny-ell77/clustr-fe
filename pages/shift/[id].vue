@@ -7,7 +7,7 @@
                     Back
                 </Button>
                 <div>
-                    <h1 class="text-2xl font-bold text-foreground">{{ shift?.title }}</h1>
+                    <h1 class="text-2xl text-foreground">{{ shift?.title }}</h1>
                     <p class="text-muted-foreground">Shift Details</p>
                 </div>
             </div>
@@ -195,7 +195,7 @@ const formatDateTime = (dateString: string) => {
 
 const getStatusClass = (status: string) => {
     const classes = {
-        SCHEDULED: 'bg-blue-100 text-blue-800',
+        SCHEDULED: 'bg-primary/15 text-primary',
         IN_PROGRESS: 'bg-purple-100 text-purple-800',
         COMPLETED: 'bg-green-100 text-green-800',
         CANCELLED: 'bg-gray-100 text-gray-800',

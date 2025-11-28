@@ -139,3 +139,59 @@ export interface MaintenanceOptimization {
     costOptimizationOpportunities: any[]
     resourceAllocationRecommendations: any[]
 }
+
+export interface MaintenanceSchedule {
+    id: string
+    name: string
+    description: string
+    propertyType: PropertyType
+    propertyTypeDisplay: string
+    propertyLocation: string
+    equipmentName?: string
+    frequencyType: string
+    frequencyTypeDisplay: string
+    frequencyValue: number
+    nextDueDate: string
+    lastPerformedDate?: string
+    estimatedDuration?: string
+    estimatedCost?: string
+    instructions?: string
+    materialsNeeded?: string
+    toolsNeeded?: string
+    isActive: boolean
+    createdAt: string
+    lastModifiedAt: string
+}
+
+export interface CreateMaintenanceScheduleDto {
+    name: string
+    description: string
+    propertyType: PropertyType
+    propertyLocation: string
+    equipmentName?: string
+    frequencyType: string
+    frequencyValue: number
+    nextDueDate: string
+    estimatedDuration?: string
+    estimatedCost?: string
+    instructions?: string
+    materialsNeeded?: string
+    toolsNeeded?: string
+}
+
+export interface UpdateMaintenanceScheduleDto {
+    name?: string
+    description?: string
+    propertyType?: PropertyType
+    propertyLocation?: string
+    equipmentName?: string
+    frequencyType?: string
+    frequencyValue?: number
+    nextDueDate?: string
+    estimatedDuration?: string
+    estimatedCost?: string
+    instructions?: string
+    materialsNeeded?: string
+    toolsNeeded?: string
+    isActive?: boolean
+}

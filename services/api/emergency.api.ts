@@ -75,7 +75,7 @@ export interface ExportReportParams {
     format?: 'json' | 'csv' | 'pdf'
 }
 
-export const managementEmergencyApi = {
+export const emergencyApi = {
     sosAlerts: {
         getAll: (params?: SOSAlertFilters) => {
             const { $api } = useNuxtApp()
@@ -313,5 +313,13 @@ export const managementEmergencyApi = {
                 method: 'DELETE'
             })
         }
-    }
+    },
+
+    // Aliases
+    getAlerts: (params?: SOSAlertFilters) => emergencyApi.sosAlerts.getAll(params),
+    getActiveAlerts: () => emergencyApi.sosAlerts.getActive(),
+    createAlert: (data: CreateSOSAlertDto & { userId: string }) => emergencyApi.sosAlerts.create(data),
+    acknowledgeAlert: (id: string, data?: AcknowledgeAlertDto) => emergencyApi.sosAlerts.acknowledge(id, data),
+    resolveAlert: (id: string, data: ResolveAlertDto) => emergencyApi.sosAlerts.resolve(id, data),
+    getAlertById: (id: string) => emergencyApi.sosAlerts.getById(id)
 }

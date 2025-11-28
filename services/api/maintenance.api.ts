@@ -164,7 +164,7 @@ export interface MaintenanceCategoryFilters {
     maintenanceType?: MaintenanceType
 }
 
-export const managementMaintenanceApi = {
+export const maintenanceApi = {
     logs: {
         getAll: (params?: MaintenanceLogFilters) => {
             const { $api } = useNuxtApp()
@@ -306,5 +306,9 @@ export const managementMaintenanceApi = {
             method: 'GET',
             query: params
         })
-    }
+    },
+
+    // Aliases
+    getSchedules: (params?: MaintenanceScheduleFilters) => maintenanceApi.schedules.getAll(params),
+    getAnalytics: (params?: MaintenanceAnalyticsFilters) => maintenanceApi.logs.getAnalytics(params)
 }

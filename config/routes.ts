@@ -23,7 +23,7 @@ export const routeConfig = {
 
     modules: [
         '/property',
-        '/accounting',
+        '/payments',
         '/security',
         '/shift',
         '/portal',

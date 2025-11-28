@@ -2,7 +2,7 @@
     <div class="shifts-calendar">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h1 class="text-2xl font-bold">Shifts Calendar</h1>
+                <h1 class="text-2xl">Shifts Calendar</h1>
                 <p class="text-muted-foreground">View and manage staff shifts</p>
             </div>
 
@@ -17,7 +17,7 @@
                     <Icon name="chevron-right" class="w-4 h-4" />
                 </Button>
                 <Button v-if="hasPermission(PERMISSIONS.FACILITY_ADMIN.MANAGE_WORK_SHIFT)"
-                    @click="showCreateModal = true" class="bg-blue-600 hover:bg-blue-700 ml-4">
+                    @click="showCreateModal = true" class="bg-primary hover:bg-primary/90 ml-4">
                     <Icon name="plus" class="w-4 h-4 mr-2" />
                     Create Shift
                 </Button>
@@ -32,7 +32,7 @@
                             <SelectValue placeholder="All Types" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">All Types</SelectItem>
+                            <SelectItem value="All">All Types</SelectItem>
                             <SelectItem value="SECURITY">Security</SelectItem>
                             <SelectItem value="CLEANING">Cleaning</SelectItem>
                             <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
@@ -46,7 +46,7 @@
                             <SelectValue placeholder="All Statuses" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">All Statuses</SelectItem>
+                            <SelectItem value="All">All Statuses</SelectItem>
                             <SelectItem value="SCHEDULED">Scheduled</SelectItem>
                             <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
                             <SelectItem value="COMPLETED">Completed</SelectItem>
@@ -77,12 +77,12 @@
                     <div v-for="(day, index) in calendarDays" :key="index" :class="[
                         'min-h-[120px] border-r border-b last:border-r-0',
                         !day.isCurrentMonth ? '' : '',
-                        day.isToday ? 'bg-blue-50' : ''
+                        day.isToday ? 'bg-primary/10' : ''
                     ]">
                         <div class="p-2">
                             <div :class="[
                                 'text-sm font-medium mb-2',
-                                !day.isCurrentMonth ? 'text-gray-400' : day.isToday ? 'text-blue-600 font-bold' : 'text-foreground'
+                                !day.isCurrentMonth ? 'text-gray-400' : day.isToday ? 'text-primary' : 'text-foreground'
                             ]">
                                 {{ day.date }}
                             </div>
@@ -382,7 +382,7 @@ const formatTime = (dateString: string) => {
 
 const getShiftPillClass = (shift: Shift) => {
     const typeClasses: Record<string, string> = {
-        SECURITY: 'bg-blue-100 text-blue-800 border border-blue-200',
+        SECURITY: 'bg-primary/15 text-primary border  border-primary/30',
         CLEANING: 'bg-green-100 text-green-800 border border-green-200',
         MAINTENANCE: 'bg-orange-100 text-orange-800 border border-orange-200',
         RECEPTION: 'bg-purple-100 text-purple-800 border border-purple-200',

@@ -60,7 +60,7 @@
                 Back
             </Button>
             <Button type="submit" @click="handleSubmit" :disabled="!isFormValid"
-                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+                class="flex-1 bg-primary hover:bg-primary/90 text-white">
                 Continue
             </Button>
         </div>

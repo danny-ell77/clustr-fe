@@ -19,6 +19,7 @@ export const refreshAccessToken = async (event: any, config: any) => {
         body: { refresh: refreshToken },
       }
     );
+    console.log(response)
 
     // Update the access token cookie
     setCookie(event, "access_token", response.access, {

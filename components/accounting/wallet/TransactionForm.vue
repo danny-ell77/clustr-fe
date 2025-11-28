@@ -103,7 +103,7 @@
 
     <!-- Submit Button -->
     <div class="flex justify-end">
-      <Button type="submit" class="bg-blue-600 hover:bg-blue-700">
+      <Button type="submit" class="bg-primary hover:bg-primary/90">
         Save
       </Button>
     </div>

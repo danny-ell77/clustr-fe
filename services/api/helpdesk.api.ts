@@ -41,7 +41,7 @@ export interface ChoiceOption {
     label: string
 }
 
-export const managementHelpdeskApi = {
+export const helpdeskApi = {
     tickets: {
         getAll: (params?: IssueTicketFilters) => {
             const { $api } = useNuxtApp()
@@ -176,5 +176,12 @@ export const managementHelpdeskApi = {
                 method: 'DELETE'
             })
         }
-    }
+    },
+
+    // Aliases
+    getIssues: (params?: IssueTicketFilters) => helpdeskApi.tickets.getAll(params),
+    getIssueById: (id: string) => helpdeskApi.tickets.getById(id),
+    createIssue: (data: CreateIssueTicketDto) => helpdeskApi.tickets.create(data),
+    updateIssue: (id: string, data: UpdateIssueTicketDto) => helpdeskApi.tickets.update(id, data),
+    assignIssue: (id: string, assignedTo: string) => helpdeskApi.tickets.assign(id, assignedTo)
 }

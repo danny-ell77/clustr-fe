@@ -15,14 +15,18 @@ export default defineNuxtPlugin((nuxtApp) => {
                 retry: 0,
                 onError: (error: any) => {
                     const message = error?.data?.message || error?.message || 'An error occurred'
-                    toast.error(message)
+                    if (process.client) {
+                        toast.error(message)
+                    }
                 },
             },
         },
         queryCache: new QueryCache({
             onError: (error: any) => {
                 const message = error?.data?.message || error?.message || 'Failed to load data'
-                toast.error(message)
+                if (process.client) {
+                    toast.error(message)
+                }
             },
         }),
     })

@@ -3,7 +3,7 @@
     <CardHeader class="pb-3">
       <div class="flex items-center justify-between">
         <CardTitle class="text-sm">Notifications</CardTitle>
-        <Button variant="ghost" size="sm" class="text-xs text-blue-600" @click="$emit('seeAll')">
+        <Button variant="ghost" size="sm" class="text-xs text-primary" @click="$emit('seeAll')">
           See all
         </Button>
       </div>
@@ -15,7 +15,7 @@
         class="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
         @click="$emit('notificationClick', notification)"
       >
-        <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+        <div class="w-2 h-2 bg-primary/100 rounded-full mt-2 flex-shrink-0"></div>
         <div class="flex-1 min-w-0">
           <p class="text-sm text-gray-900">{{ notification.message }}</p>
           <p class="text-xs text-gray-500 mt-1">{{ notification.time }}</p>

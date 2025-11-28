@@ -116,7 +116,7 @@
                             Previous
                         </Button>
                         <Button v-for="page in pageNumbers" :key="page" variant="outline" size="sm"
-                            :class="{ 'bg-blue-50 text-blue-600': currentPage === page }" @click="goToPage(page)"
+                            :class="{ 'bg-primary/10 text-primary': currentPage === page }" @click="goToPage(page)"
                             :disabled="loading">
                             {{ page }}
                         </Button>

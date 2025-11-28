@@ -12,35 +12,39 @@
 
       <!-- Primary Navigation Icons + Labels -->
       <nav class="flex flex-col space-y-4 w-full p-2 flex-1">
-        <Button v-for="module in availableModules" :key="module.id" :as="NuxtLink" :to="`/${module.id}`"
-          @click="setCurrentModule(module.id)" variant="ghost" size="icon"
-          class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2" :class="[
-            currentModule === module.id
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'text-gray-400 hover:bg-slate-700 hover:text-white',
-            isSidebarHovered && 'justify-start'
-          ]" :title="module.label">
-          <Icon :name="module.icon" class="w-5 h-5" />
-          <span class="ml-4 text-base font-medium transition-opacity duration-1000" v-if="isSidebarHovered">
-            {{ module.label }}
-          </span>
-        </Button>
+        <NuxtLink v-for="module in availableModules" :key="module.id" :to="`/${module.route}`"
+          @click="setCurrentModule(module.id)" custom v-slot="{ navigate }">
+          <Button @click="navigate" variant="ghost" size="icon"
+            class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2" :class="[
+              currentModule === module.id
+                ? 'bg-primary text-white hover:bg-primary/90'
+                : 'text-gray-400 hover:bg-slate-700 hover:text-white',
+              isSidebarHovered && 'justify-start'
+            ]" :title="module.label">
+            <Icon :name="module.icon" class="w-5 h-5" />
+            <span class="ml-4 text-base font-medium transition-opacity duration-1000" v-if="isSidebarHovered">
+              {{ module.label }}
+            </span>
+          </Button>
+        </NuxtLink>
       </nav>
 
       <!-- Settings Button at the bottom of the main sidebar -->
       <div class="w-full p-2">
-        <Button :as="NuxtLink" to="/settings" variant="ghost" size="icon"
-          class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2" :class="[
-            $route.path === '/settings'
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'text-gray-400 hover:bg-slate-700 hover:text-white',
-            isSidebarHovered && 'justify-start'
-          ]" title="Settings">
-          <Icon name="settings" class="w-5 h-5" />
-          <span class="ml-4 text-base font-medium transition-opacity duration-200" v-if="isSidebarHovered">
-            Settings
-          </span>
-        </Button>
+        <NuxtLink to="/settings" custom v-slot="{ navigate }">
+          <Button @click="navigate" variant="ghost" size="icon"
+            class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2" :class="[
+              $route.path === '/settings'
+                ? 'bg-primary text-white hover:bg-primary/90'
+                : 'text-gray-400 hover:bg-slate-700 hover:text-white',
+              isSidebarHovered && 'justify-start'
+            ]" title="Settings">
+            <Icon name="settings" class="w-5 h-5" />
+            <span class="ml-4 text-base font-medium transition-opacity duration-200" v-if="isSidebarHovered">
+              Settings
+            </span>
+          </Button>
+        </NuxtLink>
       </div>
     </aside>
 
@@ -51,7 +55,7 @@
         <!-- Module Header -->
         <div class="p-6 border-b border-border">
           <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Icon name="building" class="w-4 h-4 text-white" />
             </div>
             <div>
@@ -64,15 +68,17 @@
         <!-- Secondary Navigation -->
         <nav class="flex-1 p-4 space-y-2">
           <div v-for="navItem in subNavigation" :key="navItem.id" class="group">
-            <Button :as="NuxtLink" :to="navItem.route" variant="ghost"
-              class="w-full justify-start px-3 py-2.5 text-sm font-medium rounded-lg transition-colors" :class="[
-                $route.path === navItem.route
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'text-foreground hover:bg-gray-200 hover:text-foreground'
-              ]">
-              <Icon :name="navItem.icon" class="w-4 h-4 mr-3" />
-              <span>{{ navItem.label }}</span>
-            </Button>
+            <NuxtLink :to="navItem.route" custom v-slot="{ navigate }">
+              <Button @click="navigate" variant="ghost"
+                class="w-full justify-start px-3 py-2.5 text-sm font-medium rounded-lg transition-colors" :class="[
+                  $route.path === navItem.route
+                    ? 'bg-primary text-white hover:bg-primary/90'
+                    : 'text-foreground hover:bg-gray-200 hover:text-foreground'
+                ]">
+                <Icon :name="navItem.icon" class="w-4 h-4 mr-3" />
+                <span>{{ navItem.label }}</span>
+              </Button>
+            </NuxtLink>
           </div>
         </nav>
 
@@ -80,7 +86,7 @@
         <div class="p-4 border-t border-border">
           <div v-if="user" class="flex items-center space-x-3">
             <Avatar class="w-8 h-8">
-              <AvatarFallback class="bg-blue-600 text-white text-sm font-medium">
+              <AvatarFallback class="bg-primary text-white text-sm font-medium">
                 {{ user.name.charAt(0) }}
               </AvatarFallback>
             </Avatar>
@@ -128,11 +134,11 @@ const subNavigation = computed(() => {
       { id: 'maintenance', label: 'Maintenance', icon: 'wrench', route: '/property/maintenance', order: 3 },
       { id: 'tenants', label: 'Tenants', icon: 'users', route: '/property/tenants', order: 4 },
     ],
-    accounting: [
-      { id: 'overview', label: 'Overview', icon: 'layout-dashboard', route: '/accounting', order: 1 },
-      { id: 'bills', label: 'Bills', icon: 'file-text', route: '/accounting/bills', order: 2 },
-      { id: 'payments', label: 'Payments', icon: 'smartphone', route: '/accounting/payments', order: 3 },
-      { id: 'e-wallet', label: 'Wallet', icon: 'credit-card', route: '/accounting/e-wallet', order: 4 },
+    payments: [
+      { id: 'overview', label: 'Overview', icon: 'layout-dashboard', route: '/payments', order: 1 },
+      { id: 'bills', label: 'Bills', icon: 'file-text', route: '/payments/bills', order: 2 },
+      { id: 'payments', label: 'Payments', icon: 'smartphone', route: '/payments/transactions', order: 3 },
+      { id: 'e-wallet', label: 'Wallet', icon: 'credit-card', route: '/payments/wallet', order: 4 },
     ],
     security: [
       { id: 'overview', label: 'Overview', icon: 'shield', route: '/security', order: 1 },
@@ -157,8 +163,8 @@ const subNavigation = computed(() => {
       { id: 'handymen', label: 'Handy Man Services', icon: 'tool', route: '/portal/handymen', order: 9 }
     ],
     security: [
-      { id: 'overview', label: 'Overview', icon: 'key', route: '/security', order: 1 },
-      { id: 'logs', label: 'Visitor Logs', icon: 'file-text', route: '/security/logs', order: 3 },
+      { id: 'overview', label: 'Overview', icon: 'key', route: '/security/visitors', order: 1 },
+      { id: 'logs', label: 'Visitor Logs', icon: 'file-text', route: '/security/visitors/logs', order: 3 },
       { id: 'verify', label: 'Verify Visitor', icon: 'check-circle', route: '/security/verify', order: 2 },
       { id: 'requests', label: 'Request Entry', icon: 'alert-circle', route: '/security/requests', order: 4 },
       { id: 'child', label: 'Child Access', icon: 'user-plus', route: '/security/child_access', order: 5 }

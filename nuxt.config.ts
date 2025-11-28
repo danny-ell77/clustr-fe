@@ -1,16 +1,12 @@
 import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
-  ssr: true, // Enable server-side rendering
+  ssr: false, // Disable server-side rendering (SPA mode)
   modules: [
     "@nuxtjs/tailwindcss",
     "shadcn-nuxt",
     "@nuxt/icon",
   ],
-
-  core: {
-    debug: process.env.NODE_ENV !== "production",
-  },
 
   css: ["~/assets/css/main.css"],
 
@@ -26,7 +22,7 @@ export default defineNuxtConfig({
     dbUrl: process.env.DATABASE_URL || "",
 
     public: {
-      apiBase: process.env.API_BASE || "http://localhost:8000/api/v1/",
+      apiBase: process.env.API_BASE || "http://localhost:8000/api/v1",
       appName: "ClustR",
     },
   },

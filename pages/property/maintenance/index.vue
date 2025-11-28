@@ -1,7 +1,7 @@
 <template>
     <div class="p-6 space-y-6">
         <div>
-            <h1 class="text-2xl font-bold">Maintenance Management</h1>
+            <h1 class="text-2xl">Maintenance Management</h1>
             <p class="text-muted-foreground">Manage maintenance logs, schedules, and view analytics</p>
         </div>
 
@@ -9,8 +9,8 @@
             <NuxtLink to="/property/maintenance/logs"
                 class="bg-white border rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-12 h-12 bg-primary/15 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
@@ -65,21 +65,21 @@
             </div>
             <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="text-center">
-                    <div class="text-2xl font-bold">{{ analyticsQuery.data.value?.totalLogs || 0 }}</div>
+                    <div class="text-2xl">{{ analyticsQuery.data.value?.totalLogs || 0 }}</div>
                     <div class="text-sm text-muted-foreground">Total Logs</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-yellow-600">{{ analyticsQuery.data.value?.pendingLogs || 0 }}
+                    <div class="text-2xl text-yellow-600">{{ analyticsQuery.data.value?.pendingLogs || 0 }}
                     </div>
                     <div class="text-sm text-muted-foreground">Pending</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-blue-600">{{ analyticsQuery.data.value?.inProgressLogs || 0 }}
+                    <div class="text-2xl text-primary">{{ analyticsQuery.data.value?.inProgressLogs || 0 }}
                     </div>
                     <div class="text-sm text-muted-foreground">In Progress</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-green-600">{{ analyticsQuery.data.value?.completedLogs || 0 }}
+                    <div class="text-2xl text-green-600">{{ analyticsQuery.data.value?.completedLogs || 0 }}
                     </div>
                     <div class="text-sm text-muted-foreground">Completed</div>
                 </div>

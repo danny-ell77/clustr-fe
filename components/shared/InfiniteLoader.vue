@@ -16,7 +16,7 @@
       </div>
       <div v-else-if="!autoLoad" class="text-center">
         <button @click="query.fetchNextPage()"
-          class="px-4 py-2 text-primary hover:text-primary-dark text-sm font-medium border border-primary rounded hover:bg-primary/5 transition-colors">
+          class="px-4 py-2 text-primary hover:text-primary-dark text-sm font-medium border border-primary rounded hover:bg-primary/90/5 transition-colors">
           Load more
         </button>
       </div>
@@ -33,7 +33,7 @@
         {{ query.error.value?.message || 'Failed to load data' }}
       </p>
       <button @click="query.refetch()"
-        class="px-4 py-2 text-primary hover:text-primary-dark text-sm font-medium border border-primary rounded hover:bg-primary/5 transition-colors">
+        class="px-4 py-2 text-primary hover:text-primary-dark text-sm font-medium border border-primary rounded hover:bg-primary/90/5 transition-colors">
         Try again
       </button>
     </div>

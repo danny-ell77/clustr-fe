@@ -187,7 +187,7 @@ const emergencyTypeBadgeClass = computed(() => {
         SECURITY: 'bg-purple-100 text-purple-800',
         ACCIDENT: 'bg-orange-100 text-orange-800',
         NATURAL_DISASTER: 'bg-yellow-100 text-yellow-800',
-        UTILITY_FAILURE: 'bg-blue-100 text-blue-800',
+        UTILITY_FAILURE: 'bg-primary/15 text-primary',
         OTHER: 'bg-gray-100 text-gray-800'
     }
 

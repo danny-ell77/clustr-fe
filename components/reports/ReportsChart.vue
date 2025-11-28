@@ -4,12 +4,12 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
-                    <div class="p-2 bg-blue-100 rounded-lg">
-                        <Icon name="file-text" class="w-6 h-6 text-blue-600" />
+                    <div class="p-2 bg-primary/15 rounded-lg">
+                        <Icon name="file-text" class="w-6 h-6 text-primary" />
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Total Reports</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ totalReports }}</p>
+                        <p class="text-2xl text-gray-900">{{ totalReports }}</p>
                     </div>
                 </div>
             </div>
@@ -21,7 +21,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Completed</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ completedReports }}</p>
+                        <p class="text-2xl text-gray-900">{{ completedReports }}</p>
                     </div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">In Progress</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ inProgressReports }}</p>
+                        <p class="text-2xl text-gray-900">{{ inProgressReports }}</p>
                     </div>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Pending</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ pendingReports }}</p>
+                        <p class="text-2xl text-gray-900">{{ pendingReports }}</p>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                     <div v-for="(item, index) in monthlyTrends" :key="index"
                         class="flex flex-col items-center gap-2 flex-1">
                         <div class="relative flex flex-col items-center w-full max-w-12">
-                            <div class="w-8 bg-blue-500 rounded-t transition-all duration-300 hover:opacity-80 cursor-pointer"
+                            <div class="w-8 bg-primary/100 rounded-t transition-all duration-300 hover:opacity-80 cursor-pointer"
                                 :style="{ height: `${(item.count / maxMonthlyCount) * 200}px` }"
                                 :title="`${item.month}: ${item.count} reports`"></div>
                         </div>
@@ -132,7 +132,7 @@ const maxMonthlyCount = computed(() => {
 
 const getTypeColor = (type) => {
     switch (type) {
-        case 'maintenance': return 'bg-blue-500'
+        case 'maintenance': return 'bg-primary/100'
         case 'financial': return 'bg-green-500'
         case 'occupancy': return 'bg-yellow-500'
         case 'energy': return 'bg-red-500'

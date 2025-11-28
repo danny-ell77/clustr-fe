@@ -12,7 +12,7 @@
       <CardHeader class="pb-3">
         <div class="flex items-center justify-between">
           <CardTitle class="text-sm">Scheduled Payment</CardTitle>
-          <Button variant="ghost" size="sm" class="text-xs text-blue-600" @click="$emit('seeAllScheduled')">
+          <Button variant="ghost" size="sm" class="text-xs text-primary" @click="$emit('seeAllScheduled')">
             See all
           </Button>
         </div>

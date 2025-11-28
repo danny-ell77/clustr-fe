@@ -103,7 +103,7 @@ const formatTime = (dateString: string) => {
 const getPriorityClass = (priority: string) => {
     const classes = {
         low: 'bg-gray-100 text-gray-800',
-        medium: 'bg-blue-100 text-blue-800',
+        medium: 'bg-primary/15 text-primary',
         high: 'bg-orange-100 text-orange-800',
         critical: 'bg-red-100 text-red-800'
     }

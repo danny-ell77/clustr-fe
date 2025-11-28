@@ -26,10 +26,10 @@
 
           <!-- User Menu -->
           <DropdownMenu>
-            <DropdownMenuTrigger as-child>
+            <DropdownMenuTrigger :as-child="true">
               <Button variant="ghost" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100">
                 <Avatar class="w-8 h-8">
-                  <AvatarFallback class="bg-blue-600 text-white text-sm font-medium">
+                  <AvatarFallback class="bg-primary text-white text-sm font-medium">
                     {{ user?.name.charAt(0) }}
                   </AvatarFallback>
                 </Avatar>

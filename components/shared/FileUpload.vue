@@ -9,7 +9,7 @@
       <!-- Custom Upload Button -->
       <div
         class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer"
-        :class="{ 'border-blue-500 bg-blue-50': isDragOver }" @click="triggerFileInput" @drop="handleDrop"
+        :class="{ ' border-primary bg-primary/10': isDragOver }" @click="triggerFileInput" @drop="handleDrop"
         @dragover.prevent="isDragOver = true" @dragleave="isDragOver = false" @dragenter.prevent>
         <Icon name="upload" class="w-8 h-8 text-gray-400 mx-auto mb-2" />
         <p class="text-sm text-gray-600 mb-1">
@@ -36,7 +36,7 @@
           <div class="flex items-center gap-2">
             <div class="flex items-center gap-2">
               <div class="w-16 bg-gray-200 rounded-full h-2">
-                <div class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                <div class="bg-primary h-2 rounded-full transition-all duration-300"
                   :style="{ width: `${f.progress}%` }"></div>
               </div>
               <span class="text-xs text-gray-500 w-8">{{ f.progress }}%</span>

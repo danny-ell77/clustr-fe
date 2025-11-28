@@ -4,7 +4,6 @@ import {
     useRequestHeaders,
     useRouter,
     useNuxtApp,
-    useCookie,
     clearNuxtState,
 } from "nuxt/app";
 import { $fetch } from "ofetch";
@@ -23,23 +22,12 @@ const isLoading = ref(false);
 const error = ref<string | null>(null);
 
 export function useAuth() {
+
     const config = useRuntimeConfig();
     const router = useRouter();
+    const route = useRoute();
     const nuxtApp = useNuxtApp();
     const $api = nuxtApp.$api as typeof $fetch;
-
-    const accessToken = useCookie("access_token", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        maxAge: 60 * 15,
-    });
-    const refreshToken = useCookie("refresh_token", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        maxAge: 60 * 60 * 24 * 7,
-    });
 
     watch(user, () => {
         error.value = null;
@@ -50,15 +38,19 @@ export function useAuth() {
     const isAdmin = computed(() => {
         return true;
     });
-
+    
+    /**
+     * Backend now sets HTTP-only cookies automatically
+     * Response only contains user and permissions
+     * Then we update state with user data
+     * @param credentials 
+     * @returns 
+     */
     const login = async (credentials: LoginCredentials) => {
         try {
             isLoading.value = true;
             error.value = null;
-
             const response = await $api<{
-                access: string;
-                refresh: string;
                 user: User;
                 permissions: string[];
             }>("/auth/signin/", {
@@ -66,11 +58,12 @@ export function useAuth() {
                 body: credentials,
             });
 
-            accessToken.value = response.access;
-            refreshToken.value = response.refresh;
-
             user.value = response.user;
             permissions.splice(0, permissions.length, ...response.permissions);
+
+            // Redirect to requested path or home
+            const redirectPath = route.query.redirect as string;
+            await router.push(redirectPath || "/");
 
             return { success: true };
         } catch (err: any) {
@@ -92,16 +85,14 @@ export function useAuth() {
         } catch (err) {
             console.error("Logout error:", err);
         } finally {
-            accessToken.value = null;
-            refreshToken.value = null;
             user.value = null;
             permissions.splice(0, permissions.length);
 
             await clearNuxtState("auth.user");
 
-            if (nuxtApp.$queryClient) {
-                nuxtApp.$queryClient.clear();
-            }
+            // if (nuxtApp.$queryClient) {
+            //     nuxtApp.$queryClient.clear();
+            // }
 
             isLoading.value = false;
 
@@ -109,22 +100,20 @@ export function useAuth() {
         }
     };
 
+    /**
+     * Token refresh is handled automatically by the server proxy
+     * The server will use the refresh_token cookie
+     * If refresh fails, clear auth state.
+     * @returns 
+     */
     const refreshAuthToken = async () => {
         try {
-            if (!refreshToken.value) {
-                throw new Error("No refresh token available");
-            }
-
             const response = await $api<{ access: string }>("/auth/signin/refresh/", {
                 method: "POST",
-                body: { refresh: refreshToken.value },
             });
 
-            accessToken.value = response.access;
             return response.access;
         } catch (err) {
-            accessToken.value = null;
-            refreshToken.value = null;
             user.value = null;
             permissions.splice(0, permissions.length);
             await clearNuxtState("auth.user");
@@ -136,13 +125,10 @@ export function useAuth() {
     const fetchUserAndPermissions = async () => {
         isLoading.value = true;
         try {
-            if (!accessToken.value) {
-                return { user: null, permissions: [] };
-            }
-
+            // Cookies are automatically sent with the request
             const headers = process.server ? useRequestHeaders(["cookie"]) : {};
             const response = await $api<{ user: User; permissions: string[] }>(
-                "/auth/me/",
+                "/accounts/from-auth/",
                 {
                     headers: { ...headers },
                 }
@@ -157,7 +143,7 @@ export function useAuth() {
                     const retryResponse = await $api<{
                         user: User;
                         permissions: string[];
-                    }>("/auth/me/");
+                    }>("/accounts/from-auth/");
                     return {
                         user: retryResponse.user,
                         permissions: retryResponse.permissions,
@@ -281,6 +267,33 @@ export function useAuth() {
         return permissionList.every((p) => permissions.includes(p));
     };
 
+    /**
+     * Run on both server and client
+     * Don't initialize if already authenticated
+     * Try to fetch user data using HTTP-only cookies
+     * Silently fail if not authenticated
+     * @returns 
+     */
+    const initializeAuth = async () => {
+        if (user.value) return;
+
+        try {
+            isLoading.value = true;
+            const { user: fetchedUser, permissions: fetchedPermissions } =
+                await fetchUserAndPermissions();
+            
+            if (fetchedUser) {
+                updateAuthState(fetchedUser, fetchedPermissions);
+            }
+        } catch (err) {
+            console.log("No active session found");
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+
+
     return {
         user: readonly(user),
         permissions: readonly(permissions),
@@ -288,7 +301,6 @@ export function useAuth() {
         error: readonly(error),
         isAuthenticated,
         isAdmin,
-        accessToken: readonly(accessToken),
 
         login,
         logout,
@@ -305,5 +317,8 @@ export function useAuth() {
         hasAllPermissions,
 
         availableModules,
+        
+        // Expose initialization function in case manual re-init is needed
+        initializeAuth,
     };
 }

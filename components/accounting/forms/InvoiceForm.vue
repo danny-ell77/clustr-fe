@@ -197,7 +197,7 @@
                 <Button 
                     type="submit" 
                     :disabled="isSubmitting" 
-                    class="bg-blue-600 hover:bg-blue-700 min-w-[120px]"
+                    class="bg-primary hover:bg-primary/90 min-w-[120px]"
                 >
                     {{ isSubmitting ? 'Saving...' : 'Export Invoice' }}
                 </Button>

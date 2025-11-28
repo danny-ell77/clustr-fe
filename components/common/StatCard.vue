@@ -5,7 +5,7 @@
         <div class="flex-1">
           <p class="text-sm font-medium text-muted-foreground">{{ title }}</p>
           <div class="flex items-baseline gap-2 mt-2">
-            <h3 class="text-2xl font-bold">{{ formattedValue }}</h3>
+            <h3 class="text-2xl">{{ formattedValue }}</h3>
             <span v-if="suffix" class="text-sm text-muted-foreground">{{ suffix }}</span>
           </div>
           <div v-if="trend !== undefined" class="flex items-center gap-1 mt-2">
@@ -68,7 +68,7 @@ const formattedValue = computed(() => {
 
 const iconBackgroundClass = computed(() => {
   const colors = {
-    blue: 'bg-blue-100',
+    blue: 'bg-primary/15',
     green: 'bg-green-100',
     yellow: 'bg-yellow-100',
     red: 'bg-red-100',
@@ -80,7 +80,7 @@ const iconBackgroundClass = computed(() => {
 
 const iconColorClass = computed(() => {
   const colors = {
-    blue: 'text-blue-600',
+    blue: 'text-primary',
     green: 'text-green-600',
     yellow: 'text-yellow-600',
     red: 'text-red-600',

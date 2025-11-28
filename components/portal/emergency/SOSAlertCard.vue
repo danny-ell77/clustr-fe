@@ -48,7 +48,7 @@
                     </div>
 
                     <div v-if="alert.respondedAt" class="flex items-center gap-2 text-sm">
-                        <Icon name="user-check" class="w-4 h-4 text-blue-600" />
+                        <Icon name="user-check" class="w-4 h-4 text-primary" />
                         <span class="text-muted-foreground">
                             Response started by {{ alert.respondedByName }} • {{ formatDate(alert.respondedAt) }}
                         </span>
@@ -133,7 +133,7 @@ const alertBorderClass = computed(() => {
 
     const priorityColors: Record<string, string> = {
         LOW: 'border-l-4 border-l-gray-400',
-        MEDIUM: 'border-l-4 border-l-blue-500',
+        MEDIUM: 'border-l-4  border-l-primary',
         HIGH: 'border-l-4 border-l-orange-500',
         CRITICAL: 'border-l-4 border-l-red-600'
     }
@@ -148,7 +148,7 @@ const emergencyTypeBadgeClass = computed(() => {
         SECURITY: 'bg-purple-100 text-purple-800',
         ACCIDENT: 'bg-orange-100 text-orange-800',
         NATURAL_DISASTER: 'bg-yellow-100 text-yellow-800',
-        UTILITY_FAILURE: 'bg-blue-100 text-blue-800',
+        UTILITY_FAILURE: 'bg-primary/15 text-primary',
         OTHER: 'bg-gray-100 text-gray-800'
     }
 

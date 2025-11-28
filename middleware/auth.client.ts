@@ -1,13 +1,17 @@
 import { isPublicRoute, isGuestRoute, requiresAuth, isModuleRoute } from "~/config/routes";
 import { APP_MODULES } from "~/config/modules";
 
-export default defineNuxtRouteMiddleware((to) => {
-  const { user, isAuthenticated, isAdmin, permissions } = useAuth();
+export default defineNuxtRouteMiddleware(async (to) => {
+  const { user, isAuthenticated, isAdmin, permissions, initializeAuth } = useAuth();
   const { openPermissionModal } = usePermissionModal();
 
-  if (to.meta.auth === false) {
-    return;
-  }
+  // Initialize auth state (runs on server and client)
+  // This ensures we have the user data before checking permissions
+  await initializeAuth();
+
+  // if (to.meta.auth === false) {
+  //   return;
+  // }
 
   if (isPublicRoute(to.path)) {
     if (isGuestRoute(to.path) && isAuthenticated.value) {

@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <!-- Header -->
     <div>
-      <h1 class="text-3xl font-bold text-gray-900">Settings</h1>
+      <Typography variant="h1" as="h1">Settings</Typography>
       <p class="text-gray-600 mt-1">Manage your application settings and preferences</p>
     </div>
 
@@ -13,7 +13,7 @@
         <template #general>
           <div class="space-y-6">
             <div>
-              <h3 class="text-lg font-medium text-gray-900 mb-4">General Settings</h3>
+              <Typography variant="h3" as="h3" class="mb-4">General Settings</Typography>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <Label for="orgName">Organization Name</Label>
@@ -43,7 +43,7 @@
         <template #users>
           <div class="space-y-6">
             <div class="flex justify-between items-center">
-              <h3 class="text-lg font-medium text-gray-900">User Management</h3>
+              <Typography variant="h3" as="h3">User Management</Typography>
               <Button @click="showAddUser = true">
                 <Icon name="plus" class="w-4 h-4 mr-2" />
                 Add User
@@ -100,7 +100,7 @@
         <!-- Notifications -->
         <template #notifications>
           <div class="space-y-6">
-            <h3 class="text-lg font-medium text-gray-900">Notification Preferences</h3>
+            <Typography variant="h3" as="h3">Notification Preferences</Typography>
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <div>
@@ -130,7 +130,7 @@
         <!-- Security -->
         <template #security>
           <div class="space-y-6">
-            <h3 class="text-lg font-medium text-gray-900">Security Settings</h3>
+            <Typography variant="h3" as="h3">Security Settings</Typography>
             <div class="space-y-4">
               <div>
                 <Label for="currentPassword">Current Password</Label>
@@ -152,7 +152,7 @@
 
       <!-- Save Button -->
       <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
-        <Button @click="saveSettings" class="bg-blue-600 hover:bg-blue-700">
+        <Button @click="saveSettings" class="bg-primary hover:bg-primary/90">
           Save Changes
         </Button>
       </div>

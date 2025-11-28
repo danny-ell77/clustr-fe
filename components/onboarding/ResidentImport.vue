@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6">
-    <h2 class="text-2xl font-bold text-gray-900 mb-4">Import Residents</h2>
+    <h2 class="text-2xl text-gray-900 mb-4">Import Residents</h2>
 
     <div class="space-y-4">
       <!-- Template Download -->

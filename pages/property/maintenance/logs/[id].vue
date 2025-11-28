@@ -6,7 +6,7 @@
                     ← Back
                 </Button>
                 <div>
-                    <h1 class="text-2xl font-bold">Maintenance Log Details</h1>
+                    <h1 class="text-2xl">Maintenance Log Details</h1>
                     <p class="text-muted-foreground">{{ logQuery.data.value?.maintenanceNumber }}</p>
                 </div>
             </div>
@@ -121,7 +121,7 @@
                 <div class="bg-white border rounded-lg p-6">
                     <h2 class="text-lg font-semibold mb-4">Cost</h2>
                     <div v-if="logQuery.data.value?.cost">
-                        <p class="text-2xl font-bold text-green-600">
+                        <p class="text-2xl text-green-600">
                             {{ formatCurrency(logQuery.data.value.cost) }}
                         </p>
                     </div>
@@ -167,11 +167,11 @@ const newStatus = ref('')
 
 const logQuery = useQuery({
     queryKey: queryKeys.maintenance.logs.detail(logId),
-    queryFn: () => maintenanceApi.getLogById(logId)
+    queryFn: () => maintenanceApi.logs.getById(logId)
 })
 
 const updateStatusMutation = useMutation({
-    mutationFn: (status: string) => maintenanceApi.updateStatus(logId, status),
+    mutationFn: (status: string) => maintenanceApi.logs.update(logId, { status }),
     onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: queryKeys.maintenance.logs.detail(logId) })
         queryClient.invalidateQueries({ queryKey: queryKeys.maintenance.logs.all() })
@@ -179,7 +179,7 @@ const updateStatusMutation = useMutation({
 })
 
 const deleteMutation = useMutation({
-    mutationFn: () => maintenanceApi.deleteLog(logId),
+    mutationFn: () => maintenanceApi.logs.delete(logId),
     onSuccess: () => {
         router.push('/property/maintenance/logs')
     }

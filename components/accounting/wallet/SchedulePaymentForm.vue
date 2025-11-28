@@ -11,7 +11,7 @@
       <div class="flex justify-between items-start mb-8">
         <div class="space-y-1">
           <p class="text-sm opacity-90">Available Balance</p>
-          <p class="text-2xl font-bold">{{ formatWalletBalance(balance) }}</p>
+          <p class="text-2xl">{{ formatWalletBalance(balance) }}</p>
         </div>
         <!-- <img src="/images/chip.svg" alt="Card Chip" class="w-10" /> -->
       </div>

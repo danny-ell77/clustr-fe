@@ -1,398 +1,337 @@
 <template>
-    <div class="issue-detail">
-        <div v-if="loading" class="flex items-center justify-center py-12">
-            <div class="text-muted-foreground">Loading issue...</div>
-        </div>
-
-        <div v-else-if="error" class="flex flex-col items-center justify-center py-12">
-            <div class="text-red-600 mb-4">{{ error.message || 'Failed to load issue' }}</div>
-            <Button @click="handleRetry">Retry</Button>
-        </div>
-
-        <div v-else>
-            <div class="mb-6 flex items-center justify-between">
-                <h1 class="text-2xl font-bold">Issue Details</h1>
-                <div class="flex gap-2">
-                    <Button variant="outline" @click="showEditModal = true">
-                        <Icon name="edit-2" class="w-4 h-4 mr-2" />
-                        Edit
-                    </Button>
-
-                    <Button variant="outline" @click="showAssignModal = true">
-                        <Icon name="user-plus" class="w-4 h-4 mr-2" />
-                        Assign
-                    </Button>
-                </div>
+    <div class="space-y-6">
+        <div class="flex items-center gap-4">
+            <Button variant="ghost" size="icon" @click="goBack">
+                <Icon name="arrow-left" class="w-4 h-4" />
+            </Button>
+            <div class="flex-1">
+                <h1 class="text-3xl">Ticket Details</h1>
+                <p class="text-muted-foreground">View and manage ticket information</p>
             </div>
+        </div>
 
+        <div v-if="isLoading" class="space-y-6">
             <Card>
-                <CardHeader>
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <span class="font-mono text-sm text-muted-foreground">{{ issue.issueNo }}</span>
-                                <span :class="getPriorityClass(issue.priority)"
-                                    class="px-2 py-1 rounded text-xs font-medium">
-                                    {{ issue.priority }}
-                                </span>
-                                <span :class="getStatusClass(issue.status)"
-                                    class="px-2 py-1 rounded text-xs font-medium">
-                                    {{ issue.status }}
-                                </span>
-                                <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs font-medium">
-                                    {{ issue.issueType }}
-                                </span>
-                            </div>
-                            <CardTitle class="text-3xl mb-2">{{ issue.title }}</CardTitle>
-                            <div class="flex items-center space-x-4 text-sm text-muted-foreground">
-                                <span>Created: {{ formatDate(issue.createdAt) }}</span>
-                                <span v-if="issue.reportedBy">
-                                    Reported by: {{ issue.reportedBy.name || issue.reportedBy.email }}
-                                </span>
-                                <span v-if="issue.assignedTo">
-                                    Assigned to: {{ issue.assignedTo.name || issue.assignedTo.email }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <div class="prose max-w-none">
-                        <p class="whitespace-pre-wrap">{{ issue.description }}</p>
-                    </div>
+                <CardContent class="pt-6">
+                    <Skeleton class="h-64 w-full" />
                 </CardContent>
             </Card>
+        </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Comments</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div v-if="commentsLoading" class="text-center py-4 text-muted-foreground">
-                        Loading comments...
-                    </div>
+        <div v-else-if="!ticket" class="text-center py-12">
+            <EmptyState title="Ticket not found" description="The ticket you're looking for doesn't exist"
+                action-label="Back to Tickets" @action="goBack" />
+        </div>
 
-                    <div v-else-if="commentsError" class="text-center py-4">
-                        <div class="text-red-600 mb-2">Failed to load comments</div>
-                        <Button size="sm" @click="() => refetchComments()">Retry</Button>
-                    </div>
-
-                    <div v-else-if="comments && comments.length > 0" class="space-y-4">
-                        <div v-for="comment in comments" :key="comment.id" class="border rounded-lg p-4">
-                            <div class="flex items-start justify-between mb-2">
-                                <div class="flex items-center space-x-2">
-                                    <span class="font-semibold">
-                                        {{ comment.createdBy?.name || comment.createdBy?.email || 'Unknown' }}
-                                    </span>
-                                    <span class="text-sm text-muted-foreground">
-                                        {{ formatDate(comment.createdAt) }}
-                                    </span>
+        <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-6">
+                <Card>
+                    <CardHeader>
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 flex-wrap mb-2">
+                                    <CardTitle>{{ ticket.title }}</CardTitle>
+                                    <StatusBadge :status="ticket.status" />
+                                    <PriorityBadge :priority="ticket.priority" />
                                 </div>
+                                <p class="text-sm text-muted-foreground">{{ ticket.issueNo }}</p>
                             </div>
-                            <p class="text-foreground whitespace-pre-wrap">{{ comment.content }}</p>
-                        </div>
-                    </div>
-
-                    <div v-else class="text-center py-8 text-muted-foreground">
-                        No comments yet
-                    </div>
-
-                    <div class="mt-6 pt-6 border-t">
-                        <form @submit.prevent="handleAddComment" class="space-y-3">
-                            <div>
-                                <Label>Add Comment</Label>
-                                <textarea v-model="commentContent"
-                                    class="w-full min-h-[100px] px-3 py-2 border rounded-md"
-                                    placeholder="Write a comment..." required />
-                            </div>
-                            <div class="flex justify-end">
-                                <Button type="submit" :disabled="addCommentMutation.isPending.value">
-                                    {{ addCommentMutation.isPending.value ? 'Adding...' : 'Add Comment' }}
+                            <div class="flex gap-2">
+                                <Button
+                                    v-if="hasPermission(PERMISSIONS.COMMUNICATIONS.MANAGE_COMPLAINT) && ticket.status !== 'CLOSED'"
+                                    variant="outline" size="sm" @click="showEditDialog = true">
+                                    <Icon name="edit-2" class="w-4 h-4 mr-2" />
+                                    Edit
+                                </Button>
+                                <Button
+                                    v-if="hasPermission(PERMISSIONS.COMMUNICATIONS.MANAGE_COMPLAINT) && !ticket.assignedTo"
+                                    variant="outline" size="sm" @click="showAssignDialog = true">
+                                    <Icon name="user-plus" class="w-4 h-4 mr-2" />
+                                    Assign
+                                </Button>
+                                <Button
+                                    v-if="hasPermission(PERMISSIONS.COMMUNICATIONS.MANAGE_COMPLAINT) && ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED'"
+                                    variant="outline" size="sm" @click="handleEscalate">
+                                    <Icon name="alert-triangle" class="w-4 h-4 mr-2" />
+                                    Escalate
                                 </Button>
                             </div>
-                        </form>
-                    </div>
-                </CardContent>
-            </Card>
+                        </div>
+                    </CardHeader>
+                    <CardContent class="space-y-4">
+                        <div>
+                            <h3 class="font-semibold mb-2">Description</h3>
+                            <p class="text-sm text-muted-foreground whitespace-pre-wrap">{{ ticket.description }}</p>
+                        </div>
+
+                        <div v-if="ticket.resolutionNotes" class="p-4 bg-green-50 rounded-lg border border-green-200">
+                            <h3 class="font-semibold text-green-900 mb-2">Resolution Notes</h3>
+                            <p class="text-sm text-green-800 whitespace-pre-wrap">{{ ticket.resolutionNotes }}</p>
+                        </div>
+
+                        <div v-if="ticket.attachments && ticket.attachments.length > 0">
+                            <h3 class="font-semibold mb-2">Attachments</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                <a v-for="attachment in ticket.attachments" :key="attachment.id"
+                                    :href="attachment.fileUrl" target="_blank"
+                                    class="flex items-center gap-2 p-2 border rounded hover:bg-muted transition-colors">
+                                    <Icon name="paperclip" class="w-4 h-4" />
+                                    <span class="text-sm truncate">{{ attachment.fileName }}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Status History</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div v-if="ticket.statusHistory && ticket.statusHistory.length > 0" class="space-y-4">
+                            <div v-for="(history, index) in ticket.statusHistory" :key="history.id" class="flex gap-4">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <Icon name="arrow-right" class="w-4 h-4 text-primary" />
+                                    </div>
+                                    <div v-if="index < ticket.statusHistory.length - 1"
+                                        class="w-0.5 h-full bg-border mt-2" />
+                                </div>
+                                <div class="flex-1 pb-4">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <StatusBadge :status="history.fromStatus" />
+                                        <Icon name="arrow-right" class="w-3 h-3 text-muted-foreground" />
+                                        <StatusBadge :status="history.toStatus" />
+                                    </div>
+                                    <p class="text-sm text-muted-foreground">
+                                        by {{ history.changedBy.name }} • {{ formatDate(history.createdAt) }}
+                                    </p>
+                                    <p v-if="history.notes" class="text-sm mt-1">{{ history.notes }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="text-center py-8 text-muted-foreground">
+                            No status changes yet
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Comments</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <CommentSection :ticket-id="ticket.id" :comments="ticket.comments || []"
+                            :can-comment="hasPermission(PERMISSIONS.COMMUNICATIONS.MANAGE_COMPLAINT)" />
+                    </CardContent>
+                </Card>
+            </div>
+
+            <div class="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Ticket Information</CardTitle>
+                    </CardHeader>
+                    <CardContent class="space-y-4">
+                        <div>
+                            <p class="text-xs text-muted-foreground">Type</p>
+                            <p class="text-sm font-medium">{{ formatIssueType(ticket.issueType) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-muted-foreground">Reported By</p>
+                            <p class="text-sm font-medium">{{ ticket.reportedBy.name }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-muted-foreground">Assigned To</p>
+                            <p class="text-sm font-medium">
+                                {{ ticket.assignedTo?.name || 'Unassigned' }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-muted-foreground">Created</p>
+                            <p class="text-sm font-medium">{{ formatDate(ticket.createdAt) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-muted-foreground">Last Modified</p>
+                            <p class="text-sm font-medium">{{ formatDate(ticket.lastModifiedAt) }}</p>
+                        </div>
+                        <div v-if="ticket.dueDate">
+                            <p class="text-xs text-muted-foreground">Due Date</p>
+                            <p class="text-sm font-medium" :class="{ 'text-red-600': isOverdue }">
+                                {{ formatDate(ticket.dueDate) }}
+                            </p>
+                        </div>
+                        <div v-if="ticket.resolvedAt">
+                            <p class="text-xs text-muted-foreground">Resolved</p>
+                            <p class="text-sm font-medium">{{ formatDate(ticket.resolvedAt) }}</p>
+                        </div>
+                        <div v-if="ticket.closedAt">
+                            <p class="text-xs text-muted-foreground">Closed</p>
+                            <p class="text-sm font-medium">{{ formatDate(ticket.closedAt) }}</p>
+                        </div>
+                        <div v-if="ticket.escalatedAt">
+                            <p class="text-xs text-muted-foreground">Escalated</p>
+                            <p class="text-sm font-medium text-red-600">{{ formatDate(ticket.escalatedAt) }}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card v-if="hasPermission(PERMISSIONS.COMMUNICATIONS.MANAGE_COMPLAINT)">
+                    <CardHeader>
+                        <CardTitle>Quick Actions</CardTitle>
+                    </CardHeader>
+                    <CardContent class="space-y-2">
+                        <Button v-if="ticket.status === 'OPEN'" variant="outline" class="w-full justify-start"
+                            @click="updateStatus('IN_PROGRESS')">
+                            <Icon name="play" class="w-4 h-4 mr-2" />
+                            Start Progress
+                        </Button>
+                        <Button v-if="ticket.status === 'IN_PROGRESS'" variant="outline" class="w-full justify-start"
+                            @click="showResolveDialog = true">
+                            <Icon name="check-circle" class="w-4 h-4 mr-2" />
+                            Mark as Resolved
+                        </Button>
+                        <Button v-if="ticket.status === 'RESOLVED'" variant="outline" class="w-full justify-start"
+                            @click="updateStatus('CLOSED')">
+                            <Icon name="x-circle" class="w-4 h-4 mr-2" />
+                            Close Ticket
+                        </Button>
+                        <Button v-if="ticket.status !== 'CLOSED'" variant="outline"
+                            class="w-full justify-start text-red-600 hover:text-red-700"
+                            @click="updateStatus('CLOSED')">
+                            <Icon name="x" class="w-4 h-4 mr-2" />
+                            Close Without Resolution
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
 
-        <Dialog v-model:open="showEditModal">
-            <DialogContent class="max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle>Edit Issue</DialogTitle>
-                    <DialogDescription>
-                        Update issue details
-                    </DialogDescription>
-                </DialogHeader>
+        <TicketFormDialog v-model:open="showEditDialog" :ticket="ticket" @success="onTicketUpdated" />
 
-                <form @submit.prevent="handleUpdate" class="space-y-4">
-                    <div>
-                        <Label>Title</Label>
-                        <Input v-model="editFormData.title" required />
-                    </div>
+        <AssignDialog v-model:open="showAssignDialog" :ticket="ticket" @success="onTicketAssigned" />
 
-                    <div>
-                        <Label>Description</Label>
-                        <textarea v-model="editFormData.description"
-                            class="w-full min-h-[120px] px-3 py-2 border rounded-md" required />
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <Label>Type</Label>
-                            <Select v-model="editFormData.issueType">
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="CARPENTRY">Carpentry</SelectItem>
-                                    <SelectItem value="PLUMBING">Plumbing</SelectItem>
-                                    <SelectItem value="ELECTRICAL">Electrical</SelectItem>
-                                    <SelectItem value="CLEANING">Cleaning</SelectItem>
-                                    <SelectItem value="SECURITY">Security</SelectItem>
-                                    <SelectItem value="OTHER">Other</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div>
-                            <Label>Priority</Label>
-                            <Select v-model="editFormData.priority">
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="LOW">Low</SelectItem>
-                                    <SelectItem value="MEDIUM">Medium</SelectItem>
-                                    <SelectItem value="HIGH">High</SelectItem>
-                                    <SelectItem value="URGENT">Urgent</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div>
-                            <Label>Status</Label>
-                            <Select v-model="editFormData.status">
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="SUBMITTED">Submitted</SelectItem>
-                                    <SelectItem value="OPEN">Open</SelectItem>
-                                    <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                                    <SelectItem value="PENDING">Pending</SelectItem>
-                                    <SelectItem value="RESOLVED">Resolved</SelectItem>
-                                    <SelectItem value="CLOSED">Closed</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end space-x-2 pt-4">
-                        <Button type="button" variant="outline" @click="showEditModal = false">
-                            Cancel
-                        </Button>
-                        <Button type="submit" :disabled="updateMutation.isPending.value">
-                            {{ updateMutation.isPending.value ? 'Updating...' : 'Update' }}
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
-
-        <Dialog v-model:open="showAssignModal">
+        <Dialog v-model:open="showResolveDialog">
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Assign Issue</DialogTitle>
+                    <DialogTitle>Resolve Ticket</DialogTitle>
                     <DialogDescription>
-                        Assign this issue to a staff member
+                        Add resolution notes to mark this ticket as resolved
                     </DialogDescription>
                 </DialogHeader>
-
-                <form @submit.prevent="handleAssign" class="space-y-4">
+                <div class="space-y-4">
                     <div>
-                        <Label>Assign To</Label>
-                        <Input v-model="assignFormData.assignedTo" placeholder="Staff member ID" required />
+                        <Label>Resolution Notes</Label>
+                        <Textarea v-model="resolutionNotes" placeholder="Describe how the issue was resolved..."
+                            rows="4" />
                     </div>
-
-                    <div class="flex justify-end space-x-2 pt-4">
-                        <Button type="button" variant="outline" @click="showAssignModal = false">
-                            Cancel
-                        </Button>
-                        <Button type="submit" :disabled="assignMutation.isPending.value">
-                            {{ assignMutation.isPending.value ? 'Assigning...' : 'Assign' }}
-                        </Button>
-                    </div>
-                </form>
+                </div>
+                <div class="flex justify-end gap-2 mt-4">
+                    <Button variant="outline" @click="showResolveDialog = false">Cancel</Button>
+                    <Button @click="handleResolve" :disabled="!resolutionNotes">
+                        Mark as Resolved
+                    </Button>
+                </div>
             </DialogContent>
         </Dialog>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, watch } from 'vue'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { queryKeys } from '~/constants/query-keys'
-import { helpdeskApi, type IssueTicket } from '~/services/api/helpdesk.api'
+import { ref, computed } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+import { Textarea } from '~/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '~/components/ui/dialog'
+import { Skeleton } from '~/components/ui/skeleton'
 import Icon from '~/components/Icon.vue'
-
-const route = useRoute()
-const queryClient = useQueryClient()
-const toast = useToast()
+import StatusBadge from '~/components/common/StatusBadge.vue'
+import PriorityBadge from '~/components/common/PriorityBadge.vue'
+import EmptyState from '~/components/common/EmptyState.vue'
+import CommentSection from '~/components/portal/helpdesk/CommentSection.vue'
+import TicketFormDialog from '~/components/portal/helpdesk/TicketFormDialog.vue'
+import HelpdeskAssignDialog from '~/components/portal/helpdesk/HelpdeskAssignDialog.vue'
+import { useHelpdesk } from '~/composables/portal/useHelpdesk'
+import { usePermissions } from '~/composables/auth/usePermissions'
+import type { IssueStatus } from '~/types/helpdesk'
 
 definePageMeta({
-    title: 'Issue Details',
-    middleware: ['auth', 'permissions'],
-    layout: 'default'
+    title: 'Ticket Details'
 })
 
-const showEditModal = ref(false)
-const showAssignModal = ref(false)
-const commentContent = ref('')
+const route = useRoute()
+const router = useRouter()
+const { hasPermission, PERMISSIONS } = usePermissions()
+const { useTicket, updateTicketMutation, escalateTicketMutation } = useHelpdesk()
 
-const issueId = computed(() => route.params.id as string)
+const ticketId = computed(() => route.params.id as string)
+const ticketQuery = useTicket(ticketId)
 
-const { data: issue, isLoading: loading, error, refetch } = useQuery({
-    queryKey: computed(() => queryKeys.helpdesk.issues.detail(issueId.value)),
-    queryFn: () => helpdeskApi.getIssueById(issueId.value),
-    enabled: computed(() => !!issueId.value)
+const ticket = computed(() => ticketQuery.data.value)
+const isLoading = computed(() => ticketQuery.isLoading.value)
+
+const showEditDialog = ref(false)
+const showAssignDialog = ref(false)
+const showResolveDialog = ref(false)
+const resolutionNotes = ref('')
+
+const isOverdue = computed(() => {
+    if (!ticket.value?.dueDate) return false
+    return new Date(ticket.value.dueDate) < new Date()
 })
 
-const {
-    data: comments,
-    isLoading: commentsLoading,
-    error: commentsError,
-    refetch: refetchComments
-} = useQuery({
-    queryKey: computed(() => queryKeys.helpdesk.comments(issueId.value)),
-    queryFn: () => helpdeskApi.getIssueComments(issueId.value),
-    enabled: computed(() => !!issueId.value)
-})
-
-const editFormData = reactive({
-    title: '',
-    description: '',
-    issueType: 'OTHER' as IssueTicket['issueType'],
-    priority: 'MEDIUM' as IssueTicket['priority'],
-    status: 'SUBMITTED' as IssueTicket['status']
-})
-
-const assignFormData = reactive({
-    assignedTo: ''
-})
-
-watch(issue, (newIssue) => {
-    if (newIssue) {
-        Object.assign(editFormData, {
-            title: newIssue.title,
-            description: newIssue.description,
-            issueType: newIssue.issueType,
-            priority: newIssue.priority,
-            status: newIssue.status
-        })
-    }
-})
-
-const handleRetry = () => {
-    refetch()
+const goBack = () => {
+    router.push('/portal/helpdesk')
 }
 
-const updateMutation = useMutation({
-    mutationFn: (data: Partial<IssueTicket>) =>
-        helpdeskApi.updateIssue(issueId.value, data),
-    onSuccess: () => {
-        queryClient.invalidateQueries({
-            queryKey: queryKeys.helpdesk.issues.detail(issueId.value)
-        })
-        queryClient.invalidateQueries({ queryKey: queryKeys.helpdesk.issues.all() })
-        showEditModal.value = false
-        toast.success('Issue updated successfully')
-    },
-    onError: (error: any) => {
-        toast.error(error.message || 'Failed to update issue')
-    }
-})
-
-const assignMutation = useMutation({
-    mutationFn: (assigneeId: string) =>
-        helpdeskApi.assignIssue(issueId.value, assigneeId),
-    onSuccess: () => {
-        queryClient.invalidateQueries({
-            queryKey: queryKeys.helpdesk.issues.detail(issueId.value)
-        })
-        queryClient.invalidateQueries({ queryKey: queryKeys.helpdesk.issues.all() })
-        showAssignModal.value = false
-        assignFormData.assignedTo = ''
-        toast.success('Issue assigned successfully')
-    },
-    onError: (error: any) => {
-        toast.error(error.message || 'Failed to assign issue')
-    }
-})
-
-const addCommentMutation = useMutation({
-    mutationFn: (content: string) =>
-        helpdeskApi.addIssueComment(issueId.value, content),
-    onSuccess: () => {
-        queryClient.invalidateQueries({
-            queryKey: queryKeys.helpdesk.comments(issueId.value)
-        })
-        commentContent.value = ''
-        toast.success('Comment added successfully')
-    },
-    onError: (error: any) => {
-        toast.error(error.message || 'Failed to add comment')
-    }
-})
-
-const handleUpdate = () => {
-    updateMutation.mutate(editFormData)
-}
-
-const handleAssign = () => {
-    assignMutation.mutate(assignFormData.assignedTo)
-}
-
-const handleAddComment = () => {
-    if (!commentContent.value.trim()) return
-    addCommentMutation.mutate(commentContent.value)
-}
-
-const getPriorityClass = (priority: string) => {
-    const classes = {
-        LOW: 'bg-gray-100 text-gray-800',
-        MEDIUM: 'bg-blue-100 text-blue-800',
-        HIGH: 'bg-orange-100 text-orange-800',
-        URGENT: 'bg-red-100 text-red-800'
-    }
-    return classes[priority as keyof typeof classes] || classes.MEDIUM
-}
-
-const getStatusClass = (status: string) => {
-    const classes = {
-        SUBMITTED: 'bg-yellow-100 text-yellow-800',
-        OPEN: 'bg-blue-100 text-blue-800',
-        IN_PROGRESS: 'bg-purple-100 text-purple-800',
-        PENDING: 'bg-orange-100 text-orange-800',
-        RESOLVED: 'bg-green-100 text-green-800',
-        CLOSED: 'bg-gray-100 text-gray-800'
-    }
-    return classes[status as keyof typeof classes] || classes.OPEN
-}
-
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
+const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('en-US', {
+        month: 'short',
         day: 'numeric',
+        year: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
     })
+}
+
+const formatIssueType = (type: string) => {
+    return type.split('_').map(word =>
+        word.charAt(0) + word.slice(1).toLowerCase()
+    ).join(' ')
+}
+
+const updateStatus = async (status: string) => {
+    if (!ticket.value) return
+    await updateTicketMutation.mutateAsync({
+        id: ticket.value.id,
+        data: { status: status as IssueStatus }
+    })
+}
+
+const handleResolve = async () => {
+    if (!ticket.value || !resolutionNotes.value) return
+    await updateTicketMutation.mutateAsync({
+        id: ticket.value.id,
+        data: {
+            status: 'RESOLVED' as IssueStatus,
+            resolutionNotes: resolutionNotes.value
+        }
+    })
+    showResolveDialog.value = false
+    resolutionNotes.value = ''
+}
+
+const handleEscalate = async () => {
+    if (!ticket.value) return
+    await escalateTicketMutation.mutateAsync(ticket.value.id)
+}
+
+const onTicketUpdated = () => {
+    showEditDialog.value = false
+}
+
+const onTicketAssigned = () => {
+    showAssignDialog.value = false
 }
 </script>
