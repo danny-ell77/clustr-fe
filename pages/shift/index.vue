@@ -1,74 +1,77 @@
 <template>
-    <div class="shifts-calendar">
-        <div class="flex items-center justify-between mb-6">
+    <div class="space-y-6">
+        <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl">Shifts Calendar</h1>
-                <p class="text-muted-foreground">View and manage staff shifts</p>
+                <h1 class="text-3xl font-bold">Shift Management</h1>
+                <p class="text-muted-foreground">Manage staff shifts and schedules</p>
             </div>
 
-            <div class="flex items-center space-x-2">
-                <Button variant="outline" @click="previousMonth">
-                    <Icon name="chevron-left" class="w-4 h-4" />
+            <Button v-if="hasPermission(PERMISSIONS.FACILITY_ADMIN.MANAGE_WORK_SHIFT)" @click="showCreateModal = true">
+                <Icon name="lucide:plus" class="w-4 h-4 mr-2" />
+                Create Shift
+            </Button>
+        </div>
+
+        <StatPane v-if="!statsQuery.isLoading.value && statistics" :stats="shiftStats" />
+
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <Button variant="outline" size="sm" @click="previousMonth">
+                    <Icon name="lucide:chevron-left" class="w-4 h-4" />
                 </Button>
-                <div class="px-4 py-2 font-medium">
+                <h3 class="text-lg font-semibold px-4">
                     {{ currentMonthYear }}
-                </div>
-                <Button variant="outline" @click="nextMonth">
-                    <Icon name="chevron-right" class="w-4 h-4" />
+                </h3>
+                <Button variant="outline" size="sm" @click="nextMonth">
+                    <Icon name="lucide:chevron-right" class="w-4 h-4" />
                 </Button>
-                <Button v-if="hasPermission(PERMISSIONS.FACILITY_ADMIN.MANAGE_WORK_SHIFT)"
-                    @click="showCreateModal = true" class="bg-primary hover:bg-primary/90 ml-4">
-                    <Icon name="plus" class="w-4 h-4 mr-2" />
-                    Create Shift
+                <Button variant="outline" size="sm" @click="goToToday">
+                    Today
+                </Button>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <Select @update:model-value="(value: string) => setFilter('shiftType', value)">
+                    <SelectTrigger class="w-[180px]">
+                        <SelectValue placeholder="All Types" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="All">All Types</SelectItem>
+                        <SelectItem value="SECURITY">Security</SelectItem>
+                        <SelectItem value="CLEANING">Cleaning</SelectItem>
+                        <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
+                        <SelectItem value="RECEPTION">Reception</SelectItem>
+                        <SelectItem value="OTHER">Other</SelectItem>
+                    </SelectContent>
+                </Select>
+
+                <Select @update:model-value="(value: string) => setFilter('status', value)">
+                    <SelectTrigger class="w-[180px]">
+                        <SelectValue placeholder="All Statuses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="All">All Statuses</SelectItem>
+                        <SelectItem value="SCHEDULED">Scheduled</SelectItem>
+                        <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                        <SelectItem value="COMPLETED">Completed</SelectItem>
+                    </SelectContent>
+                </Select>
+
+                <Button variant="outline" @click="clearFilters" size="sm">
+                    Clear Filters
                 </Button>
             </div>
         </div>
 
-        <Card class="mb-4">
-            <CardContent class="pt-6">
-                <div class="flex items-center space-x-4">
-                    <Select @update:model-value="(value: string) => setFilter('shiftType', value)">
-                        <SelectTrigger class="w-[180px]">
-                            <SelectValue placeholder="All Types" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="All">All Types</SelectItem>
-                            <SelectItem value="SECURITY">Security</SelectItem>
-                            <SelectItem value="CLEANING">Cleaning</SelectItem>
-                            <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
-                            <SelectItem value="RECEPTION">Reception</SelectItem>
-                            <SelectItem value="OTHER">Other</SelectItem>
-                        </SelectContent>
-                    </Select>
-
-                    <Select @update:model-value="(value: string) => setFilter('status', value)">
-                        <SelectTrigger class="w-[180px]">
-                            <SelectValue placeholder="All Statuses" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="All">All Statuses</SelectItem>
-                            <SelectItem value="SCHEDULED">Scheduled</SelectItem>
-                            <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                            <SelectItem value="COMPLETED">Completed</SelectItem>
-                        </SelectContent>
-                    </Select>
-
-                    <Button variant="outline" @click="clearFilters" size="sm">
-                        Clear Filters
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
-
         <div v-if="loading" class="flex justify-center items-center py-12">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
 
         <Card v-else>
             <CardContent class="p-0">
-                <div class="grid grid-cols-7 border-b">
+                <div class="grid grid-cols-7 border-b bg-muted">
                     <div v-for="day in weekDays" :key="day"
-                        class="p-4 text-center font-semibold text-foreground border-r last:border-r-0">
+                        class="p-4 text-center font-semibold text-sm border-r last:border-r-0">
                         {{ day }}
                     </div>
                 </div>
@@ -76,13 +79,12 @@
                 <div class="grid grid-cols-7">
                     <div v-for="(day, index) in calendarDays" :key="index" :class="[
                         'min-h-[120px] border-r border-b last:border-r-0',
-                        !day.isCurrentMonth ? '' : '',
-                        day.isToday ? 'bg-primary/10' : ''
+                        day.isToday ? 'bg-primary/5' : ''
                     ]">
                         <div class="p-2">
                             <div :class="[
                                 'text-sm font-medium mb-2',
-                                !day.isCurrentMonth ? 'text-gray-400' : day.isToday ? 'text-primary' : 'text-foreground'
+                                !day.isCurrentMonth ? 'text-muted-foreground' : day.isToday ? 'text-primary font-bold' : ''
                             ]">
                                 {{ day.date }}
                             </div>
@@ -107,95 +109,20 @@
             </CardContent>
         </Card>
 
-        <Dialog v-model:open="showCreateModal">
-            <DialogContent class="max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle>Create Shift</DialogTitle>
-                    <DialogDescription>
-                        Create a new shift for staff
-                    </DialogDescription>
-                </DialogHeader>
-
-                <form @submit.prevent="handleCreate" class="space-y-4">
-                    <div>
-                        <Label>Title</Label>
-                        <Input v-model="formData.title" required />
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <Label>Shift Type</Label>
-                            <Select v-model="formData.shiftType">
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="SECURITY">Security</SelectItem>
-                                    <SelectItem value="CLEANING">Cleaning</SelectItem>
-                                    <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
-                                    <SelectItem value="RECEPTION">Reception</SelectItem>
-                                    <SelectItem value="OTHER">Other</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div>
-                            <Label>Assigned Staff</Label>
-                            <Input v-model="formData.assignedStaff" placeholder="Staff ID" />
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <Label>Start Time</Label>
-                            <Input v-model="formData.startTime" type="datetime-local" required />
-                        </div>
-
-                        <div>
-                            <Label>End Time</Label>
-                            <Input v-model="formData.endTime" type="datetime-local" required />
-                        </div>
-                    </div>
-
-                    <div>
-                        <Label>Location</Label>
-                        <Input v-model="formData.location" />
-                    </div>
-
-                    <div>
-                        <Label>Responsibilities</Label>
-                        <textarea v-model="formData.responsibilities" class="w-full min-h-[100px] p-2 border rounded" />
-                    </div>
-
-                    <div>
-                        <Label>Notes</Label>
-                        <textarea v-model="formData.notes" class="w-full min-h-[80px] p-2 border rounded" />
-                    </div>
-
-                    <div class="flex justify-end space-x-2 pt-4">
-                        <Button type="button" variant="outline" @click="showCreateModal = false">
-                            Cancel
-                        </Button>
-                        <Button type="submit" :disabled="createMutation.isPending.value">
-                            {{ createMutation.isPending.value ? 'Creating...' : 'Create' }}
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
+        <ShiftFormDialog v-model:open="showCreateModal" :staff-members="staffMembers" @submit="handleCreate" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useShifts } from '~/composables/shift/useShifts'
+import { usePermissions } from '~/composables/auth/usePermissions'
 import { queryKeys } from '~/constants/query-keys'
-import { shiftApi } from '~/services/api/shift.api'
-import type { Shift } from '~/types/shift'
-import { ShiftTypeEnum } from '~/types/shift'
+import type { Shift, CreateShiftDto } from '~/types/shifts'
+import ShiftFormDialog from '~/components/shift/ShiftFormDialog.vue'
+import StatPane from '~/components/common/StatPane.vue'
 
 const { hasPermission, PERMISSIONS } = usePermissions()
-const queryClient = useQueryClient()
-const toast = useToast()
+const { useShifts: useShiftsList, useShiftStats, createShiftMutation } = useShifts()
 
 definePageMeta({
     requiresPermission: 'shift.overview.view'
@@ -203,6 +130,8 @@ definePageMeta({
 
 const currentDate = ref(new Date())
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const showCreateModal = ref(false)
+const staffMembers = ref([])
 
 const filterDefinitions = [
     {
@@ -250,13 +179,19 @@ const queryParams = computed(() => {
     }
 })
 
-const shiftsQuery = useQuery({
-    queryKey: computed(() => queryKeys.shifts.list(queryParams.value)),
-    queryFn: () => shiftApi.getAll(queryParams.value)
-})
+const shiftsQuery = useShiftsList(queryParams)
+const statsQuery = useShiftStats()
 
 const shiftsData = computed(() => shiftsQuery.data.value)
 const loading = computed(() => shiftsQuery.isLoading.value)
+const statistics = computed(() => statsQuery.data.value)
+
+const shiftStats = computed(() => [
+    { title: 'Total Shifts', value: statistics.value?.totalShifts || 0, color: '#0ea5e9' },
+    { title: 'Completed', value: statistics.value?.completedShifts || 0, color: '#10b981' },
+    { title: 'Attendance Rate', value: `${statistics.value?.attendanceRate || 0}%`, color: '#a855f7' },
+    { title: 'Avg Overtime', value: `${statistics.value?.averageOvertimeHours || 0}h`, color: '#eab308' }
+])
 
 const calendarDays = computed(() => {
     const year = currentDate.value.getFullYear()
@@ -321,43 +256,9 @@ const calendarDays = computed(() => {
     return days
 })
 
-const createMutation = useMutation({
-    mutationFn: shiftApi.create,
-    onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
-        toast.success('Shift created successfully')
-        showCreateModal.value = false
-        Object.assign(formData, {
-            title: '',
-            shiftType: 'SECURITY',
-            assignedStaff: '',
-            startTime: '',
-            endTime: '',
-            location: '',
-            responsibilities: '',
-            notes: ''
-        })
-    },
-    onError: (error: any) => {
-        toast.error(error.message || 'Failed to create shift')
-    }
-})
-
-const showCreateModal = ref(false)
-
-const formData = reactive({
-    title: '',
-    shiftType: ShiftTypeEnum.SECURITY,
-    assignedStaff: '',
-    startTime: '',
-    endTime: '',
-    location: '',
-    responsibilities: '',
-    notes: ''
-})
-
-const handleCreate = () => {
-    createMutation.mutate(formData)
+const handleCreate = async (data: CreateShiftDto) => {
+    await createShiftMutation.mutateAsync(data)
+    showCreateModal.value = false
 }
 
 const viewShift = (shift: Shift) => {
@@ -372,6 +273,10 @@ const nextMonth = () => {
     currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1)
 }
 
+const goToToday = () => {
+    currentDate.value = new Date()
+}
+
 const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString('en-US', {
         hour: 'numeric',
@@ -382,16 +287,15 @@ const formatTime = (dateString: string) => {
 
 const getShiftPillClass = (shift: Shift) => {
     const typeClasses: Record<string, string> = {
-        SECURITY: 'bg-primary/15 text-primary border  border-primary/30',
+        SECURITY: 'bg-blue-100 text-blue-800 border border-blue-200',
         CLEANING: 'bg-green-100 text-green-800 border border-green-200',
         MAINTENANCE: 'bg-orange-100 text-orange-800 border border-orange-200',
         RECEPTION: 'bg-purple-100 text-purple-800 border border-purple-200',
-        GARDENING: 'bg-teal-100 text-teal-800 border border-teal-200',
-        OTHER: 'bg-gray-100 text-gray-800 border border-border'
+        OTHER: 'bg-gray-100 text-gray-800 border border-gray-200'
     }
 
     const statusOverlay = {
-        IN_PROGRESS: 'ring-2 ring-purple-400',
+        IN_PROGRESS: 'ring-2 ring-yellow-400',
         COMPLETED: 'opacity-60',
         CANCELLED: 'opacity-40 line-through',
         NO_SHOW: 'opacity-40 bg-red-50 border-red-200'

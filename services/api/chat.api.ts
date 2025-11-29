@@ -1,9 +1,9 @@
 import type { PaginatedResponse } from '~/types/api'
 import type {
-    Conversation,
+    Chat,
     Message,
-    CreateConversationDto,
-    SendMessageDto,
+    CreateChatDto,
+    CreateMessageDto,
     MessageAttachment
 } from '~/types/chat'
 
@@ -27,7 +27,7 @@ export const managementChatApi = {
     conversations: {
         getAll: (params?: ConversationFilters) => {
             const { $api } = useNuxtApp()
-            return $api<PaginatedResponse<Conversation>>('/management/chat/conversations/', {
+            return $api<PaginatedResponse<Chat>>('/management/chat/conversations/', {
                 method: 'GET',
                 query: params
             })
@@ -35,14 +35,14 @@ export const managementChatApi = {
 
         getById: (id: string) => {
             const { $api } = useNuxtApp()
-            return $api<Conversation>(`/management/chat/conversations/${id}/`, {
+            return $api<Chat>(`/management/chat/conversations/${id}/`, {
                 method: 'GET'
             })
         },
 
-        create: (data: CreateConversationDto) => {
+        create: (data: CreateChatDto) => {
             const { $api } = useNuxtApp()
-            return $api<Conversation>('/management/chat/conversations/', {
+            return $api<Chat>('/management/chat/conversations/', {
                 method: 'POST',
                 body: data
             })
@@ -64,14 +64,14 @@ export const managementChatApi = {
 
         archive: (id: string) => {
             const { $api } = useNuxtApp()
-            return $api<{ message: string; conversation: Conversation }>(`/management/chat/conversations/${id}/archive/`, {
+            return $api<{ message: string; conversation: Chat }>(`/management/chat/conversations/${id}/archive/`, {
                 method: 'POST'
             })
         },
 
         unarchive: (id: string) => {
             const { $api } = useNuxtApp()
-            return $api<{ message: string; conversation: Conversation }>(`/management/chat/conversations/${id}/unarchive/`, {
+            return $api<{ message: string; conversation: Chat }>(`/management/chat/conversations/${id}/unarchive/`, {
                 method: 'POST'
             })
         }
@@ -101,7 +101,7 @@ export const managementChatApi = {
             })
         },
 
-        send: (conversationId: string, data: SendMessageDto) => {
+        send: (conversationId: string, data: CreateMessageDto) => {
             const { $api } = useNuxtApp()
             return $api<Message>(`/management/chat/conversations/${conversationId}/send_message/`, {
                 method: 'POST',

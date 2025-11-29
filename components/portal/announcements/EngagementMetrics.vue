@@ -151,24 +151,26 @@ const engagementColorClass = computed(() => {
 const formattedPublishDate = computed(() => {
     if (!props.publishedAt) return 'N/A'
     const date = new Date(props.publishedAt)
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        hour12: true
     })
 })
 
 const formattedUpdateDate = computed(() => {
     if (!props.updatedAt) return 'N/A'
     const date = new Date(props.updatedAt)
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        hour12: true
     })
 })
 </script>

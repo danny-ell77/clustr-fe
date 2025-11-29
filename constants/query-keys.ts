@@ -93,10 +93,24 @@ export const queryKeys = {
     // Shifts domain
     shifts: {
         all: ['shifts'] as const,
-        list: (filters: any) => [...queryKeys.shifts.all, 'list', filters] as const,
-        detail: (id: string) => [...queryKeys.shifts.all, 'detail', id] as const,
+        lists: () => [...queryKeys.shifts.all, 'list'] as const,
+        list: (filters: any) => [...queryKeys.shifts.lists(), filters] as const,
+        details: () => [...queryKeys.shifts.all, 'detail'] as const,
+        detail: (id: string) => [...queryKeys.shifts.details(), id] as const,
         statistics: () => [...queryKeys.shifts.all, 'statistics'] as const,
         upcoming: () => [...queryKeys.shifts.all, 'upcoming'] as const,
+        overdue: () => [...queryKeys.shifts.all, 'overdue'] as const,
+        swapRequests: {
+            all: () => [...queryKeys.shifts.all, 'swap-requests'] as const,
+            list: (filters: any) => [...queryKeys.shifts.swapRequests.all(), filters] as const,
+            detail: (id: string) => [...queryKeys.shifts.swapRequests.all(), id] as const,
+            pending: () => [...queryKeys.shifts.swapRequests.all(), 'pending'] as const,
+        },
+        schedules: {
+            all: () => [...queryKeys.shifts.all, 'schedules'] as const,
+            staff: (staffId: string) => [...queryKeys.shifts.schedules.all(), 'staff', staffId] as const,
+            allStaff: () => [...queryKeys.shifts.schedules.all(), 'all-staff'] as const,
+        },
     },
 
     // Emergency domain

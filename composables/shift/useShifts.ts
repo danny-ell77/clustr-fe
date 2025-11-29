@@ -1,133 +1,152 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { computed, type Ref } from 'vue'
+import { managementShiftsApi, type ShiftFilters, type ShiftSwapRequestFilters, type StaffScheduleFilters } from '~/services/api/shifts.api'
 import { queryKeys } from '~/constants/query-keys'
-import { shiftApi } from '~/services/api/shift.api'
-import type { ShiftCreate, ShiftUpdate } from '~/types/shift'
+import type {
+    CreateShiftDto,
+    UpdateShiftDto,
+    CreateShiftSwapRequestDto,
+    ShiftSwapResponseDto,
+    ClockInOutDto
+} from '~/types/shifts'
 
 export const useShifts = () => {
     const queryClient = useQueryClient()
     const toast = useToast()
 
-    const getShifts = (params?: Record<string, any>) => {
+    const useShifts = (filters: Ref<ShiftFilters>) => {
         return useQuery({
-            queryKey: computed(() => queryKeys.shifts.list(params || {})),
-            queryFn: () => shiftApi.getAll(params)
+            queryKey: computed(() => queryKeys.shifts.list(filters.value)),
+            queryFn: () => managementShiftsApi.shifts.getAll(filters.value)
         })
     }
 
-    const getShiftById = (id: Ref<string> | string) => {
-        const shiftId = computed(() => typeof id === 'string' ? id : id.value)
+    const useShift = (id: Ref<string | undefined>) => {
         return useQuery({
-            queryKey: computed(() => queryKeys.shifts.detail(shiftId.value)),
-            queryFn: () => shiftApi.getById(shiftId.value),
-            enabled: computed(() => !!shiftId.value)
+            queryKey: computed(() => queryKeys.shifts.detail(id.value!)),
+            queryFn: () => managementShiftsApi.shifts.getById(id.value!),
+            enabled: computed(() => !!id.value)
         })
     }
 
-    const createShift = () => {
-        return useMutation({
-            mutationFn: (data: ShiftCreate) => shiftApi.create(data),
-            onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
-                toast.success('Shift created successfully')
-            },
-            onError: (error: any) => {
-                toast.error(error.message || 'Failed to create shift')
-            }
+    const useSwapRequests = (filters?: Ref<ShiftSwapRequestFilters>) => {
+        const filterValue = filters?.value || {}
+        return useQuery({
+            queryKey: computed(() => queryKeys.shifts.swapRequests.list(filterValue)),
+            queryFn: () => managementShiftsApi.swapRequests.getAll(filterValue)
         })
     }
 
-    const updateShift = () => {
-        return useMutation({
-            mutationFn: ({ id, data }: { id: string; data: ShiftUpdate }) =>
-                shiftApi.update(id, data),
-            onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
-                toast.success('Shift updated successfully')
-            },
-            onError: (error: any) => {
-                toast.error(error.message || 'Failed to update shift')
-            }
+    const useStaffSchedule = (staffId: Ref<string | undefined>, filters?: Ref<StaffScheduleFilters>) => {
+        const filterValue = filters?.value || {}
+        return useQuery({
+            queryKey: computed(() => queryKeys.shifts.schedules.staff(staffId.value!)),
+            queryFn: () => managementShiftsApi.schedules.getStaffSchedule(staffId.value!, filterValue),
+            enabled: computed(() => !!staffId.value)
         })
     }
 
-    const clockIn = () => {
-        return useMutation({
-            mutationFn: ({ id, timestamp, notes }: { id: string; timestamp?: string; notes?: string }) =>
-                shiftApi.clockIn(id, timestamp, notes),
-            onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
-                toast.success('Clocked in successfully')
-            },
-            onError: (error: any) => {
-                toast.error(error.message || 'Failed to clock in')
-            }
-        })
-    }
-
-    const clockOut = () => {
-        return useMutation({
-            mutationFn: ({ id, timestamp, notes }: { id: string; timestamp?: string; notes?: string }) =>
-                shiftApi.clockOut(id, timestamp, notes),
-            onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
-                toast.success('Clocked out successfully')
-            },
-            onError: (error: any) => {
-                toast.error(error.message || 'Failed to clock out')
-            }
-        })
-    }
-
-    const cancelShift = () => {
-        return useMutation({
-            mutationFn: (id: string) => shiftApi.cancel(id),
-            onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
-                toast.success('Shift cancelled successfully')
-            },
-            onError: (error: any) => {
-                toast.error(error.message || 'Failed to cancel shift')
-            }
-        })
-    }
-
-    const markNoShow = () => {
-        return useMutation({
-            mutationFn: (id: string) => shiftApi.markNoShow(id),
-            onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
-                toast.success('Shift marked as no-show')
-            },
-            onError: (error: any) => {
-                toast.error(error.message || 'Failed to mark no-show')
-            }
-        })
-    }
-
-    const getStatistics = (params?: { startDate?: string; endDate?: string }) => {
+    const useShiftStats = () => {
         return useQuery({
             queryKey: queryKeys.shifts.statistics(),
-            queryFn: () => shiftApi.getStatistics(params?.startDate, params?.endDate)
+            queryFn: () => managementShiftsApi.shifts.getStatistics(),
+            refetchInterval: 30000
         })
     }
 
-    const getUpcoming = () => {
-        return useQuery({
-            queryKey: queryKeys.shifts.upcoming(),
-            queryFn: () => shiftApi.getUpcoming()
-        })
-    }
+    const createShiftMutation = useMutation({
+        mutationFn: (data: CreateShiftDto) =>
+            managementShiftsApi.shifts.create(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.statistics() })
+            toast.success('Shift created successfully')
+        },
+        onError: (error: any) => {
+            toast.error('Failed to create shift', error.message || 'Please try again')
+        }
+    })
+
+    const updateShiftMutation = useMutation({
+        mutationFn: ({ id, data }: { id: string; data: UpdateShiftDto }) =>
+            managementShiftsApi.shifts.update(id, data),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.detail(variables.id) })
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.statistics() })
+            toast.success('Shift updated successfully')
+        },
+        onError: (error: any) => {
+            toast.error('Failed to update shift', error.message || 'Please try again')
+        }
+    })
+
+    const clockInMutation = useMutation({
+        mutationFn: ({ id, data }: { id: string; data?: ClockInOutDto }) =>
+            managementShiftsApi.shifts.clockIn(id, data),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.detail(variables.id) })
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.statistics() })
+            toast.success('Clocked in successfully')
+        },
+        onError: (error: any) => {
+            toast.error('Failed to clock in', error.message || 'Please try again')
+        }
+    })
+
+    const clockOutMutation = useMutation({
+        mutationFn: ({ id, data }: { id: string; data?: ClockInOutDto }) =>
+            managementShiftsApi.shifts.clockOut(id, data),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.detail(variables.id) })
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.statistics() })
+            toast.success('Clocked out successfully')
+        },
+        onError: (error: any) => {
+            toast.error('Failed to clock out', error.message || 'Please try again')
+        }
+    })
+
+    const cancelShiftMutation = useMutation({
+        mutationFn: (id: string) =>
+            managementShiftsApi.shifts.cancel(id),
+        onSuccess: (_, id) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.detail(id) })
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.statistics() })
+            toast.success('Shift cancelled successfully')
+        },
+        onError: (error: any) => {
+            toast.error('Failed to cancel shift', error.message || 'Please try again')
+        }
+    })
+
+    const approveSwapMutation = useMutation({
+        mutationFn: ({ id, data }: { id: string; data: ShiftSwapResponseDto }) =>
+            managementShiftsApi.swapRequests.respond(id, data),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.swapRequests.all() })
+            queryClient.invalidateQueries({ queryKey: queryKeys.shifts.all })
+            toast.success('Swap request processed successfully')
+        },
+        onError: (error: any) => {
+            toast.error('Failed to process swap request', error.message || 'Please try again')
+        }
+    })
 
     return {
-        getShifts,
-        getShiftById,
-        createShift,
-        updateShift,
-        clockIn,
-        clockOut,
-        cancelShift,
-        markNoShow,
-        getStatistics,
-        getUpcoming
+        useShifts,
+        useShift,
+        useSwapRequests,
+        useStaffSchedule,
+        useShiftStats,
+        createShiftMutation,
+        updateShiftMutation,
+        clockInMutation,
+        clockOutMutation,
+        cancelShiftMutation,
+        approveSwapMutation
     }
 }

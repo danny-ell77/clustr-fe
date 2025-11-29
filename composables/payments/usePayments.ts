@@ -36,10 +36,26 @@ export const usePayments = () => {
         })
     }
 
+    const useBill = (billId: string) => {
+        return useQuery({
+            queryKey: queryKeys.bills.detail(billId),
+            queryFn: () => managementPaymentsApi.bills.getById(billId),
+            enabled: !!billId
+        })
+    }
+
     const useTransactions = (filters: Ref<TransactionFilters>) => {
         return useQuery({
             queryKey: computed(() => queryKeys.payments.transactions.list(filters.value)),
             queryFn: () => managementPaymentsApi.transactions.getAll(filters.value)
+        })
+    }
+
+    const useTransaction = (transactionId: string) => {
+        return useQuery({
+            queryKey: queryKeys.payments.transactions.detail(transactionId),
+            queryFn: () => managementPaymentsApi.transactions.getById(transactionId),
+            enabled: !!transactionId
         })
     }
 
@@ -208,10 +224,53 @@ export const usePayments = () => {
         }
     })
 
+    const acknowledgeBillMutation = useMutation({
+        mutationFn: ({ billId }: { billId: string }) =>
+            managementPaymentsApi.bills.acknowledge(billId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.bills.detail(variables.billId) })
+            queryClient.invalidateQueries({ queryKey: queryKeys.bills.all })
+            toast.success('Bill acknowledged successfully')
+        },
+        onError: (error: any) => {
+            toast.error('Failed to acknowledge bill', error.message || 'Please try again')
+        }
+    })
+
+    const disputeBillMutation = useMutation({
+        mutationFn: ({ billId, reason }: { billId: string; reason: string }) =>
+            managementPaymentsApi.bills.dispute(billId, reason),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.bills.detail(variables.billId) })
+            queryClient.invalidateQueries({ queryKey: queryKeys.bills.all })
+            toast.success('Bill disputed successfully')
+        },
+        onError: (error: any) => {
+            toast.error('Failed to dispute bill', error.message || 'Please try again')
+        }
+    })
+
+    const payBillMutation = useMutation({
+        mutationFn: ({ billId, amount }: { billId: string; amount?: string }) =>
+            managementPaymentsApi.bills.pay(billId, amount),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.bills.detail(variables.billId) })
+            queryClient.invalidateQueries({ queryKey: queryKeys.bills.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.payments.wallet() })
+            queryClient.invalidateQueries({ queryKey: queryKeys.payments.transactions.all() })
+            toast.success('Bill paid successfully')
+        },
+        onError: (error: any) => {
+            toast.error('Failed to pay bill', error.message || 'Please try again')
+        }
+    })
+
     return {
         usePaymentDashboard,
         useBills,
+        useBill,
         useTransactions,
+        useTransaction,
         useRecurringPayments,
         useClusterWallet,
         createBillMutation,
@@ -224,6 +283,9 @@ export const usePayments = () => {
         cancelRecurringMutation,
         walletCreditMutation,
         walletDebitMutation,
-        retryFailedPaymentMutation
+        retryFailedPaymentMutation,
+        acknowledgeBillMutation,
+        disputeBillMutation,
+        payBillMutation
     }
 }

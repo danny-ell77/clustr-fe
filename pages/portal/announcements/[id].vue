@@ -246,7 +246,7 @@ const refetch = () => {
   announcementQuery.refetch()
 }
 
-const handlePublish = async (settings: any) => {
+const handlePublish = async () => {
   if (!announcement.value) return
   await publishMutation.mutateAsync(announcement.value.id)
   showPublishDialog.value = false

@@ -1,27 +1,27 @@
 <template>
-  <Card class="hover:shadow-md transition-shadow">
+  <Card class="hover:shadow-md transition-shadow h-full">
     <CardContent class="pt-6">
       <div class="space-y-4">
-        <div class="flex items-start justify-between">
-          <div class="flex-1">
-            <div class="flex items-center gap-2">
-              <h3 class="font-semibold text-lg">{{ bill.title }}</h3>
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="font-semibold text-lg truncate">{{ bill.title }}</h3>
               <StatusBadge :status="billStatus" />
             </div>
-            <p v-if="bill.description" class="text-sm text-muted-foreground mt-1">
+            <p v-if="bill.description" class="text-sm text-muted-foreground mt-1 line-clamp-2">
               {{ bill.description }}
             </p>
-            <div class="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-              <span>{{ bill.billNumber }}</span>
+            <div class="flex items-center gap-2 mt-2 text-sm text-muted-foreground flex-wrap">
+              <span class="truncate">{{ bill.billNumber }}</span>
               <span>•</span>
-              <span>{{ formatBillType(bill.type) }}</span>
+              <span class="truncate">{{ formatBillType(bill.type) }}</span>
               <span v-if="bill.isClusterWide">•</span>
-              <span v-if="bill.isClusterWide" class="text-primary">Cluster-wide</span>
+              <span v-if="bill.isClusterWide" class="text-primary whitespace-nowrap">Cluster-wide</span>
             </div>
           </div>
-          <div class="text-right">
-            <p class="text-2xl">{{ formatCurrency(bill.amount) }}</p>
-            <p v-if="bill.paidAmount !== '0.00'" class="text-sm text-muted-foreground">
+          <div class="text-right shrink-0">
+            <p class="text-xl font-semibold whitespace-nowrap">{{ formatCurrency(bill.amount) }}</p>
+            <p v-if="bill.paidAmount !== '0.00'" class="text-xs text-muted-foreground whitespace-nowrap">
               Paid: {{ formatCurrency(bill.paidAmount) }}
             </p>
           </div>
@@ -51,29 +51,13 @@
         </div>
 
         <div v-if="showActions" class="flex gap-2 pt-4 border-t">
-          <Button
-            v-if="!bill.isFullyPaid"
-            variant="outline"
-            size="sm"
-            class="flex-1"
-            @click="$emit('view', bill)"
-          >
+          <Button v-if="!bill.isFullyPaid" variant="outline" size="sm" class="flex-1" @click="$emit('view', bill)">
             View Details
           </Button>
-          <Button
-            v-if="!bill.isFullyPaid && canEdit"
-            variant="outline"
-            size="sm"
-            @click="$emit('edit', bill)"
-          >
+          <Button v-if="!bill.isFullyPaid && canEdit" variant="outline" size="sm" @click="$emit('edit', bill)">
             Edit
           </Button>
-          <Button
-            v-if="!bill.isFullyPaid && canCancel"
-            variant="destructive"
-            size="sm"
-            @click="$emit('cancel', bill)"
-          >
+          <Button v-if="!bill.isFullyPaid && canCancel" variant="destructive" size="sm" @click="$emit('cancel', bill)">
             Cancel
           </Button>
         </div>
