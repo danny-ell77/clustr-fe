@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
   const cookies = getRequestHeader(event, "cookie");
 
   try {
+    console.log(config.public.apiBase, path)
     const response = await $fetch.raw(`${config.public.apiBase}/auth/${path}/`, {
       method: event.method,
       headers: {
@@ -34,6 +35,7 @@ export default defineEventHandler(async (event) => {
 
     return response._data;
   } catch (error: any) {
+    console.log(error)
     // Forward error response
     throw createError({
       statusCode: error.response?.status || 500,
