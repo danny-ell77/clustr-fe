@@ -9,7 +9,7 @@ ENV NODE_ENV=production
 COPY package.json bun.lock ./
 
 # Install dependencies
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Copy application code
 COPY . .
