@@ -18,7 +18,7 @@ COPY . .
 RUN bun run build
 
 # Create non-root user
-RUN adduser --system --no-create-home nuxtuser
+RUN useradd -r -s /bin/false nuxtuser
 USER nuxtuser
 
 EXPOSE 3000
