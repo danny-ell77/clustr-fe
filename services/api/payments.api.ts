@@ -169,6 +169,13 @@ export const managementPaymentsApi = {
             })
         },
 
+        getById: (billId: string) => {
+            const { $api } = useNuxtApp()
+            return $api<Bill>(`/management/payments/bills/${billId}/`, {
+                method: 'GET'
+            })
+        },
+
         create: (data: CreateBillDto) => {
             const { $api } = useNuxtApp()
             return $api<Bill>('/management/payments/create_bill/', {
@@ -191,6 +198,30 @@ export const managementPaymentsApi = {
                 method: 'POST',
                 body: data
             })
+        },
+
+        acknowledge: (billId: string) => {
+            const { $api } = useNuxtApp()
+            return $api<Bill>('/management/payments/acknowledge_bill/', {
+                method: 'POST',
+                body: { bill_id: billId }
+            })
+        },
+
+        dispute: (billId: string, reason: string) => {
+            const { $api } = useNuxtApp()
+            return $api<Bill>('/management/payments/dispute_bill/', {
+                method: 'POST',
+                body: { bill_id: billId, reason }
+            })
+        },
+
+        pay: (billId: string, amount?: string) => {
+            const { $api } = useNuxtApp()
+            return $api<Transaction>('/management/payments/pay_bill/', {
+                method: 'POST',
+                body: { bill_id: billId, amount }
+            })
         }
     },
 
@@ -200,6 +231,13 @@ export const managementPaymentsApi = {
             return $api<TransactionListResponse>('/management/payments/transactions/', {
                 method: 'GET',
                 query: params
+            })
+        },
+
+        getById: (transactionId: string) => {
+            const { $api } = useNuxtApp()
+            return $api<Transaction>(`/management/payments/transactions/${transactionId}/`, {
+                method: 'GET'
             })
         },
 

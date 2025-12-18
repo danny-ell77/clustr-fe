@@ -1,9 +1,11 @@
 // Server utility functions for authentication and token management
 
 export const refreshAccessToken = async (event: any, config: any) => {
+  console.log("Refreshing access token");
   const refreshToken = getCookie(event, "refresh_token");
 
   if (!refreshToken) {
+    console.log("No refresh tokken found");
     throw createError({
       statusCode: 401,
       statusMessage: "No refresh token available",
@@ -19,7 +21,6 @@ export const refreshAccessToken = async (event: any, config: any) => {
         body: { refresh: refreshToken },
       }
     );
-    console.log(response)
 
     // Update the access token cookie
     setCookie(event, "access_token", response.access, {
@@ -32,8 +33,9 @@ export const refreshAccessToken = async (event: any, config: any) => {
     return response.access;
   } catch (error) {
     // If refresh fails, clear both tokens
-    deleteCookie(event, "access_token");
-    deleteCookie(event, "refresh_token");
+    // deleteCookie(event, "access_token");
+    // deleteCookie(event, "refresh_token");
+    console.log("Session expired. Please log in again.", error);
     throw createError({
       statusCode: 401,
       statusMessage: "Session expired. Please log in again.",

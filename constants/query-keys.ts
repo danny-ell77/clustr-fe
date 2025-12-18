@@ -262,4 +262,14 @@ export const queryKeys = {
         pending: () => [...queryKeys.invitations.all, 'pending'] as const,
         expired: () => [...queryKeys.invitations.all, 'expired'] as const,
     },
+
+    // Residents domain
+    residents: {
+        all: ['residents'] as const,
+        lists: () => [...queryKeys.residents.all, 'list'] as const,
+        list: (filters: any) => [...queryKeys.residents.lists(), filters] as const,
+        details: () => [...queryKeys.residents.all, 'detail'] as const,
+        detail: (id: string) => [...queryKeys.residents.details(), id] as const,
+        stats: () => [...queryKeys.residents.all, 'stats'] as const,
+    },
 } as const

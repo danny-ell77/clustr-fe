@@ -7,7 +7,7 @@
                     Back
                 </Button>
                 <div>
-                    <h1 class="text-3xl font-bold">{{ shift?.title }}</h1>
+                    <h1 class="text-3xl font-semibold">{{ shift?.title }}</h1>
                     <p class="text-muted-foreground">Shift Details</p>
                 </div>
             </div>

@@ -2,7 +2,7 @@
     <div class="space-y-6">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-bold">Shift Swap Requests</h1>
+                <h1 class="text-3xl font-semibold">Shift Swap Requests</h1>
                 <p class="text-muted-foreground">Manage shift swap requests from staff</p>
             </div>
         </div>

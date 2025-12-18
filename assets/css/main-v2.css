@@ -1,13 +1,13 @@
-/* assets/css/main.css */
+/* assets/css/main-v2.css - Outfit Style */
 
-/* Import Inter font with full weight range for maximum flexibility */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* Import Outfit font with full weight range */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  /* Primary font: Inter (Notion-style configuration) */
-  --font-family-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Primary font: Outfit (Friendly & approachable style) */
+  --font-family-sans: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   
   --color-background: oklch(1 0 0);
   --color-foreground: oklch(0.145 0 0);
@@ -115,7 +115,7 @@
 }
 
 .sidebar-item.active {
-  @apply bg-primary text-primary-foreground font-semibold border-r-4 border-white/20;
+  @apply bg-primary text-primary-foreground;
 }
 
 .sidebar-subitem {
@@ -241,86 +241,47 @@
   * {
     @apply border-border outline-ring/50;
   }
-
+  
   body {
     @apply bg-background text-foreground;
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     font-weight: 400;
     font-size: 16px;
     line-height: 1.5;
-    letter-spacing: -0.011em;
+    letter-spacing: -0.005em; /* Slightly negative for Outfit */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    
-    /* Better font loading - prevents FOIT (flash of invisible text) */
-    font-display: swap;
-    
-    /* Add tabular numbers for consistent number widths */
-    font-variant-numeric: tabular-nums;
-    
-    /* Improve text wrapping */
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    
-    /* Better hyphenation (optional, use sparingly) */
-    hyphens: auto;
-    -webkit-hyphens: auto;
-    
-    /* Prevent font size inflation on mobile */
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    text-size-adjust: 100%;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Inter", sans-serif;
-    letter-spacing: -0.02em; /* Tighter for headings */
+    font-family: "Outfit", sans-serif;
+    letter-spacing: -0.015em; /* Tighter for headings */
     line-height: 1.2;
   }
   
   h1 {
     @apply text-4xl font-semibold tracking-tight lg:text-5xl;
-    font-weight: 500; /* Notion uses 600, not 700 */
+    font-weight: 600;
   }
   h2 {
     @apply text-3xl font-semibold tracking-tight;
-    font-weight: 500;
+    font-weight: 600;
   }
   h3 {
     @apply text-2xl font-semibold tracking-tight;
-    font-weight: 500;
+    font-weight: 600;
   }
   h4 {
     @apply text-xl font-medium tracking-tight;
-    font-weight: 400;
+    font-weight: 500;
   }
   h5 {
     @apply text-lg font-medium tracking-tight;
-    font-weight: 400;
+    font-weight: 500;
   }
   h6 {
     @apply text-base font-medium tracking-tight;
-    font-weight: 400;
+    font-weight: 500;
   }
-}
-
-/* Custom utility classes from feedback */
-.stat-number {
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-}
-
-.section-title {
-  font-weight: 600 !important;
-  letter-spacing: -0.015em !important;
-}
-
-.module-card {
-  transition: all 0.2s ease;
-}
-.module-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
 }

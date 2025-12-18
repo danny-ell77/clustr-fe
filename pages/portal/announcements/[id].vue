@@ -54,9 +54,9 @@
           <Card>
             <CardHeader>
               <div class="flex items-center gap-2">
-                <StatusBadge :status="announcement.status" show-icon />
-                <PriorityBadge :priority="announcement.priority" />
+                <StatusBadge :status="announcement.status" :show-icon="true" />
                 <Badge variant="outline" class="text-xs">
+                  <Icon name="tag" class="w-3 h-3 mr-1" />
                   {{ categoryLabel }}
                 </Badge>
               </div>

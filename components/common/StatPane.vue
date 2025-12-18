@@ -16,7 +16,7 @@
                         <p class="text-sm font-medium text-muted-foreground mb-1">{{ stat.title }}</p>
 
                         <div class="flex justify-between flex-wrap">
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ formatValue(stat.value) }}</h3>
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-2">{{ formatValue(stat.value) }}</h3>
 
                             <div class="h-8">
                                 <apexchart v-if="stat.trendData" type="area" :height="32"

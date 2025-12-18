@@ -10,6 +10,7 @@ import type {
     MaintenanceStatus,
     PropertyType
 } from '~/types/maintenance'
+import type { ChoiceOption } from '~/services/api/types'
 
 export interface MaintenanceLogFilters {
     maintenanceType?: MaintenanceType
@@ -145,11 +146,6 @@ export interface UploadAttachmentDto {
     file: File
     attachmentType?: string
     description?: string
-}
-
-export interface ChoiceOption {
-    value: string
-    label: string
 }
 
 export interface MaintenanceChoices {

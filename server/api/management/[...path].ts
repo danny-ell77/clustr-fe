@@ -13,10 +13,17 @@ export default defineEventHandler(async (event) => {
   let accessToken = getCookie(event, "access_token");
 
   if (!accessToken) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: "Authentication required",
-    });
+    console.log("No access token found");
+    try {
+      console.log("Refreshing access token");
+      accessToken = await refreshAccessToken(event, config);
+    } catch (error) {
+      console.log("Failed to refresh access token", error);
+      throw createError({
+        statusCode: 401,
+        statusMessage: "Authentication required",
+      });
+    }
   }
 
   // Extract cluster context from subdomain
@@ -57,11 +64,25 @@ export default defineEventHandler(async (event) => {
     // First attempt with current token
     return await makeRequest(accessToken);
   } catch (error: any) {
+    // $fetch errors have status in different places depending on error type
+    const errorStatus = error.response?.status || error.status || error.statusCode;
+    
     // If 401 error, try to refresh token and retry
-    if (error.statusCode === 401) {
-      const newToken = await refreshAccessToken(event, config);
-      return await makeRequest(newToken);
+    if (errorStatus === 401) {
+      try {
+        const newToken = await refreshAccessToken(event, config);
+        return await makeRequest(newToken);
+      } catch (refreshError) {
+        // If refresh also fails, throw the refresh error
+        throw refreshError;
+      }
     }
-    throw error;
+    
+    // Re-throw with proper error structure
+    throw createError({
+      statusCode: errorStatus || 500,
+      statusMessage: error.statusMessage || error.message || 'Request failed',
+      data: error.data,
+    });
   }
 });

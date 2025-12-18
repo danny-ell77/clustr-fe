@@ -15,45 +15,33 @@
 
             <div v-else-if="metrics" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="p-4 bg-primary/10 rounded-lg">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-primary">Views</p>
-                                <p class="text-2xl text-primary mt-1">
-                                    {{ metrics.viewsCount || 0 }}
-                                </p>
-                            </div>
-                            <div class="w-12 h-12 bg-primary/15 rounded-lg flex items-center justify-center">
-                                <Icon name="eye" class="w-6 h-6 text-primary" />
-                            </div>
+                    <div class="p-4 rounded-lg relative overflow-hidden">
+                        <Icon name="eye" class="absolute inset-0 w-full h-full text-primary/10 p-4" />
+                        <div class="relative z-10">
+                            <p class="text-sm font-medium text-primary">Views</p>
+                            <p class="text-2xl text-primary mt-1">
+                                {{ metrics.viewsCount || 0 }}
+                            </p>
                         </div>
                     </div>
 
-                    <div class="p-4 bg-red-50 rounded-lg">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-red-900">Likes</p>
-                                <p class="text-2xl text-red-600 mt-1">
-                                    {{ metrics.likesCount || 0 }}
-                                </p>
-                            </div>
-                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                                <Icon name="heart" class="w-6 h-6 text-red-600" />
-                            </div>
+                    <div class="p-4 rounded-lg relative overflow-hidden">
+                        <Icon name="heart" class="absolute inset-0 w-full h-full text-red-600/10 p-4" />
+                        <div class="relative z-10">
+                            <p class="text-sm font-medium text-red-900">Likes</p>
+                            <p class="text-2xl text-red-600 mt-1">
+                                {{ metrics.likesCount || 0 }}
+                            </p>
                         </div>
                     </div>
 
-                    <div class="p-4 bg-green-50 rounded-lg">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-green-900">Comments</p>
-                                <p class="text-2xl text-green-600 mt-1">
-                                    {{ metrics.commentsCount || 0 }}
-                                </p>
-                            </div>
-                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                <Icon name="message-circle" class="w-6 h-6 text-green-600" />
-                            </div>
+                    <div class="p-4 rounded-lg relative overflow-hidden">
+                        <Icon name="message-circle" class="absolute inset-0 w-full h-full text-green-600/10 p-4" />
+                        <div class="relative z-10">
+                            <p class="text-sm font-medium text-green-900">Comments</p>
+                            <p class="text-2xl text-green-600 mt-1">
+                                {{ metrics.commentsCount || 0 }}
+                            </p>
                         </div>
                     </div>
                 </div>

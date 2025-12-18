@@ -101,7 +101,7 @@ export interface LastMessage {
 export interface OtherParticipant {
   id: string
   name: string
-  email: string
+  emailAddress: string
 }
 
 export interface Chat {

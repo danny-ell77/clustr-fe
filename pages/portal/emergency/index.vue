@@ -273,7 +273,7 @@ const toast = useToast()
 
 definePageMeta({
     title: 'Emergency Alerts',
-    middleware: ['auth', 'permissions'],
+    // middleware: ['auth', 'permissions'],
     layout: 'default'
 })
 

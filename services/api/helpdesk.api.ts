@@ -36,11 +36,6 @@ export interface AssignTicketDto {
     assignedTo: string
 }
 
-export interface ChoiceOption {
-    value: string
-    label: string
-}
-
 export const helpdeskApi = {
     tickets: {
         getAll: (params?: IssueTicketFilters) => {

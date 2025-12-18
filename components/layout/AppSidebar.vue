@@ -2,8 +2,8 @@
   <div class="flex h-screen">
     <!-- Primary Sidebar - Only for Admin users -->
     <aside
-      class="fixed left-0 top-0 h-full bg-slate-800 text-white flex flex-col items-start py-4 space-y-6 transition-all duration-300 z-30 max-h-screen"
-      :class="isSidebarHovered ? 'w-56 shadow-xl' : 'w-16'" @mouseenter="isSidebarHovered = true"
+      class="fixed left-0 top-0 h-full bg-slate-800 text-white flex flex-col items-start py-4 space-y-6 transition-all duration-300 z-30 max-h-screen overflow-hidden"
+      :class="isSidebarHovered ? 'w-56 shadow-xl' : 'w-12'" @mouseenter="isSidebarHovered = true"
       @mouseleave="isSidebarHovered = false">
       <!-- Logo -->
       <div class="w-10 h-10 rounded-lg flex items-center justify-center ml-3">
@@ -15,14 +15,14 @@
         <NuxtLink v-for="module in availableModules" :key="module.id" :to="`/${module.route}`"
           @click="setCurrentModule(module.id)" custom v-slot="{ navigate }">
           <Button @click="navigate" variant="ghost" size="icon"
-            class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2" :class="[
+            class="h-8 rounded-lg transition-all duration-300 flex items-center justify-start p-2 whitespace-nowrap" :class="[
               currentModule === module.id
                 ? 'bg-primary text-white hover:bg-primary/90'
                 : 'text-gray-400 hover:bg-slate-700 hover:text-white',
-              isSidebarHovered && 'justify-start'
+              isSidebarHovered ? 'w-52' : 'w-8'
             ]" :title="module.label">
-            <Icon :name="module.icon" class="w-5 h-5" />
-            <span class="ml-4 text-base font-medium transition-opacity duration-1000" v-if="isSidebarHovered">
+            <Icon :name="module.icon" class="w-5 h-5 flex-shrink-0" />
+            <span class="ml-4 text-base font-medium">
               {{ module.label }}
             </span>
           </Button>
@@ -33,14 +33,14 @@
       <div class="w-full p-2">
         <NuxtLink to="/settings" custom v-slot="{ navigate }">
           <Button @click="navigate" variant="ghost" size="icon"
-            class="w-full h-10 rounded-lg transition-colors flex items-center mx-auto p-2" :class="[
+            class="h-8 rounded-lg transition-all duration-300 flex items-center justify-start p-2 whitespace-nowrap" :class="[
               $route.path === '/settings'
                 ? 'bg-primary text-white hover:bg-primary/90'
                 : 'text-gray-400 hover:bg-slate-700 hover:text-white',
-              isSidebarHovered && 'justify-start'
+              isSidebarHovered ? 'w-52' : 'w-8'
             ]" title="Settings">
-            <Icon name="settings" class="w-5 h-5" />
-            <span class="ml-4 text-base font-medium transition-opacity duration-200" v-if="isSidebarHovered">
+            <Icon name="settings" class="w-5 h-5 flex-shrink-0" />
+            <span class="ml-4 text-base font-medium">
               Settings
             </span>
           </Button>
@@ -132,7 +132,7 @@ const subNavigation = computed(() => {
       { id: 'overview', label: 'Overview', icon: 'home', route: '/property', order: 1 },
       { id: 'listings', label: 'Listings', icon: 'building', route: '/property/listings', order: 2 },
       { id: 'maintenance', label: 'Maintenance', icon: 'wrench', route: '/property/maintenance', order: 3 },
-      { id: 'tenants', label: 'Tenants', icon: 'users', route: '/property/tenants', order: 4 },
+      { id: 'residents', label: 'Residents', icon: 'users', route: '/property/residents', order: 4 },
     ],
     payments: [
       { id: 'overview', label: 'Overview', icon: 'layout-dashboard', route: '/payments', order: 1 },
@@ -153,21 +153,22 @@ const subNavigation = computed(() => {
     ],
     portal: [
       { id: 'overview', label: 'Overview', icon: 'message-circle', route: '/portal', order: 1 },
-      { id: 'announcements', label: 'Announcements', icon: 'bell', route: '/portal/announcements', order: 2 },
-      { id: 'helpdesk', label: 'Helpdesk', icon: 'headphones', route: '/portal/helpdesk', order: 3 },
-      { id: 'chat', label: 'Chat', icon: 'message-square', route: '/portal/chat', order: 4 },
-      { id: 'meetings', label: 'Meetings', icon: 'video', route: '/portal/meetings', order: 5 },
-      { id: 'reports', label: 'Reports', icon: 'file-text', route: '/portal/reports', order: 6 },
-      { id: 'polls', label: 'Polls', icon: 'bar-chart', route: '/portal/polls', order: 7 },
-      { id: 'rulebook', label: 'Rule book', icon: 'book', route: '/portal/rulebook', order: 8 },
-      { id: 'handymen', label: 'Handy Man Services', icon: 'tool', route: '/portal/handymen', order: 9 }
+      { id: 'emergencies', label: 'Emergency', icon: 'message-circle', route: '/portal/emergency', order: 2 },
+      { id: 'announcements', label: 'Announcements', icon: 'bell', route: '/portal/announcements', order: 3 },
+      { id: 'helpdesk', label: 'Helpdesk', icon: 'headphones', route: '/portal/helpdesk', order: 4 },
+      { id: 'chat', label: 'Chat', icon: 'message-square', route: '/portal/chat', order: 5 },
+      { id: 'meetings', label: 'Meetings', icon: 'video', route: '/portal/meetings', order: 6 },
+      { id: 'reports', label: 'Reports', icon: 'file-text', route: '/portal/reports', order: 7 },
+      { id: 'polls', label: 'Polls', icon: 'bar-chart', route: '/portal/polls', order: 8 },
+      { id: 'rulebook', label: 'Rule book', icon: 'book', route: '/portal/rulebook', order: 9 },
+      { id: 'handymen', label: 'Handy Man Services', icon: 'tool', route: '/portal/handymen', order: 10 }
     ],
     security: [
       { id: 'overview', label: 'Overview', icon: 'key', route: '/security/visitors', order: 1 },
       { id: 'logs', label: 'Visitor Logs', icon: 'file-text', route: '/security/visitors/logs', order: 3 },
-      { id: 'verify', label: 'Verify Visitor', icon: 'check-circle', route: '/security/verify', order: 2 },
-      { id: 'requests', label: 'Request Entry', icon: 'alert-circle', route: '/security/requests', order: 4 },
-      { id: 'child', label: 'Child Access', icon: 'user-plus', route: '/security/child_access', order: 5 }
+      { id: 'verify', label: 'Verify Visitor', icon: 'check-circle', route: '/security/visitors/verify', order: 2 },
+      { id: 'requests', label: 'Request Entry', icon: 'alert-circle', route: '/security/visitors/request-entry', order: 4 },
+      { id: 'child', label: 'Child Access', icon: 'user-plus', route: '/security/children', order: 5 }
     ],
   }
 

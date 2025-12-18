@@ -16,6 +16,7 @@ import type {
     EmergencyContactType,
     EmergencyStatus
 } from '~/types/emergency'
+import type { ChoiceOption } from '~/services/api/types'
 
 export interface SOSAlertFilters {
     status?: EmergencyStatus
@@ -50,10 +51,7 @@ export interface EmergencyResponseFilters {
     pageSize?: number
 }
 
-export interface ChoiceOption {
-    value: string
-    label: string
-}
+
 
 export interface AcknowledgeAlertDto {
     notes?: string

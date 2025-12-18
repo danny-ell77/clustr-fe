@@ -69,7 +69,7 @@
       <div
         class="text-center text-white bg-black/50 bg-opacity-50 p-8 rounded-lg h-full w-full flex flex-col items-center justify-center">
         <img src="/images/clustr_logo.png" alt="ClustR Logo" class="mx-auto mb-4 w-24 h-24" />
-        <h2 class="text-4xl font-extrabold">ClustR</h2>
+        <h2 class="text-4xl font-semibold">ClustR</h2>
         <p class="text-lg mt-2">Property Management & Access Control</p>
       </div>
     </div>

@@ -1,11 +1,16 @@
 <template>
     <div class="h-[calc(100vh-4rem)] flex flex-col">
-        <div class="flex items-center justify-between p-6 border-b">
+        <!-- <div class="flex items-center justify-between p-1 border-b">
             <div>
-                <h1 class="text-3xl font-bold">Chat</h1>
+                <h1 class="text-3xl font-semibold">Chat</h1>
                 <p class="text-muted-foreground">Communicate with residents and staff</p>
             </div>
-        </div>
+            <div class="flex items-center gap-2">
+                <Button variant="outline" size="sm" @click="toggleMockMode">
+                    {{ isMockMode ? 'Mock Mode' : 'Backend Mode' }}
+                </Button>
+            </div>
+        </div> -->
 
         <div class="flex-1 flex overflow-hidden">
             <div class="w-80 flex-shrink-0 border-r">
@@ -117,9 +122,9 @@ import ConfirmDialog from '~/components/common/ConfirmDialog.vue'
 import Icon from '~/components/Icon.vue'
 import type { Chat } from '~/types/chat'
 
-// definePageMeta({
-//     layout: 'management'
-// })
+definePageMeta({
+    layout: 'default'
+})
 
 const {
     useConversations,
@@ -128,7 +133,9 @@ const {
     sendMessageMutation,
     markAsReadMutation,
     archiveConversationMutation,
-    deleteConversationMutation
+    deleteConversationMutation,
+    setMockMode,
+    isMockMode
 } = useChat()
 
 const conversationsQuery = useConversations()
@@ -142,7 +149,7 @@ const selectedConversation = computed(() =>
 const messagesQuery = useMessages(computed(() => selectedConversationId.value || undefined))
 const messages = computed(() => messagesQuery.data.value?.messages || [])
 
-const currentUserId = ref('current-user-id')
+const currentUserId = ref('current-user')
 
 const showNewConversationDialog = ref(false)
 const newConversationParticipantId = ref('')
@@ -156,6 +163,10 @@ watch(selectedConversationId, (newId) => {
     }
 })
 
+function toggleMockMode() {
+    setMockMode(!isMockMode.value)
+}
+
 function getConversationName(conversation?: Chat): string {
     if (!conversation) return ''
     if (conversation.name) return conversation.name
@@ -168,7 +179,7 @@ function getConversationSubtitle(conversation?: Chat): string {
     if (conversation.chatType === 'group') {
         return `${conversation.participantCount || conversation.participants.length} participants`
     }
-    return conversation.otherParticipant?.email || ''
+    return conversation.otherParticipant?.emailAddress || ''
 }
 
 function getConversationInitials(conversation?: Chat): string {

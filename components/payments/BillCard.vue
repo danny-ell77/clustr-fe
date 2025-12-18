@@ -1,5 +1,5 @@
 <template>
-  <Card class="hover:shadow-md transition-shadow h-full">
+  <Card class="hover:shadow-md transition-shadow h-full cursor-pointer relative" @click="$emit('view', bill)">
     <CardContent class="pt-6">
       <div class="space-y-4">
         <div class="flex items-start justify-between gap-4">
@@ -19,11 +19,30 @@
               <span v-if="bill.isClusterWide" class="text-primary whitespace-nowrap">Cluster-wide</span>
             </div>
           </div>
-          <div class="text-right shrink-0">
-            <p class="text-xl font-semibold whitespace-nowrap">{{ formatCurrency(bill.amount) }}</p>
-            <p v-if="bill.paidAmount !== '0.00'" class="text-xs text-muted-foreground whitespace-nowrap">
-              Paid: {{ formatCurrency(bill.paidAmount) }}
-            </p>
+          <div class="flex items-start gap-2 shrink-0">
+            <div class="text-right">
+              <p class="text-xl font-semibold whitespace-nowrap">{{ formatCurrency(bill.amount) }}</p>
+              <p v-if="bill.paidAmount !== '0.00'" class="text-xs text-muted-foreground whitespace-nowrap">
+                Paid: {{ formatCurrency(bill.paidAmount) }}
+              </p>
+            </div>
+            <DropdownMenu v-if="showActions && !bill.isFullyPaid && (canEdit || canCancel)">
+              <DropdownMenuTrigger as-child @click.stop>
+                <Button variant="ghost" size="icon" class="h-8 w-8">
+                  <Icon name="more-vertical" class="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" @click.stop>
+                <DropdownMenuItem v-if="canEdit" @click="$emit('edit', bill)">
+                  <Icon name="edit" class="h-4 w-4 mr-2" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem v-if="canCancel" class="text-destructive focus:text-destructive" @click="$emit('cancel', bill)">
+                  <Icon name="x-circle" class="h-4 w-4 mr-2" />
+                  Cancel
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -49,18 +68,6 @@
             <p class="text-sm font-medium text-yellow-600">{{ bill.disputeCount }}</p>
           </div>
         </div>
-
-        <div v-if="showActions" class="flex gap-2 pt-4 border-t">
-          <Button v-if="!bill.isFullyPaid" variant="outline" size="sm" class="flex-1" @click="$emit('view', bill)">
-            View Details
-          </Button>
-          <Button v-if="!bill.isFullyPaid && canEdit" variant="outline" size="sm" @click="$emit('edit', bill)">
-            Edit
-          </Button>
-          <Button v-if="!bill.isFullyPaid && canCancel" variant="destructive" size="sm" @click="$emit('cancel', bill)">
-            Cancel
-          </Button>
-        </div>
       </div>
     </CardContent>
   </Card>
@@ -70,6 +77,13 @@
 import { computed } from 'vue'
 import { Card, CardContent } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '~/components/ui/dropdown-menu'
+import Icon from '~/components/Icon.vue'
 import StatusBadge from '~/components/common/StatusBadge.vue'
 import type { Bill } from '~/types/payments'
 

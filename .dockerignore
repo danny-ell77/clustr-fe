@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.nuxt/
+.output/
+dist/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.md
+!README.md

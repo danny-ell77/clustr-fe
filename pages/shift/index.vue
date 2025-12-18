@@ -2,7 +2,7 @@
     <div class="space-y-6">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-bold">Shift Management</h1>
+                <h1 class="text-3xl font-semibold">Shift Management</h1>
                 <p class="text-muted-foreground">Manage staff shifts and schedules</p>
             </div>
 
@@ -84,7 +84,7 @@
                         <div class="p-2">
                             <div :class="[
                                 'text-sm font-medium mb-2',
-                                !day.isCurrentMonth ? 'text-muted-foreground' : day.isToday ? 'text-primary font-bold' : ''
+                                !day.isCurrentMonth ? 'text-muted-foreground' : day.isToday ? 'text-primary font-semibold' : ''
                             ]">
                                 {{ day.date }}
                             </div>

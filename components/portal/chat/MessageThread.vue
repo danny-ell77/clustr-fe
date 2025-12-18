@@ -1,5 +1,5 @@
 <template>
-  <div ref="scrollContainer" class="flex-1 overflow-y-auto bg-gradient-to-b from-slate-50/50 to-white">
+  <div ref="scrollContainer" class="flex-1 overflow-y-auto max-h-[65%] bg-gradient-to-b from-slate-50/50 to-white">
     <div class="max-w-4xl mx-auto px-4 py-6 space-y-4">
       <div v-for="(message, index) in messages" :key="message.id" class="flex" :class="[
         isOwnMessage(message) ? 'justify-end' : 'justify-start',
