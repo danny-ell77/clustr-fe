@@ -5,6 +5,10 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+# Define build arguments for SPA environment variables
+ARG NUXT_PUBLIC_API_BASE
+ENV NUXT_PUBLIC_API_BASE=$NUXT_PUBLIC_API_BASE
+
 # Copy package files
 COPY package.json bun.lock ./
 
