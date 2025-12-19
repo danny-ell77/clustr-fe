@@ -10,7 +10,8 @@ export default defineEventHandler(async (event) => {
 
   try {
     console.log(config.public.apiBase, path)
-    const response = await $fetch.raw(`${config.public.apiBase}/auth/${path}/`, {
+    const baseUrl = config.public.apiBase || "https://clustr.up.railway.app/api/v1"
+    const response = await $fetch.raw(`${baseUrl}/auth/${path}/`, {
       method: event.method,
       headers: {
         "Content-Type": "application/json",

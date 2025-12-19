@@ -31,7 +31,9 @@ export default defineEventHandler(async (event) => {
       ...(clusterSlug && { "X-Cluster-Slug": clusterSlug }),
     };
 
-    const response = await $fetch.raw(`${config.public.apiBase}/accounts/${path}`, {
+    const baseUrl = config.public.apiBase || "https://clustr.up.railway.app/api/v1"
+
+    const response = await $fetch.raw(`${baseUrl}/accounts/${path}`, {
       method,
       headers,
       body,

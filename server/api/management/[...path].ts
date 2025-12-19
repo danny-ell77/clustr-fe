@@ -37,8 +37,8 @@ export default defineEventHandler(async (event) => {
       "Content-Type": "application/json",
       ...(clusterSlug && { "X-Cluster-Slug": clusterSlug }),
     };
-
-    const response = await $fetch.raw(`${config.public.apiBase}/management/${path}`, {
+    const baseUrl = config.public.apiBase || "https://clustr.up.railway.app/api/v1"
+    const response = await $fetch.raw(`${baseUrl}/management/${path}`, {
       method,
       headers,
       body,
