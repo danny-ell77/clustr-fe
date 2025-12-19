@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     public: {
       // Just a string default, used only for dev.
       // NUXT_PUBLIC_API_BASE will automatically override this at runtime.
-      apiBase: "http://localhost:8008/api/v1",
+      apiBase: process.env.NUXT_PUBLIC_API_BASE,
       appName: "ClustR",
     },
   },
