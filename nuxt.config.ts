@@ -22,7 +22,9 @@ export default defineNuxtConfig({
     dbUrl: process.env.DATABASE_URL || "",
 
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || process.env.API_BASE || "http://localhost:8008/api/v1",
+      // Just a string default, used only for dev.
+      // NUXT_PUBLIC_API_BASE will automatically override this at runtime.
+      apiBase: "http://localhost:8008/api/v1",
       appName: "ClustR",
     },
   },
