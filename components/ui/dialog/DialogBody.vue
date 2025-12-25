@@ -1,6 +1,7 @@
 <template>
-  <div class="mb-3 flex-shrink-0 pb-3 border-b border-border">
+  <div class="flex-1 overflow-y-auto py-4 min-h-0">
     <slot />
   </div>
 </template>
+
 <script setup lang="ts"></script>

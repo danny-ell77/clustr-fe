@@ -37,6 +37,15 @@ export default defineNuxtPlugin(() => {
       if (response._data && typeof response._data === "object") {
         response._data = transformKeys(response._data, camelCase);
       }
+      
+      // Redirect to login on 401 errors (authentication failed)
+      if (response.status === 401) {
+        const currentPath = window.location.pathname;
+        // Don't redirect if already on login page
+        if (!currentPath.startsWith('/login')) {
+          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+        }
+      }
     },
   });
 

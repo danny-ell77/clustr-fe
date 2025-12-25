@@ -11,8 +11,10 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const config = useRuntimeConfig();
   let accessToken = getCookie(event, "access_token");
+  console.log("Access token", typeof accessToken, accessToken);
 
-  if (!accessToken) {
+
+  if (!accessToken || accessToken === "undefined") {
     console.log("No access token found");
     try {
       console.log("Refreshing access token");
