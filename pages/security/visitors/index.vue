@@ -14,66 +14,81 @@
 
         <StatPane v-if="!activeVisitorsQuery.isLoading.value" :stats="statsData" />
 
-        <Card>
-            <CardHeader>
-                <CardTitle>Filters</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <Label>Status</Label>
-                        <Select @update:model-value="(value) => setFilter('status', value)">
-                            <SelectTrigger>
-                                <SelectValue placeholder="All Statuses" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="All">All</SelectItem>
-                                <SelectItem value="PENDING">Pending</SelectItem>
-                                <SelectItem value="APPROVED">Approved</SelectItem>
-                                <SelectItem value="CHECKED_IN">Checked In</SelectItem>
-                                <SelectItem value="CHECKED_OUT">Checked Out</SelectItem>
-                                <SelectItem value="REJECTED">Rejected</SelectItem>
-                                <SelectItem value="EXPIRED">Expired</SelectItem>
-                            </SelectContent>
-                        </Select>
+        <!-- Search bar with filter icon inside -->
+        <div class="relative">
+            <div class="relative">
+                <Icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input 
+                    type="text" 
+                    placeholder="Search visitors..." 
+                    class="pl-10 pr-10"
+                    @input="(e: Event) => setSearch((e.target as HTMLInputElement).value)" 
+                />
+                <button 
+                    @click="showFilters = !showFilters"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    <Icon name="sliders" class="w-4 h-4 scale-x-[-1]" />
+                </button>
+            </div>
+
+            <!-- Filter Dropdown -->
+            <FilterDropdown v-model:open="showFilters">
+                <div class="p-6 space-y-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold">Filters</h3>
+                        <Button variant="ghost" size="sm" @click="clearFilters">Clear All</Button>
                     </div>
 
-                    <div>
-                        <Label>Visit Type</Label>
-                        <Select @update:model-value="(value) => setFilter('visitType', value)">
-                            <SelectTrigger>
-                                <SelectValue placeholder="All Types" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="All">All</SelectItem>
-                                <SelectItem value="ONE_TIME">One Time</SelectItem>
-                                <SelectItem value="SHORT_STAY">Short Stay</SelectItem>
-                                <SelectItem value="EXTENDED_STAY">Extended Stay</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label class="text-sm">Status</Label>
+                            <Select @update:model-value="(value) => setFilter('status', value)">
+                                <SelectTrigger class="h-9">
+                                    <SelectValue placeholder="All Statuses" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="All">All</SelectItem>
+                                    <SelectItem value="PENDING">Pending</SelectItem>
+                                    <SelectItem value="APPROVED">Approved</SelectItem>
+                                    <SelectItem value="CHECKED_IN">Checked In</SelectItem>
+                                    <SelectItem value="CHECKED_OUT">Checked Out</SelectItem>
+                                    <SelectItem value="REJECTED">Rejected</SelectItem>
+                                    <SelectItem value="EXPIRED">Expired</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                    <div>
-                        <Label>Date</Label>
-                        <Input type="date"
-                            @change="(e: Event) => setFilter('date', (e.target as HTMLInputElement).value)" />
-                    </div>
+                        <div>
+                            <Label class="text-sm">Visit Type</Label>
+                            <Select @update:model-value="(value) => setFilter('visitType', value)">
+                                <SelectTrigger class="h-9">
+                                    <SelectValue placeholder="All Types" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="All">All</SelectItem>
+                                    <SelectItem value="ONE_TIME">One Time</SelectItem>
+                                    <SelectItem value="SHORT_STAY">Short Stay</SelectItem>
+                                    <SelectItem value="EXTENDED_STAY">Extended Stay</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                    <div>
-                        <Label>Search</Label>
-                        <Input type="text" placeholder="Search visitors..."
-                            @input="(e: Event) => setSearch((e.target as HTMLInputElement).value)" />
+                        <div>
+                            <Label class="text-sm">Date</Label>
+                            <Input type="date" class="h-9"
+                                @change="(e: Event) => setFilter('date', (e.target as HTMLInputElement).value)" />
+                        </div>
+
+                        <div class="flex items-end">
+                            <div class="text-sm text-muted-foreground">
+                                {{ visitors.length }} of {{ visitorsQuery.data.value?.count || 0 }} results
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="flex items-center justify-between mt-4">
-                    <div class="text-sm text-muted-foreground">
-                        Showing {{ visitors.length }} of {{ visitorsQuery.data.value?.count || 0 }} visitors
-                    </div>
-                    <Button variant="outline" @click="clearFilters">Clear Filters</Button>
-                </div>
-            </CardContent>
-        </Card>
+            </FilterDropdown>
+        </div>
 
         <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Card v-for="i in 6" :key="i">
@@ -116,6 +131,7 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Skeleton } from '~/components/ui/skeleton'
+import { FilterDropdown } from '~/components/ui/filter-dropdown'
 import Icon from '~/components/Icon.vue'
 import StatPane from '~/components/common/StatPane.vue'
 import EmptyState from '~/components/common/EmptyState.vue'
@@ -133,6 +149,8 @@ definePageMeta({
 })
 
 const { useVisitors: useVisitorsList, useActiveVisitors, checkInMutation, checkOutMutation, generatePassMutation } = useVisitors()
+
+const showFilters = ref(false)
 
 const filterDefinitions = [
     { field: 'status', type: 'select' as const, label: 'Status' },

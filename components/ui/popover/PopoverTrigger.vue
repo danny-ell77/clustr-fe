@@ -1,15 +1,23 @@
 <template>
-    <div @click="$emit('click', $event)">
+    <div @click="handleClick">
         <slot />
     </div>
 </template>
 
 <script setup lang="ts">
+import { inject } from 'vue'
+
 defineProps<{
     asChild?: boolean
 }>()
 
-defineEmits<{
-    click: [event: MouseEvent]
-}>()
+const popover = inject<{
+    isOpen: { value: boolean }
+    toggle: () => void
+    close: () => void
+}>('popover')
+
+const handleClick = () => {
+    popover?.toggle()
+}
 </script>

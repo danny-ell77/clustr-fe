@@ -18,12 +18,24 @@
                         class="mt-1" />
                 </div>
 
-                <div class="space-y-3">
-                    <Label>Filters</Label>
-                    <slot name="filters" :filters="localFilters" :set-filter="setLocalFilter" />
+                <!-- Collapsible Filters Section -->
+                <div class="border-t border-border pt-4">
+                    <button type="button"
+                        class="flex items-center justify-between w-full text-left text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                        @click="showFilters = !showFilters">
+                        <span>Filters</span>
+                        <Icon :name="showFilters ? 'chevron-up' : 'chevron-down'" class="w-4 h-4" />
+                    </button>
+                    <p class="text-xs text-muted-foreground mt-1">
+                        {{ showFilters ? 'Customize filters for this view' : 'Using current filters' }}
+                    </p>
+
+                    <div v-if="showFilters" class="mt-4 space-y-3">
+                        <slot name="filters" :filters="localFilters" :set-filter="setLocalFilter" />
+                    </div>
                 </div>
 
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2 pb-3">
                     <Checkbox id="persist-view" v-model:checked="persistView" />
                     <Label for="persist-view" class="text-sm font-normal cursor-pointer">
                         Show this view as a tab
@@ -49,6 +61,7 @@ import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Checkbox } from '~/components/ui/checkbox'
+import Icon from '~/components/Icon.vue'
 import {
     Dialog,
     DialogContent,
@@ -87,6 +100,7 @@ const isOpen = computed({
 const viewName = ref('')
 const localFilters = ref<FilterState>({})
 const persistView = ref(true)
+const showFilters = ref(false)
 
 watch(() => props.open, (open) => {
     if (open) {
@@ -94,10 +108,12 @@ watch(() => props.open, (open) => {
             viewName.value = props.view.name
             localFilters.value = { ...props.view.filters }
             persistView.value = props.view.persisted
+            showFilters.value = true
         } else {
             viewName.value = ''
             localFilters.value = { ...props.currentFilters }
             persistView.value = true
+            showFilters.value = false
         }
     }
 })
@@ -115,9 +131,11 @@ const saveAndApply = () => {
         return
     }
 
+    const filtersToSave = showFilters.value ? { ...localFilters.value } : { ...props.currentFilters }
+
     emit('save', {
         name: viewName.value.trim(),
-        filters: { ...localFilters.value },
+        filters: filtersToSave,
         persisted: persistView.value
     })
 

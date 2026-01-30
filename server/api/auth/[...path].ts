@@ -9,7 +9,6 @@ export default defineEventHandler(async (event) => {
   const cookies = getRequestHeader(event, "cookie");
 
   try {
-    console.log(config.public.apiBase, path)
     const baseUrl = config.public.apiBase || "https://clustr.up.railway.app/api/v1"
     const response = await $fetch.raw(`${baseUrl}/auth/${path}/`, {
       method: event.method,
@@ -28,7 +27,6 @@ export default defineEventHandler(async (event) => {
       ? (response.headers as any).getSetCookie() 
       : response.headers.get("set-cookie");
     
-    console.log(setCookieHeaders)
       
     if (setCookieHeaders) {
       setResponseHeader(event, "set-cookie", setCookieHeaders);
@@ -36,7 +34,6 @@ export default defineEventHandler(async (event) => {
 
     return response._data;
   } catch (error: any) {
-    console.log(error)
     // Forward error response
     throw createError({
       statusCode: error.response?.status || 500,

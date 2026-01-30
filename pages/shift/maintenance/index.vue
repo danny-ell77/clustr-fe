@@ -6,7 +6,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <NuxtLink to="/property/maintenance/logs"
+            <NuxtLink to="/shift/maintenance/logs"
                 class="bg-white border rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 bg-primary/15 rounded-lg flex items-center justify-center">
@@ -22,7 +22,7 @@
                 </div>
             </NuxtLink>
 
-            <NuxtLink to="/property/maintenance/schedules"
+            <NuxtLink to="/shift/maintenance/schedules"
                 class="bg-white border rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -38,7 +38,7 @@
                 </div>
             </NuxtLink>
 
-            <NuxtLink to="/property/maintenance/analytics"
+            <NuxtLink to="/shift/maintenance/analytics"
                 class="bg-white border rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">

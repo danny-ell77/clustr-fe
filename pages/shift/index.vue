@@ -7,7 +7,7 @@
             </div>
 
             <Button v-if="hasPermission(PERMISSIONS.FACILITY_ADMIN.MANAGE_WORK_SHIFT)" @click="showCreateModal = true">
-                <Icon name="lucide:plus" class="w-4 h-4 mr-2" />
+                <Icon name="plus" class="w-4 h-4 mr-2" />
                 Create Shift
             </Button>
         </div>
@@ -15,114 +15,45 @@
         <StatPane v-if="!statsQuery.isLoading.value && statistics" :stats="shiftStats" />
 
         <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <Button variant="outline" size="sm" @click="previousMonth">
-                    <Icon name="lucide:chevron-left" class="w-4 h-4" />
-                </Button>
-                <h3 class="text-lg font-semibold px-4">
-                    {{ currentMonthYear }}
-                </h3>
-                <Button variant="outline" size="sm" @click="nextMonth">
-                    <Icon name="lucide:chevron-right" class="w-4 h-4" />
-                </Button>
-                <Button variant="outline" size="sm" @click="goToToday">
-                    Today
-                </Button>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <Select @update:model-value="(value: string) => setFilter('shiftType', value)">
-                    <SelectTrigger class="w-[180px]">
-                        <SelectValue placeholder="All Types" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="All">All Types</SelectItem>
-                        <SelectItem value="SECURITY">Security</SelectItem>
-                        <SelectItem value="CLEANING">Cleaning</SelectItem>
-                        <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
-                        <SelectItem value="RECEPTION">Reception</SelectItem>
-                        <SelectItem value="OTHER">Other</SelectItem>
-                    </SelectContent>
-                </Select>
-
-                <Select @update:model-value="(value: string) => setFilter('status', value)">
-                    <SelectTrigger class="w-[180px]">
-                        <SelectValue placeholder="All Statuses" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="All">All Statuses</SelectItem>
-                        <SelectItem value="SCHEDULED">Scheduled</SelectItem>
-                        <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                        <SelectItem value="COMPLETED">Completed</SelectItem>
-                    </SelectContent>
-                </Select>
-
-                <Button variant="outline" @click="clearFilters" size="sm">
-                    Clear Filters
-                </Button>
-            </div>
+            <ShiftCalendarControls
+                :current-month-year="currentMonthYear"
+                @previous="previousMonth"
+                @next="nextMonth"
+                @today="goToToday"
+            />
+            <ShiftFilterBar
+                v-model="filtersModel"
+                @clear="clearFilters"
+            />
         </div>
-
         <div v-if="loading" class="flex justify-center items-center py-12">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-
-        <Card v-else>
-            <CardContent class="p-0">
-                <div class="grid grid-cols-7 border-b bg-muted">
-                    <div v-for="day in weekDays" :key="day"
-                        class="p-4 text-center font-semibold text-sm border-r last:border-r-0">
-                        {{ day }}
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-7">
-                    <div v-for="(day, index) in calendarDays" :key="index" :class="[
-                        'min-h-[120px] border-r border-b last:border-r-0',
-                        day.isToday ? 'bg-primary/5' : ''
-                    ]">
-                        <div class="p-2">
-                            <div :class="[
-                                'text-sm font-medium mb-2',
-                                !day.isCurrentMonth ? 'text-muted-foreground' : day.isToday ? 'text-primary font-semibold' : ''
-                            ]">
-                                {{ day.date }}
-                            </div>
-
-                            <div class="space-y-1">
-                                <div v-for="shift in day.shifts" :key="shift.id" @click="viewShift(shift)" :class="[
-                                    'text-xs p-2 rounded cursor-pointer hover:opacity-80 transition-opacity',
-                                    getShiftPillClass(shift)
-                                ]">
-                                    <div class="font-medium truncate">{{ shift.title }}</div>
-                                    <div class="text-xs opacity-90 truncate">
-                                        {{ formatTime(shift.startTime) }} - {{ formatTime(shift.endTime) }}
-                                    </div>
-                                    <div v-if="shift.assignedStaffDetails" class="text-xs opacity-75 truncate">
-                                        {{ shift.assignedStaffDetails.name }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-
+        <ShiftCalendarGrid v-else
+            :week-days="weekDays"
+            :calendar-days="calendarDays"
+            @view="viewShift"
+        />
         <ShiftFormDialog v-model:open="showCreateModal" :staff-members="staffMembers" @submit="handleCreate" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { useShifts } from '~/composables/shift/useShifts'
+import { Button } from '~/components/ui/button'
 import { usePermissions } from '~/composables/auth/usePermissions'
 import { queryKeys } from '~/constants/query-keys'
-import type { Shift, CreateShiftDto } from '~/types/shifts'
+import { managementShiftsApi } from '~/services/api/shifts.api'
+import type { Shift, CreateShiftDto, Staff } from '~/types/shifts'
 import ShiftFormDialog from '~/components/shift/ShiftFormDialog.vue'
 import StatPane from '~/components/common/StatPane.vue'
+import { Badge } from '~/components/ui/badge'
+import ShiftCalendarControls from '~/components/shift/ShiftCalendarControls.vue'
+import ShiftFilterBar from '~/components/shift/ShiftFilterBar.vue'
+import ShiftCalendarGrid from '~/components/shift/ShiftCalendarGrid.vue'
 
 const { hasPermission, PERMISSIONS } = usePermissions()
-const { useShifts: useShiftsList, useShiftStats, createShiftMutation } = useShifts()
+const { useShiftsCalendar, useShiftStats, createShiftMutation, useStaffList } = useShifts()
 
 definePageMeta({
     requiresPermission: 'shift.overview.view'
@@ -131,7 +62,10 @@ definePageMeta({
 const currentDate = ref(new Date())
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const showCreateModal = ref(false)
-const staffMembers = ref([])
+
+const staffQuery = useStaffList({ isActive: true })
+
+const staffMembers = computed<Staff[]>(() => staffQuery.data.value?.results || [])
 
 const filterDefinitions = [
     {
@@ -162,6 +96,15 @@ const { currentQuery, clearFilters, setFilter } = useDataFilters(filterDefinitio
     persistKey: 'shifts-filters'
 })
 
+const filtersModel = computed({
+    get: () => currentQuery.value,
+    set: (newFilters: any) => {
+        Object.entries(newFilters).forEach(([key, value]) => {
+            setFilter(key, value as string)
+        })
+    }
+})
+
 const currentMonthYear = computed(() => {
     return currentDate.value.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 })
@@ -179,10 +122,10 @@ const queryParams = computed(() => {
     }
 })
 
-const shiftsQuery = useShiftsList(queryParams)
+const shiftsQuery = useShiftsCalendar(queryParams)
 const statsQuery = useShiftStats()
 
-const shiftsData = computed(() => shiftsQuery.data.value)
+const shiftsData = computed(() => shiftsQuery.data.value || [])
 const loading = computed(() => shiftsQuery.isLoading.value)
 const statistics = computed(() => statsQuery.data.value)
 
@@ -226,11 +169,11 @@ const calendarDays = computed(() => {
         const dateObj = new Date(year, month, date)
         dateObj.setHours(0, 0, 0, 0)
 
-        const dayShifts = shiftsData.value?.results?.filter((shift: Shift) => {
+        const dayShifts = (shiftsData.value as Shift[]).filter((shift: Shift) => {
             const shiftDate = new Date(shift.startTime)
             shiftDate.setHours(0, 0, 0, 0)
             return shiftDate.getTime() === dateObj.getTime()
-        }) || []
+        })
 
         days.push({
             date,

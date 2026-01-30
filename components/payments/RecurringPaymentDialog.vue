@@ -1,15 +1,14 @@
 <template>
     <Dialog :open="open" @update:open="$emit('update:open', $event)">
         <DialogContent class="max-w-2xl">
-            <div class="space-y-4">
-                <div>
-                    <h2 class="text-2xl">{{ payment ? 'Edit Recurring Payment' : 'Create Recurring Payment' }}
-                    </h2>
-                    <p class="text-sm text-muted-foreground">
-                        {{ payment ? 'Update recurring payment schedule' : 'Set up automatic recurring payment' }}
-                    </p>
-                </div>
+            <DialogHeader>
+                <DialogTitle>{{ payment ? 'Edit Recurring Payment' : 'Create Recurring Payment' }}</DialogTitle>
+                <DialogDescription>
+                    {{ payment ? 'Update recurring payment schedule' : 'Set up automatic recurring payment' }}
+                </DialogDescription>
+            </DialogHeader>
 
+            <DialogBody>
                 <form @submit.prevent="handleSubmit" class="space-y-4">
                     <div>
                         <Label for="title">Title *</Label>
@@ -103,22 +102,22 @@
                         </p>
                     </div>
 
-                    <div class="flex gap-2 pt-4 border-t">
-                        <Button type="button" variant="outline" class="flex-1"
-                            @click="$emit('update:open', false)">Cancel</Button>
-                        <Button type="submit" class="flex-1" :disabled="isSubmitting">
-                            {{ isSubmitting ? 'Saving...' : payment ? 'Update Schedule' : 'Create Schedule' }}
-                        </Button>
-                    </div>
                 </form>
-            </div>
+            </DialogBody>
+
+            <DialogFooter>
+                <Button type="button" variant="outline" @click="$emit('update:open', false)">Cancel</Button>
+                <Button type="submit" :disabled="isSubmitting" @click="handleSubmit">
+                    {{ isSubmitting ? 'Saving...' : payment ? 'Update Schedule' : 'Create Schedule' }}
+                </Button>
+            </DialogFooter>
         </DialogContent>
     </Dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { Dialog, DialogContent } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter } from '~/components/ui/dialog'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'

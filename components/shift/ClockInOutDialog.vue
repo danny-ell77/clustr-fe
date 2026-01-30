@@ -1,14 +1,14 @@
 <template>
     <Dialog :open="open" @update:open="$emit('update:open', $event)">
         <DialogContent class="max-w-md">
-            <div class="space-y-4">
-                <div>
-                    <h2 class="text-2xl">{{ action === 'in' ? 'Clock In' : 'Clock Out' }}</h2>
-                    <p class="text-sm text-muted-foreground">
-                        {{ action === 'in' ? 'Start your shift' : 'End your shift' }}
-                    </p>
-                </div>
+            <DialogHeader>
+                <DialogTitle>{{ action === 'in' ? 'Clock In' : 'Clock Out' }}</DialogTitle>
+                <DialogDescription>
+                    {{ action === 'in' ? 'Start your shift' : 'End your shift' }}
+                </DialogDescription>
+            </DialogHeader>
 
+            <DialogBody>
                 <div v-if="shift" class="p-4 bg-muted rounded-lg space-y-2">
                     <div class="flex justify-between">
                         <span class="text-sm text-muted-foreground">Shift</span>
@@ -37,23 +37,24 @@
                         <Textarea id="notes" v-model="formData.notes" placeholder="Any notes?" rows="3" />
                     </div>
 
-                    <div class="flex gap-2 pt-4">
-                        <Button type="button" variant="outline" class="flex-1" @click="$emit('update:open', false)">
-                            Cancel
-                        </Button>
-                        <Button type="submit" class="flex-1" :disabled="isSubmitting">
-                            {{ isSubmitting ? 'Processing...' : action === 'in' ? 'Clock In' : 'Clock Out' }}
-                        </Button>
-                    </div>
                 </form>
-            </div>
+            </DialogBody>
+
+            <DialogFooter>
+                <Button type="button" variant="outline" @click="$emit('update:open', false)">
+                    Cancel
+                </Button>
+                <Button type="submit" :disabled="isSubmitting" @click="handleSubmit">
+                    {{ isSubmitting ? 'Processing...' : action === 'in' ? 'Clock In' : 'Clock Out' }}
+                </Button>
+            </DialogFooter>
         </DialogContent>
     </Dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { Dialog, DialogContent } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter } from '~/components/ui/dialog'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'

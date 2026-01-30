@@ -47,7 +47,6 @@ export default defineEventHandler(async (event) => {
       ? (response.headers as any).getSetCookie() 
       : response.headers.get("set-cookie");
     
-    console.log(setCookieHeaders)
       
     if (setCookieHeaders) {
       setResponseHeader(event, "set-cookie", setCookieHeaders);
@@ -57,10 +56,8 @@ export default defineEventHandler(async (event) => {
   };
 
   try {
-    // First attempt with current token
     return await makeRequest(accessToken);
   } catch (error: any) {
-    // If 401 error, try to refresh token and retry
     if (error.statusCode === 401) {
       const newToken = await refreshAccessToken(event, config);
       return await makeRequest(newToken);

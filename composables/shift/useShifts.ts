@@ -21,6 +21,13 @@ export const useShifts = () => {
         })
     }
 
+    const useShiftsCalendar = (params: Ref<{ startDate: string; endDate: string; staffId?: number; status?: string; shiftType?: string }>) => {
+        return useQuery({
+            queryKey: computed(() => ['shifts', 'calendar', params.value]),
+            queryFn: () => managementShiftsApi.shifts.getCalendar(params.value)
+        })
+    }
+
     const useShift = (id: Ref<string | undefined>) => {
         return useQuery({
             queryKey: computed(() => queryKeys.shifts.detail(id.value!)),
@@ -51,6 +58,13 @@ export const useShifts = () => {
             queryKey: queryKeys.shifts.statistics(),
             queryFn: () => managementShiftsApi.shifts.getStatistics(),
             refetchInterval: 30000
+        })
+    }
+
+    const useStaffList = (queryParams = {}) => {
+        return useQuery({
+            queryKey: [queryKeys.staff.all, 'active'],
+            queryFn: () => managementShiftsApi.staff.getAll(queryParams)
         })
     }
 
@@ -142,6 +156,8 @@ export const useShifts = () => {
         useSwapRequests,
         useStaffSchedule,
         useShiftStats,
+        useStaffList,
+        useShiftsCalendar,
         createShiftMutation,
         updateShiftMutation,
         clockInMutation,

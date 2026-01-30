@@ -1,4 +1,3 @@
-// Management endpoint forwarding with automatic token refresh
 import {
   refreshAccessToken,
   extractSubdomainFromHost,
@@ -11,7 +10,6 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const config = useRuntimeConfig();
   let accessToken = getCookie(event, "access_token");
-  console.log("Access token", typeof accessToken, accessToken);
 
 
   if (!accessToken || accessToken === "undefined") {
@@ -40,7 +38,7 @@ export default defineEventHandler(async (event) => {
       ...(clusterSlug && { "X-Cluster-Slug": clusterSlug }),
     };
     const baseUrl = config.public.apiBase || "https://clustr.up.railway.app/api/v1"
-    const response = await $fetch.raw(`${baseUrl}/management/${path}`, {
+    const response = await $fetch.raw(`${baseUrl}/management/${path}/`, {
       method,
       headers,
       body,
@@ -63,24 +61,19 @@ export default defineEventHandler(async (event) => {
   };
 
   try {
-    // First attempt with current token
     return await makeRequest(accessToken);
   } catch (error: any) {
-    // $fetch errors have status in different places depending on error type
     const errorStatus = error.response?.status || error.status || error.statusCode;
     
-    // If 401 error, try to refresh token and retry
     if (errorStatus === 401) {
       try {
         const newToken = await refreshAccessToken(event, config);
         return await makeRequest(newToken);
       } catch (refreshError) {
-        // If refresh also fails, throw the refresh error
         throw refreshError;
       }
     }
     
-    // Re-throw with proper error structure
     throw createError({
       statusCode: errorStatus || 500,
       statusMessage: error.statusMessage || error.message || 'Request failed',

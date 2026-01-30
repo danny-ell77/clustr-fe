@@ -107,6 +107,7 @@ export interface Bill {
   description?: string
   type: BillType
   category?: string
+  status: BillStatus
   amount: string
   currency: string
   acknowledgedBy: string[]

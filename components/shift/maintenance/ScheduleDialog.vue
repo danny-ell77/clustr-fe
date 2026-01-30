@@ -1,6 +1,6 @@
 <template>
     <Dialog v-model:open="isOpen">
-        <DialogContent class="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent class="max-w-2xl">
             <DialogHeader>
                 <DialogTitle>{{ schedule ? 'Edit Schedule' : 'Create Maintenance Schedule' }}</DialogTitle>
                 <DialogDescription>
@@ -8,7 +8,8 @@
                 </DialogDescription>
             </DialogHeader>
 
-            <form @submit.prevent="handleSubmit" class="space-y-4">
+            <DialogBody>
+                <form @submit.prevent="handleSubmit" class="space-y-4">
                 <div>
                     <Label for="name">Schedule Name *</Label>
                     <Input id="name" v-model="formData.name" placeholder="e.g., Monthly Generator Maintenance"
@@ -92,8 +93,14 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <Label for="estimatedDuration">Estimated Duration</Label>
-                        <Input id="estimatedDuration" v-model="formData.estimatedDuration"
-                            placeholder="e.g., 2 hours, 1 day" />
+                        <div class="flex items-center gap-1.5">
+                            <Input id="estimatedDurationHours" v-model.number="estimatedDurationHours"
+                                type="number" min="0" placeholder="0" class="w-16 text-center" />
+                            <span class="text-xs text-muted-foreground">h</span>
+                            <Input id="estimatedDurationMinutes" v-model.number="estimatedDurationMinutes"
+                                type="number" min="0" max="59" placeholder="0" class="w-16 text-center" />
+                            <span class="text-xs text-muted-foreground">m</span>
+                        </div>
                     </div>
 
                     <div>
@@ -121,23 +128,25 @@
                         rows="2" />
                 </div>
 
-                <div class="flex justify-end gap-2 mt-6">
-                    <Button type="button" variant="outline" @click="isOpen = false" :disabled="isSubmitting">
-                        Cancel
-                    </Button>
-                    <Button type="submit" :disabled="isSubmitting">
-                        {{ isSubmitting ? 'Saving...' : schedule ? 'Update' : 'Create' }}
-                    </Button>
-                </div>
-            </form>
+                </form>
+            </DialogBody>
+
+            <DialogFooter>
+                <Button type="button" variant="outline" @click="isOpen = false" :disabled="isSubmitting">
+                    Cancel
+                </Button>
+                <LoadingButton type="button" :loading="isSubmitting" @click="handleSubmit">
+                    {{ schedule ? 'Update' : 'Create' }}
+                </LoadingButton>
+            </DialogFooter>
         </DialogContent>
     </Dialog>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Button } from '~/components/ui/button'
+import { computed, reactive, ref, watch } from 'vue'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogBody, DialogFooter } from '~/components/ui/dialog'
+import { Button, LoadingButton } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Textarea } from '~/components/ui/textarea'
@@ -185,6 +194,27 @@ const isSubmitting = computed(() =>
     createScheduleMutation.isPending.value || updateScheduleMutation.isPending.value
 )
 
+const estimatedDurationHours = ref<number | undefined>(undefined)
+const estimatedDurationMinutes = ref<number | undefined>(undefined)
+
+function parseDuration(duration: string | undefined): { hours: number; minutes: number } {
+    if (!duration) return { hours: 0, minutes: 0 }
+    const parts = duration.split(':')
+    if (parts.length >= 2) {
+        return { hours: parseInt(parts[0]) || 0, minutes: parseInt(parts[1]) || 0 }
+    }
+    return { hours: 0, minutes: 0 }
+}
+
+function formatDuration(hours: number | undefined, minutes: number | undefined): string | undefined {
+    if ((hours === undefined || hours === 0) && (minutes === undefined || minutes === 0)) {
+        return undefined
+    }
+    const h = (hours || 0).toString().padStart(2, '0')
+    const m = (minutes || 0).toString().padStart(2, '0')
+    return `${h}:${m}:00`
+}
+
 watch(() => props.schedule, (schedule) => {
     if (schedule) {
         formData.name = schedule.name
@@ -195,7 +225,9 @@ watch(() => props.schedule, (schedule) => {
         formData.frequencyType = schedule.frequencyType
         formData.frequencyValue = schedule.frequencyValue
         formData.nextDueDate = schedule.nextDueDate.split('T')[0]
-        formData.estimatedDuration = schedule.estimatedDuration || ''
+        const estDur = parseDuration(schedule.estimatedDuration)
+        estimatedDurationHours.value = estDur.hours || undefined
+        estimatedDurationMinutes.value = estDur.minutes || undefined
         formData.estimatedCost = schedule.estimatedCost || ''
         formData.instructions = schedule.instructions || ''
         formData.materialsNeeded = schedule.materialsNeeded || ''
@@ -209,7 +241,8 @@ watch(() => props.schedule, (schedule) => {
         formData.frequencyType = 'MONTHLY'
         formData.frequencyValue = 1
         formData.nextDueDate = ''
-        formData.estimatedDuration = ''
+        estimatedDurationHours.value = undefined
+        estimatedDurationMinutes.value = undefined
         formData.estimatedCost = ''
         formData.instructions = ''
         formData.materialsNeeded = ''
@@ -229,7 +262,7 @@ const handleSubmit = async () => {
                 frequencyType: formData.frequencyType,
                 frequencyValue: formData.frequencyValue,
                 nextDueDate: formData.nextDueDate,
-                estimatedDuration: formData.estimatedDuration || undefined,
+                estimatedDuration: formatDuration(estimatedDurationHours.value, estimatedDurationMinutes.value),
                 estimatedCost: formData.estimatedCost || undefined,
                 instructions: formData.instructions || undefined,
                 materialsNeeded: formData.materialsNeeded || undefined,
@@ -249,7 +282,7 @@ const handleSubmit = async () => {
                 frequencyType: formData.frequencyType,
                 frequencyValue: formData.frequencyValue,
                 nextDueDate: formData.nextDueDate,
-                estimatedDuration: formData.estimatedDuration || undefined,
+                estimatedDuration: formatDuration(estimatedDurationHours.value, estimatedDurationMinutes.value),
                 estimatedCost: formData.estimatedCost || undefined,
                 instructions: formData.instructions || undefined,
                 materialsNeeded: formData.materialsNeeded || undefined,

@@ -59,86 +59,17 @@
             </CardContent>
         </Card>
 
-        <div v-if="isLoading" class="space-y-4">
-            <Card v-for="i in 3" :key="i">
-                <CardContent class="pt-6">
-                    <Skeleton class="h-24 w-full" />
-                </CardContent>
-            </Card>
-        </div>
-
-        <div v-else-if="recurringPayments.length === 0" class="text-center py-12">
-            <EmptyState title="No recurring payments" description="Create your first recurring payment schedule"
-                action-label="Create Schedule" @action="showCreateDialog = true" />
-        </div>
-
-        <div v-else class="space-y-4">
-            <Card v-for="payment in recurringPayments" :key="payment.id" class="hover:shadow-md transition-shadow">
-                <CardContent class="pt-6">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2">
-                                <h3 class="font-semibold text-lg">{{ payment.title }}</h3>
-                                <StatusBadge :status="payment.status" />
-                            </div>
-                            <p v-if="payment.description" class="text-sm text-muted-foreground mt-1">{{
-                                payment.description }}</p>
-
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                                <div>
-                                    <p class="text-xs text-muted-foreground">Amount</p>
-                                    <p class="text-sm font-medium">{{ formatCurrency(payment.amount) }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-muted-foreground">Frequency</p>
-                                    <p class="text-sm font-medium">{{ formatFrequency(payment.frequency) }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-muted-foreground">Next Payment</p>
-                                    <p class="text-sm font-medium">{{ payment.nextPaymentDate ?
-                                        formatDate(payment.nextPaymentDate) : 'N/A' }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-muted-foreground">Total Payments</p>
-                                    <p class="text-sm font-medium">{{ payment.totalPayments }}</p>
-                                </div>
-                            </div>
-
-                            <div v-if="payment.failedAttempts > 0"
-                                class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                <div class="flex items-center gap-2">
-                                    <Icon name="alert-triangle" class="w-4 h-4 text-yellow-600" />
-                                    <p class="text-sm text-yellow-900">{{ payment.failedAttempts }} failed attempt(s)
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex gap-2 ml-4">
-                            <Button
-                                v-if="payment.status === 'ACTIVE' && hasPermission(PERMISSIONS.PAYMENTS.MANAGE_WALLET)"
-                                variant="outline" size="sm" @click="pausePayment(payment.id)">
-                                <Icon name="pause" class="w-4 h-4" />
-                            </Button>
-                            <Button
-                                v-if="payment.status === 'PAUSED' && hasPermission(PERMISSIONS.PAYMENTS.MANAGE_WALLET)"
-                                variant="outline" size="sm" @click="resumePayment(payment.id)">
-                                <Icon name="play" class="w-4 h-4" />
-                            </Button>
-                            <Button v-if="hasPermission(PERMISSIONS.PAYMENTS.MANAGE_WALLET)" variant="outline" size="sm"
-                                @click="editPayment(payment)">
-                                <Icon name="edit-2" class="w-4 h-4" />
-                            </Button>
-                            <Button v-if="hasPermission(PERMISSIONS.PAYMENTS.MANAGE_WALLET)" variant="destructive"
-                                size="sm" @click="cancelPayment(payment.id)">
-                                <Icon name="x" class="w-4 h-4" />
-                            </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-
+        <RecurringPaymentsListContent
+            :payments="recurringPayments"
+            :is-loading="isLoading"
+            :can-manage="true"
+            @click="viewPayment"
+            @pause="pausePayment"
+            @resume="resumePayment"
+            @edit="editPayment"
+            @cancel="cancelPayment"
+            @create="showCreateDialog = true"
+        />
         <RecurringPaymentDialog v-model:open="showCreateDialog" :payment="selectedPayment" :wallets="wallets"
             :bills="bills" @submit="handleSubmit" />
     </div>
@@ -213,6 +144,10 @@ const handleSubmit = async (data: CreateRecurringPaymentDto) => {
 const editPayment = (payment: RecurringPayment) => {
     selectedPayment.value = payment
     showCreateDialog.value = true
+}
+
+const viewPayment = (payment: RecurringPayment) => {
+    editPayment(payment)
 }
 
 const pausePayment = async (paymentId: string) => {

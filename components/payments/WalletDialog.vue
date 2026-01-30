@@ -1,27 +1,27 @@
 <template>
     <Dialog :open="open" @update:open="$emit('update:open', $event)">
         <DialogContent class="max-w-lg">
-            <div class="space-y-4">
-                <div>
-                    <h2 class="text-2xl">{{ operation === 'credit' ? 'Credit Wallet' : 'Debit Wallet' }}</h2>
-                    <p class="text-sm text-muted-foreground">{{ operation === 'credit' ? 'Add funds to cluster wallet' :
-                        'Withdraw funds from cluster wallet' }}</p>
-                </div>
+            <DialogHeader>
+                <DialogTitle>{{ operation === 'credit' ? 'Credit Wallet' : 'Debit Wallet' }}</DialogTitle>
+                <DialogDescription>{{ operation === 'credit' ? 'Add funds to cluster wallet' : 'Withdraw funds from cluster wallet' }}</DialogDescription>
+            </DialogHeader>
 
-                <div v-if="wallet" class="p-4 bg-muted rounded-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-muted-foreground">Current Balance</p>
-                            <p class="text-2xl">{{ formatCurrency(wallet.balance) }}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm text-muted-foreground">Available</p>
-                            <p class="text-lg font-semibold">{{ formatCurrency(wallet.availableBalance) }}</p>
+            <DialogBody>
+                <div class="space-y-4">
+                    <div v-if="wallet" class="p-4 bg-muted rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-muted-foreground">Current Balance</p>
+                                <p class="text-2xl">{{ formatCurrency(wallet.balance) }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-muted-foreground">Available</p>
+                                <p class="text-lg font-semibold">{{ formatCurrency(wallet.availableBalance) }}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <form @submit.prevent="handleSubmit" class="space-y-4">
+                    <form @submit.prevent="handleSubmit" class="space-y-4">
                     <div>
                         <Label for="amount">Amount (NGN) *</Label>
                         <Input id="amount" v-model="formData.amount" type="number" step="0.01" min="0.01"
@@ -73,24 +73,26 @@
                         </div>
                     </div>
 
-                    <div class="flex gap-2 pt-4 border-t">
-                        <Button type="button" variant="outline" class="flex-1"
-                            @click="$emit('update:open', false)">Cancel</Button>
-                        <Button type="submit" class="flex-1"
-                            :variant="operation === 'credit' ? 'default' : 'destructive'"
-                            :disabled="isSubmitting || exceedsBalance">
-                            {{ isSubmitting ? 'Processing...' : operation === 'credit' ? 'Credit Wallet' : 'Debit Wallet' }}
-                        </Button>
-                    </div>
-                </form>
-            </div>
+                    </form>
+                </div>
+            </DialogBody>
+
+            <DialogFooter>
+                <Button type="button" variant="outline" @click="$emit('update:open', false)">Cancel</Button>
+                <Button type="submit"
+                    :variant="operation === 'credit' ? 'default' : 'destructive'"
+                    :disabled="isSubmitting || exceedsBalance"
+                    @click="handleSubmit">
+                    {{ isSubmitting ? 'Processing...' : operation === 'credit' ? 'Credit Wallet' : 'Debit Wallet' }}
+                </Button>
+            </DialogFooter>
         </DialogContent>
     </Dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { Dialog, DialogContent } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter } from '~/components/ui/dialog'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'

@@ -131,7 +131,6 @@ const subNavigation = computed(() => {
     property: [
       { id: 'overview', label: 'Overview', icon: 'home', route: '/property', order: 1 },
       { id: 'listings', label: 'Listings', icon: 'building', route: '/property/listings', order: 2 },
-      { id: 'maintenance', label: 'Maintenance', icon: 'wrench', route: '/property/maintenance', order: 3 },
       { id: 'residents', label: 'Residents', icon: 'users', route: '/property/residents', order: 4 },
     ],
     payments: [
@@ -147,13 +146,15 @@ const subNavigation = computed(() => {
     ],
     shift: [
       { id: 'overview', label: 'Overview', icon: 'calendar-clock', route: '/shift', order: 1 },
-      { id: 'shifts', label: 'Shifts', icon: 'calendar', route: '/shift/shifts', order: 2 },
-      { id: 'scheduling', label: 'Scheduling', icon: 'calendar-days', route: '/shift/scheduling', order: 3 },
-      { id: 'logging', label: 'Logging', icon: 'clock', route: '/shift/logging', order: 4 },
+      { id: 'maintenance', label: 'Maintenance', icon: 'wrench', route: '/shift/maintenance', order: 3 },
+      { id: 'staff', label: 'Staff', icon: 'users', route: '/shift/staff', order: 2 },
+      // { id: 'shifts', label: 'Shifts', icon: 'calendar', route: '/shift/shifts', order: 3 },
+      // { id: 'scheduling', label: 'Scheduling', icon: 'calendar-days', route: '/shift/scheduling', order: 4 },
+      // { id: 'logging', label: 'Logging', icon: 'clock', route: '/shift/logging', order: 5 },
     ],
     portal: [
       { id: 'overview', label: 'Overview', icon: 'message-circle', route: '/portal', order: 1 },
-      { id: 'emergencies', label: 'Emergency', icon: 'message-circle', route: '/portal/emergency', order: 2 },
+      { id: 'emergencies', label: 'Emergency', icon: 'alert-triangle', route: '/portal/emergency', order: 2 },
       { id: 'announcements', label: 'Announcements', icon: 'bell', route: '/portal/announcements', order: 3 },
       { id: 'helpdesk', label: 'Helpdesk', icon: 'headphones', route: '/portal/helpdesk', order: 4 },
       { id: 'chat', label: 'Chat', icon: 'message-square', route: '/portal/chat', order: 5 },

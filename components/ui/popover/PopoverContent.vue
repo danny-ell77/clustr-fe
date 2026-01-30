@@ -1,5 +1,5 @@
 <template>
-    <div v-if="open" :class="cn(
+    <div v-if="isOpen" :class="cn(
         'absolute z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md',
         'animate-in fade-in-0 zoom-in-95',
         alignClass,
@@ -10,21 +10,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { cn } from '~/lib/utils'
 
 const props = withDefaults(defineProps<{
-    open?: boolean
     align?: 'start' | 'center' | 'end'
     side?: 'top' | 'right' | 'bottom' | 'left'
     sideOffset?: number
     class?: string
 }>(), {
-    open: false,
     align: 'center',
     side: 'bottom',
     sideOffset: 4
 })
+
+const popover = inject<{
+    isOpen: { value: boolean }
+    toggle: () => void
+    close: () => void
+}>('popover')
+
+const isOpen = computed(() => popover?.isOpen.value ?? false)
 
 const alignClass = computed(() => {
     const classes: Record<string, string> = {

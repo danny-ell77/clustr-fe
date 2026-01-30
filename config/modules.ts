@@ -9,7 +9,7 @@ export const APP_MODULES = [
     {
         id: 'payments',
         label: 'Payments',
-        icon: 'dollar-sign',
+        icon: 'credit-card',
         permission: 'payments.overview.view',
         route: 'payments'
     },
@@ -22,7 +22,7 @@ export const APP_MODULES = [
     },
     {
         id: 'shift',
-        label: 'Shift Management',
+        label: 'Staff Management',
         icon: 'calendar-clock',
         permission: 'shift.overview.view',
         route: 'shift'

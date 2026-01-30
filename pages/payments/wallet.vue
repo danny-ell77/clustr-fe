@@ -115,44 +115,11 @@
                 </Card>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <div class="flex items-center justify-between">
-                        <CardTitle>Recent Transactions</CardTitle>
-                        <Button variant="outline" size="sm" @click="navigateTo('/payments/transactions')">
-                            View All
-                        </Button>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <div v-if="walletData.recentTransactions.length === 0"
-                        class="text-center py-8 text-muted-foreground">
-                        No recent transactions
-                    </div>
-                    <div v-else class="divide-y">
-                        <div v-for="transaction in walletData.recentTransactions" :key="transaction.id"
-                            class="py-4 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div
-                                    :class="['w-10 h-10 rounded-full flex items-center justify-center', getTransactionBg(transaction.type)]">
-                                    <Icon :name="getTransactionIcon(transaction.type)"
-                                        :class="['w-5 h-5', getTransactionColor(transaction.type)]" />
-                                </div>
-                                <div>
-                                    <p class="font-medium">{{ transaction.description }}</p>
-                                    <p class="text-sm text-muted-foreground">{{ formatDate(transaction.createdAt) }}</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p :class="['font-bold', getAmountColor(transaction.type)]">
-                                    {{ getAmountPrefix(transaction.type) }}{{ formatCurrency(transaction.amount) }}
-                                </p>
-                                <StatusBadge :status="transaction.status" />
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+            <RecentTransactionsContent
+                :transactions="walletData.recentTransactions"
+                @view-all="navigateTo('/payments/transactions')"
+                @click="viewTransaction"
+            />
         </div>
 
         <WalletDialog v-model:open="showWalletDialog" :operation="walletOperation" :wallet="walletInfo"

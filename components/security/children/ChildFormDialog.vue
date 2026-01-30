@@ -1,6 +1,6 @@
 <template>
     <Dialog :open="open" @update:open="$emit('update:open', $event)">
-        <DialogContent class="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent class="max-w-2xl">
             <DialogHeader>
                 <DialogTitle>{{ isEdit ? 'Edit Child Profile' : 'Add Child Profile' }}</DialogTitle>
                 <DialogDescription>
@@ -8,7 +8,8 @@
                 </DialogDescription>
             </DialogHeader>
 
-            <form @submit.prevent="handleSubmit" class="space-y-6">
+            <DialogBody>
+                <form @submit.prevent="handleSubmit" class="space-y-6">
                 <div class="space-y-4">
                     <div>
                         <Label for="name">Full Name *</Label>
@@ -75,17 +76,18 @@
                     </div>
                 </div>
 
-                <DialogFooter>
-                    <Button type="button" variant="outline" @click="$emit('update:open', false)"
-                        :disabled="isSubmitting">
-                        Cancel
-                    </Button>
-                    <Button type="submit" :disabled="isSubmitting">
-                        <Icon v-if="isSubmitting" name="loader-2" class="w-4 h-4 mr-2 animate-spin" />
-                        {{ isEdit ? 'Update' : 'Create' }}
-                    </Button>
-                </DialogFooter>
-            </form>
+                </form>
+            </DialogBody>
+
+            <DialogFooter>
+                <Button type="button" variant="outline" @click="$emit('update:open', false)"
+                    :disabled="isSubmitting">
+                    Cancel
+                </Button>
+                <LoadingButton type="button" :loading="isSubmitting" @click="handleSubmit">
+                    {{ isEdit ? 'Update' : 'Create' }}
+                </LoadingButton>
+            </DialogFooter>
         </DialogContent>
     </Dialog>
 </template>
@@ -96,11 +98,11 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
+    DialogBody,
     DialogHeader,
     DialogTitle
 } from '~/components/ui/dialog'
-import { Button } from '~/components/ui/button'
+import { Button, LoadingButton } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Textarea } from '~/components/ui/textarea'

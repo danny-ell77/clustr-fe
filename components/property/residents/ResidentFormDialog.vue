@@ -1,6 +1,6 @@
 <template>
   <Dialog :open="open" @update:open="handleOpenChange">
-    <DialogContent class="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <DialogContent class="max-w-2xl">
       <DialogHeader>
         <DialogTitle>{{ isEdit ? 'Edit Resident' : 'Add New Resident' }}</DialogTitle>
         <DialogDescription>
@@ -8,7 +8,8 @@
         </DialogDescription>
       </DialogHeader>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <DialogBody>
+        <form @submit.prevent="handleSubmit" class="space-y-4">
         <!-- Name -->
         <div class="space-y-2">
           <Label for="name">Full Name *</Label>
@@ -46,22 +47,24 @@
           <Label for="approvedByAdmin" class="cursor-pointer">Approve Resident</Label>
         </div>
 
-        <DialogFooter>
-          <Button type="button" variant="outline" @click="handleCancel">
-            Cancel
-          </Button>
-          <Button type="submit" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Saving...' : (isEdit ? 'Update' : 'Add') }}
-          </Button>
-        </DialogFooter>
-      </form>
+        </form>
+      </DialogBody>
+
+      <DialogFooter>
+        <Button type="button" variant="outline" @click="handleCancel">
+          Cancel
+        </Button>
+        <LoadingButton type="button" :loading="isSubmitting" @click="handleSubmit">
+          {{ isEdit ? 'Update' : 'Add' }}
+        </LoadingButton>
+      </DialogFooter>
     </DialogContent>
   </Dialog>
 </template>
 
 <script setup lang="ts">
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogBody } from '@/components/ui/dialog'
+import { Button, LoadingButton } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { Resident, CreateResidentDto, UpdateResidentDto } from '@/types/residents'

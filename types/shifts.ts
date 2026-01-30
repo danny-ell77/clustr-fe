@@ -23,11 +23,29 @@ export enum ShiftSwapStatus {
     CANCELLED = 'CANCELLED'
 }
 
+export interface Staff {
+    id: string
+    name: string
+    email?: string
+    phoneNumber: string
+    staffType: ShiftType
+    staffTypeDisplay: string
+    employeeId?: string
+    isActive: boolean
+    dateJoined: string
+    notes?: string
+    assignedShiftsCount: number
+    createdAt: string
+    lastModifiedAt: string
+}
+
 export interface StaffSummary {
     id: string
     name: string
-    emailAddress: string
+    email?: string
     phoneNumber: string
+    staffType: ShiftType
+    staffTypeDisplay: string
 }
 
 export interface ShiftAttendance {
@@ -141,4 +159,39 @@ export interface ShiftStatistics {
     cancelledShifts: number
     attendanceRate: number
     averageOvertimeHours: number
+}
+
+export interface CreateStaffDto {
+    name: string
+    email?: string
+    phoneNumber: string
+    staffType: ShiftType
+    employeeId?: string
+    notes?: string
+    isActive?: boolean
+}
+
+export interface UpdateStaffDto {
+    name?: string
+    email?: string
+    phoneNumber?: string
+    staffType?: ShiftType
+    employeeId?: string
+    notes?: string
+    isActive?: boolean
+}
+
+export interface StaffFilters {
+    staffType?: ShiftType
+    isActive?: boolean
+    search?: string
+    page?: number
+    pageSize?: number
+}
+
+export interface StaffStatistics {
+    totalStaff: number
+    activeStaff: number
+    inactiveStaff: number
+    byType: Record<string, number>
 }

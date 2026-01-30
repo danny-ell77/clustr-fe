@@ -1,6 +1,6 @@
 <template>
   <Badge :variant="badgeVariant" :class="badgeClass">
-    <Icon v-if="showIcon" :name="statusIcon" class="w-3 h-3 mr-1" />
+    <!-- <Icon v-if="showIcon" :name="statusIcon" class="w-3 h-3 mr-1" /> -->
     {{ label }}
   </Badge>
 </template>

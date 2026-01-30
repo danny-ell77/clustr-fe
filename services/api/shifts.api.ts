@@ -10,7 +10,11 @@ import type {
     ShiftStatistics,
     ShiftType,
     ShiftStatus,
-    ShiftSwapStatus
+    ShiftSwapStatus,
+    Staff,
+    CreateStaffDto,
+    UpdateStaffDto,
+    StaffStatistics
 } from '~/types/shifts'
 
 export interface ShiftFilters {
@@ -79,11 +83,27 @@ export interface ShiftReportDetailed {
     }
 }
 
+export interface StaffFilters {
+    staffType?: ShiftType
+    isActive?: boolean
+    search?: string
+    page?: number
+    pageSize?: number
+}
+
 export const managementShiftsApi = {
     shifts: {
         getAll: (params?: ShiftFilters) => {
             const { $api } = useNuxtApp()
             return $api<PaginatedResponse<Shift>>('/management/shifts/', {
+                method: 'GET',
+                query: params
+            })
+        },
+
+        getCalendar: (params: { startDate: string; endDate: string; staffId?: number; status?: string; shiftType?: string }) => {
+            const { $api } = useNuxtApp()
+            return $api<Shift[]>('/management/shifts/calendar/', {
                 method: 'GET',
                 query: params
             })
@@ -226,6 +246,84 @@ export const managementShiftsApi = {
             return $api<{ schedules: StaffSchedule[] }>('/management/staff-schedule/', {
                 method: 'GET',
                 query: params
+            })
+        }
+    },
+
+    staff: {
+        getAll: (params?: StaffFilters) => {
+            const { $api } = useNuxtApp()
+            return $api<PaginatedResponse<Staff>>('/management/staff/', {
+                method: 'GET',
+                query: params
+            })
+        },
+
+        getById: (id: string) => {
+            const { $api } = useNuxtApp()
+            return $api<Staff>(`/management/staff/${id}/`, {
+                method: 'GET'
+            })
+        },
+
+        create: (data: CreateStaffDto) => {
+            const { $api } = useNuxtApp()
+            return $api<Staff>('/management/staff/', {
+                method: 'POST',
+                body: data
+            })
+        },
+
+        update: (id: string, data: UpdateStaffDto) => {
+            const { $api } = useNuxtApp()
+            return $api<Staff>(`/management/staff/${id}/`, {
+                method: 'PATCH',
+                body: data
+            })
+        },
+
+        delete: (id: string) => {
+            const { $api } = useNuxtApp()
+            return $api(`/management/staff/${id}/`, {
+                method: 'DELETE'
+            })
+        },
+
+        activate: (id: string) => {
+            const { $api } = useNuxtApp()
+            return $api<{ message: string; staff: Staff }>(`/management/staff/${id}/activate/`, {
+                method: 'POST'
+            })
+        },
+
+        deactivate: (id: string) => {
+            const { $api } = useNuxtApp()
+            return $api<{ message: string; staff: Staff }>(`/management/staff/${id}/deactivate/`, {
+                method: 'POST'
+            })
+        },
+
+        getShifts: (id: string, params?: { status?: string; start_date?: string; end_date?: string }) => {
+            const { $api } = useNuxtApp()
+            return $api<{ staff: Staff; shifts: Shift[] }>(`/management/staff/${id}/shifts/`, {
+                method: 'GET',
+                query: params
+            })
+        },
+
+        getStatistics: () => {
+            const { $api } = useNuxtApp()
+            return $api<StaffStatistics>('/management/staff/statistics/', {
+                method: 'GET'
+            })
+        },
+
+        export: (params?: StaffFilters) => {
+            const { $api } = useNuxtApp()
+            return $api<Blob>('/management/staff/export/', {
+                method: 'GET',
+                query: params,
+                responseType: 'blob'
             })
         }
     },

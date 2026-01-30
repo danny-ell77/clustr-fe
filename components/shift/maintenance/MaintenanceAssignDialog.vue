@@ -8,7 +8,8 @@
                 </DialogDescription>
             </DialogHeader>
 
-            <form @submit.prevent="handleSubmit" class="space-y-4">
+            <DialogBody>
+                <form @submit.prevent="handleSubmit" class="space-y-4">
                 <div v-if="log" class="p-4 bg-muted rounded-lg">
                     <p class="text-sm font-medium">{{ log.title }}</p>
                     <p class="text-xs text-muted-foreground mt-1">{{ log.maintenanceNumber }}</p>
@@ -47,15 +48,17 @@
                     </Select>
                 </div>
 
-                <div class="flex justify-end gap-2 mt-6">
-                    <Button type="button" variant="outline" @click="isOpen = false" :disabled="isSubmitting">
-                        Cancel
-                    </Button>
-                    <Button type="submit" :disabled="isSubmitting || (!formData.performedBy && !formData.supervisedBy)">
-                        {{ isSubmitting ? 'Assigning...' : 'Assign' }}
-                    </Button>
-                </div>
-            </form>
+                </form>
+            </DialogBody>
+
+            <DialogFooter>
+                <Button type="button" variant="outline" @click="isOpen = false" :disabled="isSubmitting">
+                    Cancel
+                </Button>
+                <LoadingButton type="button" :loading="isSubmitting" :disabled="!formData.performedBy && !formData.supervisedBy" @click="handleSubmit">
+                    Assign
+                </LoadingButton>
+            </DialogFooter>
         </DialogContent>
     </Dialog>
 </template>
@@ -63,8 +66,8 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Button } from '~/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogBody, DialogFooter } from '~/components/ui/dialog'
+import { Button, LoadingButton } from '~/components/ui/button'
 import { Label } from '~/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { useMaintenance } from '~/composables/property/useMaintenance'

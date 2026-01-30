@@ -1,6 +1,6 @@
 <template>
     <Dialog v-model:open="isOpen">
-        <DialogContent class="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent class="max-w-3xl">
             <DialogHeader>
                 <DialogTitle>{{ log ? 'Edit Maintenance Log' : 'Create Maintenance Log' }}</DialogTitle>
                 <DialogDescription>
@@ -8,7 +8,8 @@
                 </DialogDescription>
             </DialogHeader>
 
-            <form @submit.prevent="handleSubmit" class="space-y-4">
+            <DialogBody>
+                <form @submit.prevent="handleSubmit" class="space-y-4">
                 <div>
                     <Label for="title">Title *</Label>
                     <Input id="title" v-model="formData.title" placeholder="Brief description of maintenance task"
@@ -96,8 +97,14 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <Label for="estimatedDuration">Estimated Duration</Label>
-                        <Input id="estimatedDuration" v-model="formData.estimatedDuration"
-                            placeholder="e.g., 2 hours, 3 days" />
+                        <div class="flex items-center gap-1.5">
+                            <Input id="estimatedDurationHours" v-model.number="estimatedDurationHours"
+                                type="number" min="0" placeholder="0" class="w-16 text-center" />
+                            <span class="text-xs text-muted-foreground">h</span>
+                            <Input id="estimatedDurationMinutes" v-model.number="estimatedDurationMinutes"
+                                type="number" min="0" max="59" placeholder="0" class="w-16 text-center" />
+                            <span class="text-xs text-muted-foreground">m</span>
+                        </div>
                     </div>
 
                     <div>
@@ -156,8 +163,14 @@
 
                         <div>
                             <Label for="actualDuration">Actual Duration</Label>
-                            <Input id="actualDuration" v-model="formData.actualDuration"
-                                placeholder="e.g., 2.5 hours" />
+                            <div class="flex items-center gap-1.5">
+                                <Input id="actualDurationHours" v-model.number="actualDurationHours"
+                                    type="number" min="0" placeholder="0" class="w-16 text-center" />
+                                <span class="text-xs text-muted-foreground">h</span>
+                                <Input id="actualDurationMinutes" v-model.number="actualDurationMinutes"
+                                    type="number" min="0" max="59" placeholder="0" class="w-16 text-center" />
+                                <span class="text-xs text-muted-foreground">m</span>
+                            </div>
                         </div>
                     </div>
 
@@ -168,23 +181,25 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end gap-2 mt-6">
-                    <Button type="button" variant="outline" @click="isOpen = false" :disabled="isSubmitting">
-                        Cancel
-                    </Button>
-                    <Button type="submit" :disabled="isSubmitting">
-                        {{ isSubmitting ? 'Saving...' : log ? 'Update' : 'Create' }}
-                    </Button>
-                </div>
-            </form>
+                </form>
+            </DialogBody>
+
+            <DialogFooter>
+                <Button type="button" variant="outline" @click="isOpen = false" :disabled="isSubmitting">
+                    Cancel
+                </Button>
+                <LoadingButton type="button" :loading="isSubmitting" @click="handleSubmit">
+                    {{ log ? 'Update' : 'Create' }}
+                </LoadingButton>
+            </DialogFooter>
         </DialogContent>
     </Dialog>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Button } from '~/components/ui/button'
+import { computed, reactive, ref, watch } from 'vue'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogBody, DialogFooter } from '~/components/ui/dialog'
+import { Button, LoadingButton } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Textarea } from '~/components/ui/textarea'
@@ -243,6 +258,29 @@ const isSubmitting = computed(() =>
     createLogMutation.isPending.value || updateLogMutation.isPending.value
 )
 
+const estimatedDurationHours = ref<number | undefined>(undefined)
+const estimatedDurationMinutes = ref<number | undefined>(undefined)
+const actualDurationHours = ref<number | undefined>(undefined)
+const actualDurationMinutes = ref<number | undefined>(undefined)
+
+function parseDuration(duration: string | undefined): { hours: number; minutes: number } {
+    if (!duration) return { hours: 0, minutes: 0 }
+    const parts = duration.split(':')
+    if (parts.length >= 2) {
+        return { hours: parseInt(parts[0]) || 0, minutes: parseInt(parts[1]) || 0 }
+    }
+    return { hours: 0, minutes: 0 }
+}
+
+function formatDuration(hours: number | undefined, minutes: number | undefined): string | undefined {
+    if ((hours === undefined || hours === 0) && (minutes === undefined || minutes === 0)) {
+        return undefined
+    }
+    const h = (hours || 0).toString().padStart(2, '0')
+    const m = (minutes || 0).toString().padStart(2, '0')
+    return `${h}:${m}:00`
+}
+
 watch(() => props.log, (log) => {
     if (log) {
         formData.title = log.title
@@ -253,7 +291,9 @@ watch(() => props.log, (log) => {
         formData.equipmentName = log.equipmentName || ''
         formData.priority = log.priority
         formData.scheduledDate = log.scheduledDate || ''
-        formData.estimatedDuration = log.estimatedDuration || ''
+        const estDur = parseDuration(log.estimatedDuration)
+        estimatedDurationHours.value = estDur.hours || undefined
+        estimatedDurationMinutes.value = estDur.minutes || undefined
         formData.cost = log.cost || ''
         formData.materialsUsed = log.materialsUsed || ''
         formData.toolsUsed = log.toolsUsed || ''
@@ -261,7 +301,9 @@ watch(() => props.log, (log) => {
         formData.nextMaintenanceDue = log.nextMaintenanceDue || ''
         formData.warrantyExpiry = log.warrantyExpiry || ''
         formData.status = log.status
-        formData.actualDuration = log.actualDuration || ''
+        const actDur = parseDuration(log.actualDuration)
+        actualDurationHours.value = actDur.hours || undefined
+        actualDurationMinutes.value = actDur.minutes || undefined
         formData.completionNotes = log.completionNotes || ''
     } else {
         formData.title = ''
@@ -272,7 +314,8 @@ watch(() => props.log, (log) => {
         formData.equipmentName = ''
         formData.priority = 'MEDIUM' as MaintenancePriority
         formData.scheduledDate = ''
-        formData.estimatedDuration = ''
+        estimatedDurationHours.value = undefined
+        estimatedDurationMinutes.value = undefined
         formData.cost = ''
         formData.materialsUsed = ''
         formData.toolsUsed = ''
@@ -280,7 +323,8 @@ watch(() => props.log, (log) => {
         formData.nextMaintenanceDue = ''
         formData.warrantyExpiry = ''
         formData.status = undefined
-        formData.actualDuration = ''
+        actualDurationHours.value = undefined
+        actualDurationMinutes.value = undefined
         formData.completionNotes = ''
     }
 }, { immediate: true })
@@ -297,7 +341,7 @@ const handleSubmit = async () => {
                 equipmentName: formData.equipmentName || undefined,
                 priority: formData.priority,
                 scheduledDate: formData.scheduledDate || undefined,
-                estimatedDuration: formData.estimatedDuration || undefined,
+                estimatedDuration: formatDuration(estimatedDurationHours.value, estimatedDurationMinutes.value),
                 cost: formData.cost || undefined,
                 materialsUsed: formData.materialsUsed || undefined,
                 toolsUsed: formData.toolsUsed || undefined,
@@ -305,7 +349,7 @@ const handleSubmit = async () => {
                 nextMaintenanceDue: formData.nextMaintenanceDue || undefined,
                 warrantyExpiry: formData.warrantyExpiry || undefined,
                 status: formData.status as MaintenanceStatus | undefined,
-                actualDuration: formData.actualDuration || undefined,
+                actualDuration: formatDuration(actualDurationHours.value, actualDurationMinutes.value),
                 completionNotes: formData.completionNotes || undefined
             }
             await updateLogMutation.mutateAsync({
@@ -322,7 +366,7 @@ const handleSubmit = async () => {
                 equipmentName: formData.equipmentName || undefined,
                 priority: formData.priority,
                 scheduledDate: formData.scheduledDate || undefined,
-                estimatedDuration: formData.estimatedDuration || undefined,
+                estimatedDuration: formatDuration(estimatedDurationHours.value, estimatedDurationMinutes.value),
                 cost: formData.cost || undefined,
                 materialsUsed: formData.materialsUsed || undefined,
                 toolsUsed: formData.toolsUsed || undefined,

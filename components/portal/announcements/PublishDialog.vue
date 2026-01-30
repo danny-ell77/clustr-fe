@@ -8,7 +8,8 @@
                 </DialogDescription>
             </DialogHeader>
 
-            <div class="space-y-6">
+            <DialogBody>
+                <div class="space-y-6">
                 <div class="p-4 bg-muted rounded-lg space-y-2">
                     <h4 class="font-semibold">{{ announcement?.title }}</h4>
                     <p class="text-sm text-muted-foreground line-clamp-3">
@@ -85,7 +86,8 @@
                         Once published, this announcement will be visible to all residents in the estate
                     </p>
                 </div>
-            </div>
+                </div>
+            </DialogBody>
 
             <DialogFooter>
                 <Button variant="outline" @click="isOpen = false" :disabled="isPublishing">
@@ -101,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogBody } from '~/components/ui/dialog'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Button } from '~/components/ui/button'

@@ -51,7 +51,7 @@
                     <Icon v-else-if="column.sortable" name="chevrons-up-down" class="w-4 h-4 opacity-30" />
                 </div>
             </TableHead>
-            <TableHead class="w-[100px]" v-if="showRowActions">Actions</TableHead>
+            <TableHead class="w-[100px]" v-if="showRowActions"></TableHead>
         </template>
 
         <!-- Table Body -->

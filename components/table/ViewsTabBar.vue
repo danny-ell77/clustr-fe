@@ -1,41 +1,51 @@
 <template>
-    <div class="bg-muted/30 border-b">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1 overflow-x-auto flex-1 px-2 pt-2">
-                <button v-for="view in persistedViews" :key="view.id" :class="[
-                    'group relative px-4 py-2 text-sm font-medium whitespace-nowrap transition-all rounded-t-lg',
-                    'flex items-center gap-2 min-w-[120px] max-w-[200px]',
-                    activeViewId === view.id
-                        ? 'bg-card text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-                ]" :aria-selected="activeViewId === view.id" :aria-label="`View: ${view.name}`" role="tab"
-                    @click="activateView(view.id)" @contextmenu.prevent="openContextMenu(view, $event)">
-                    <span class="truncate flex-1">{{ view.name }}</span>
+    <div class="relative">
+        <!-- Tab bar with border-bottom -->
+        <div class="flex items-center justify-between border-b border-gray-200 bg-gray-50/50 px-4">
+            
+            <!-- Tabs container - positioned relative so active tab can extend past border -->
+            <div class="flex items-center gap-1 relative">
+                <button v-for="view in persistedViews" :key="view.id" 
+                    :class="[
+                        'group px-4 py-2 text-sm font-medium transition-all duration-200',
+                        'flex items-center gap-2 min-w-[120px] max-w-[200px] rounded-t-md -mb-[10px]',
+                        activeViewId === view.id
+                            ? 'bg-white border-t border-l border-r border-gray-200 text-foreground relative z-10'
+                            : 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-gray-100'
+                    ]" 
+                    :aria-selected="activeViewId === view.id" 
+                    role="tab"
+                    @click="activateView(view.id)" 
+                    @contextmenu.prevent="openContextMenu(view, $event)"
+                >
+                    <span class="truncate flex-1 text-left">{{ view.name }}</span>
+                    
                     <button v-if="persistedViews.length > 1"
-                        class="opacity-0 group-hover:opacity-100 hover:bg-muted/80 rounded p-0.5 transition-opacity"
+                        class="opacity-0 group-hover:opacity-100 hover:bg-gray-200 rounded p-0.5 transition-opacity"
                         @click.stop="confirmDelete(view)">
-                        <Icon name="x" class="w-3 h-3" />
+                        <Icon name="x" class="w-1 h-1" />
                     </button>
                 </button>
 
                 <button
-                    class="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-t-lg transition-colors"
+                    class="ml-1 p-1.5 text-muted-foreground hover:text-foreground hover:bg-gray-200 rounded-md transition-colors"
                     aria-label="Create new view" @click="$emit('create')">
                     <Icon name="plus" class="w-4 h-4" />
                 </button>
             </div>
 
-            <div class="flex items-center gap-2 px-4 pt-2">
-                <div v-if="showViewSwitcher" class="flex items-center border rounded-md bg-background">
+            <!-- Right side actions -->
+            <div class="flex items-center gap-2 py-2">
+                <div v-if="showViewSwitcher" class="flex items-center border border-gray-200 rounded-md bg-white p-0.5">
                     <Button variant="ghost" size="sm" :class="[
-                        'rounded-r-none h-8',
-                        currentViewMode === 'grid' ? 'bg-muted' : ''
+                        'h-7 px-2 rounded-sm',
+                        currentViewMode === 'grid' ? 'bg-gray-100' : 'bg-transparent'
                     ]" @click="$emit('switchView', 'grid')">
                         <Icon name="grid" class="w-4 h-4" />
                     </Button>
                     <Button variant="ghost" size="sm" :class="[
-                        'rounded-l-none h-8',
-                        currentViewMode === 'table' ? 'bg-muted' : ''
+                        'h-7 px-2 rounded-sm',
+                        currentViewMode === 'table' ? 'bg-gray-100' : 'bg-transparent'
                     ]" @click="$emit('switchView', 'table')">
                         <Icon name="table" class="w-4 h-4" />
                     </Button>
@@ -43,11 +53,11 @@
 
                 <Popover v-model:open="showFiltersPopover">
                     <PopoverTrigger as-child>
-                        <Button variant="outline" size="sm" class="gap-2 h-8">
+                        <Button variant="outline" size="sm" class="gap-2 h-8 border-gray-200 shadow-sm">
                             <Icon name="filter" class="w-4 h-4" />
-                            Filter
+                            <span class="font-medium">Filter</span>
                             <span v-if="activeFilterCount > 0"
-                                class="ml-1 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full">
+                                class="ml-1 flex items-center justify-center w-4 h-4 text-[10px] bg-primary text-primary-foreground rounded-full">
                                 {{ activeFilterCount }}
                             </span>
                         </Button>
@@ -68,9 +78,10 @@
             </div>
         </div>
 
+        <!-- Context menu for right-click on tabs -->
         <DropdownMenu v-if="contextMenuView" v-model:open="showContextMenu">
             <DropdownMenuTrigger as-child>
-                <div :style="{ position: 'absolute', left: `${contextMenuX}px`, top: `${contextMenuY}px` }" />
+                <div :style="{ position: 'fixed', left: `${contextMenuX}px`, top: `${contextMenuY}px` }" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
                 <DropdownMenuItem @click="editView">

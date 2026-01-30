@@ -1,12 +1,12 @@
 <template>
     <Dialog :open="open" @update:open="$emit('update:open', $event)">
         <DialogContent class="max-w-3xl">
-            <div class="space-y-4">
-                <div>
-                    <h2 class="text-2xl">Create Bulk Bills</h2>
-                    <p class="text-sm text-muted-foreground">Create bills for multiple users at once</p>
-                </div>
+            <DialogHeader>
+                <DialogTitle>Create Bulk Bills</DialogTitle>
+                <DialogDescription>Create bills for multiple users at once</DialogDescription>
+            </DialogHeader>
 
+            <DialogBody>
                 <div class="space-y-4">
                     <div class="flex gap-2 border-b pb-4">
                         <Button variant="outline" :class="{ 'bg-primary text-primary-foreground': mode === 'manual' }"
@@ -109,23 +109,22 @@
                         </div>
                     </div>
 
-                    <div class="flex gap-2 pt-4 border-t">
-                        <Button type="button" variant="outline" class="flex-1"
-                            @click="$emit('update:open', false)">Cancel</Button>
-                        <Button type="button" class="flex-1" :disabled="!canSubmit || isSubmitting"
-                            @click="handleSubmit">
-                            {{ isSubmitting ? 'Creating...' : `Create ${billCount} Bill(s)` }}
-                        </Button>
-                    </div>
                 </div>
-            </div>
+            </DialogBody>
+
+            <DialogFooter>
+                <Button type="button" variant="outline" @click="$emit('update:open', false)">Cancel</Button>
+                <Button type="button" :disabled="!canSubmit || isSubmitting" @click="handleSubmit">
+                    {{ isSubmitting ? 'Creating...' : `Create ${billCount} Bill(s)` }}
+                </Button>
+            </DialogFooter>
         </DialogContent>
     </Dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Dialog, DialogContent } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter } from '~/components/ui/dialog'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'

@@ -113,6 +113,15 @@ export const queryKeys = {
         },
     },
 
+    // Staff domain
+    staff: {
+        all: ['staff'] as const,
+        list: (filters: any) => [...queryKeys.staff.all, 'list', filters] as const,
+        detail: (id: string) => [...queryKeys.staff.all, 'detail', id] as const,
+        statistics: ['staff', 'statistics'] as const,
+        shifts: (id: string, filters: any) => [...queryKeys.staff.all, id, 'shifts', filters] as const,
+    },
+
     // Emergency domain
     emergency: {
         all: ['emergency'] as const,

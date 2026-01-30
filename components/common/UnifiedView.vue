@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-card rounded-lg shadow-sm border">
+    <div class="bg-card rounded-lg shadow-sm border overflow-hidden">
         <ViewsTabBar :persisted-views="persistedViews" :active-view-id="activeViewId" :current-filters="filters"
             :show-view-switcher="availableViews.length > 1" :current-view-mode="currentViewMode"
             @activate="activateView" @create="showViewModal = true" @edit="editViewHandler" @delete="deleteView"
@@ -9,7 +9,7 @@
             </template>
         </ViewsTabBar>
 
-        <div class="p-0">
+        <div class="p-4 max-w-full overflow-auto">
             <div v-if="currentViewMode === 'grid' && availableViews.includes('grid')">
                 <slot name="grid" :data="data" :is-loading="isLoading" />
             </div>

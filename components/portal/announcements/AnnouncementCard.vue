@@ -22,28 +22,28 @@
             class="w-5 h-5 text-muted-foreground flex-shrink-0" />
         </div>
 
-        <div class="flex items-center justify-between pt-4 border-t">
-          <div class="flex items-center gap-4 text-sm text-muted-foreground">
-            <div class="flex items-center gap-1">
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t">
+          <div class="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <div class="flex items-center gap-1 whitespace-nowrap">
               <Icon name="user" class="w-4 h-4" />
               <span>{{ announcement.authorName }}</span>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1 whitespace-nowrap">
               <Icon name="calendar" class="w-4 h-4" />
               <span>{{ formattedDate }}</span>
             </div>
           </div>
 
-          <div class="flex items-center gap-4 text-sm">
-            <div class="flex items-center gap-1 text-muted-foreground">
+          <div class="flex flex-wrap items-center gap-3 text-sm">
+            <div class="flex items-center gap-1 text-muted-foreground whitespace-nowrap">
               <Icon name="eye" class="w-4 h-4" />
               <span>{{ announcement.viewsCount || 0 }}</span>
             </div>
-            <div class="flex items-center gap-1 text-muted-foreground">
+            <div class="flex items-center gap-1 text-muted-foreground whitespace-nowrap">
               <Icon name="heart" class="w-4 h-4" />
               <span>{{ announcement.likesCount || 0 }}</span>
             </div>
-            <div class="flex items-center gap-1 text-muted-foreground">
+            <div class="flex items-center gap-1 text-muted-foreground whitespace-nowrap">
               <Icon name="message-circle" class="w-4 h-4" />
               <span>{{ announcement.commentsCount || 0 }}</span>
             </div>
@@ -58,8 +58,6 @@
 import { Card, CardContent } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
 import Icon from '~/components/Icon.vue'
-import StatusBadge from '~/components/common/StatusBadge.vue'
-import PriorityBadge from '~/components/common/PriorityBadge.vue'
 import type { Announcement, AnnouncementCategory } from '~/types/announcements'
 
 interface Props {

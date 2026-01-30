@@ -1,6 +1,6 @@
 <template>
     <Dialog v-model:open="isOpen">
-        <DialogContent class="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent class="max-w-2xl">
             <DialogHeader>
                 <DialogTitle>{{ visitor ? 'Edit Visitor' : 'Register Visitor' }}</DialogTitle>
                 <DialogDescription>
@@ -8,7 +8,8 @@
                 </DialogDescription>
             </DialogHeader>
 
-            <form @submit.prevent="handleSubmit" class="space-y-4">
+            <DialogBody>
+                <form @submit.prevent="handleSubmit" class="space-y-4">
                 <div>
                     <Label for="name">Full Name *</Label>
                     <Input id="name" v-model="formData.name" placeholder="Enter visitor's full name" required />
@@ -97,23 +98,25 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end gap-2 mt-6">
-                    <Button type="button" variant="outline" @click="isOpen = false" :disabled="isSubmitting">
-                        Cancel
-                    </Button>
-                    <Button type="submit" :disabled="isSubmitting">
-                        {{ isSubmitting ? 'Saving...' : visitor ? 'Update' : 'Register' }}
-                    </Button>
-                </div>
-            </form>
+                </form>
+            </DialogBody>
+
+            <DialogFooter>
+                <Button type="button" variant="outline" @click="isOpen = false" :disabled="isSubmitting">
+                    Cancel
+                </Button>
+                <LoadingButton type="button" :loading="isSubmitting" @click="handleSubmit">
+                    {{ visitor ? 'Update' : 'Register' }}
+                </LoadingButton>
+            </DialogFooter>
         </DialogContent>
     </Dialog>
 </template>
 
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '~/components/ui/dialog'
-import { Button } from '~/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogBody, DialogFooter } from '~/components/ui/dialog'
+import { Button, LoadingButton } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Textarea } from '~/components/ui/textarea'
